@@ -25,6 +25,6 @@ def getAllDirsDepth1(rootPath):
 def getProjectRoot():
     thisModulePath = os.path.dirname(os.path.realpath(__file__))
     projectRoot = path.abspath(path.join(thisModulePath ,".."))
-    return projectRoot
+    return (projectRoot + '/')
 
     
