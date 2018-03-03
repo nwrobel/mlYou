@@ -1,8 +1,7 @@
 import os
 from os import listdir
 import os.path as path
-from os.path import isdir, join
-from pathlib import Path
+from os.path import join
 
 def getAllFilesRecursive(rootPath):
     
