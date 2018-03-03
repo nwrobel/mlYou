@@ -5,7 +5,7 @@ from urllib.request import urlopen
 from mlu.discogs import auth
 from mlu import common
 
-
+#
 
 def printScriptIntro():
     print("############ Welcome to the Discogs Master Tag Writer ##############")
