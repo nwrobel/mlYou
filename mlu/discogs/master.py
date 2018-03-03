@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from urllib.request import urlopen
 from mlu.discogs import auth
 from mlu import common
+import time
 
 #
 
@@ -94,7 +95,13 @@ def getReleaseIdForAlbum(artistAlbumSongs):
         
 
 def getMasterReleaseUserStats(masterUri):
-    page = urlopen(masterUri)
+    try:
+        page = urlopen(masterUri)
+    except:
+        print("Too many requests...server returned a 429. Waiting 60 seconds before sending more requests.")
+        time.sleep(60)
+        page = urlopen(masterUri)
+        
     soup = BeautifulSoup(page, "html.parser")
     
     statsOuterDiv = soup.find("div", {"id": "statistics"})
@@ -187,6 +194,8 @@ def run():
         writeTagsToSongs(albumSongPaths, masterReleaseTags)
         print("Master release tags set successfully for all songs in album: ", artistAlbumSongs['album'])
         print("-------------------------------------------------------------------------------------------------------------------")
+        print("-----------------Sleeping for 6 seconds")
+        time.sleep(6)
     
     print()    
     print("ALL FINISHED, now leaving this script....")
