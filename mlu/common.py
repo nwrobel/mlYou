@@ -1,6 +1,8 @@
 import os
 from os import listdir
+import os.path as path
 from os.path import isdir, join
+from pathlib import Path
 
 def getAllFilesRecursive(rootPath):
     
@@ -21,6 +23,8 @@ def getAllDirsDepth1(rootPath):
     return x
 
 def getProjectRoot():
-    return "/home/nick/workspace/mlu/"
+    thisModulePath = os.path.dirname(os.path.realpath(__file__))
+    projectRoot = path.abspath(path.join(thisModulePath ,".."))
+    return projectRoot
 
     
