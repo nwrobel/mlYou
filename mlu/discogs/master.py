@@ -6,7 +6,7 @@ from mlu.discogs import auth
 from mlu import common
 import time
 
-#
+erroeredSongs = []
 
 def printScriptIntro():
     print("############ Welcome to the Discogs Master Tag Writer ##############")
@@ -38,7 +38,7 @@ def printReleaseIdNotFoundForSong(songPath):
     print("> 'Discogs' > 'Write Tags':")
     print("- Artist Name")
     print("- Track Title")
-    print("- Album Title (normal, do not write the words 'delux' or 'xxx version' in the album title...check the tag in the Discogs window before it is written")
+    print("- Album Title (normal, do not write the words 'delux' or 'xxx version' in the album title...check the tag in the Discogs window before it is written)")
     print("- Composer")
     print("- Album Artist")
     print("- Track Number")
@@ -50,7 +50,7 @@ def printReleaseIdNotFoundForSong(songPath):
     print("- ARTIST_WEBSITES")
     print("- DISCOGS_RELEASE_ID")
     print()
-    print("Skipping this album becuase no release ID was found")
+    print("Skipping this album and its songs becuase no release ID was found...")
     print()
 
 def getDeepestObjectInPath(path):
@@ -73,6 +73,14 @@ def getAllArtistsAlbumsSongs(musicDir):
             allArtistsAlbumSongs.append(newAlbum)
             
     return allArtistsAlbumSongs
+
+def countSongs(allArtistAlbumSongs):
+    count = 0
+    for artistAlbumSongs in allArtistAlbumSongs:
+        countForAlbum = len(artistAlbumSongs['albumSongPaths'])
+        count += countForAlbum
+        
+    return count
     
 
 def getReleaseIdForAlbum(artistAlbumSongs):
@@ -129,6 +137,12 @@ def getMasterReleaseTagsFromNonMasterReleaseId(client, releaseId):
     release = client.release(releaseId)
     masterRelease = release.master
     
+    if (not masterRelease):
+        print("Failed to get the master release object from the release Id ", releaseId)
+        print("Skipping this album and its songs...")
+        return 0
+        
+    
     print("Found master release for album successfully:", masterRelease)
 
     tags['genres'] = masterRelease.data['genres'] + masterRelease.data['styles']
@@ -171,31 +185,59 @@ def run():
     args = parser.parse_args()    
     musicDir = args.musicDir
     
+    erroredArtistAlbumSongs = []
+    
     printScriptIntro()
     
     print("Loading and grouping all artists, albums, and songs...")
     allArtistsAlbumSongs = getAllArtistsAlbumsSongs(musicDir)
+    print()
+    
+    songsCount = countSongs(allArtistsAlbumSongs)
+    albumsCount = len(allArtistsAlbumSongs)
+    print("All songs loaded and grouped successfully")
+    print(songsCount, " songs found in ", albumsCount, " albums")
+    print()
     
     print("Initializing the Discogs client...")
     client = auth.getDiscogsClient()
     
-    print("Finding and setting the master tags for all albums and songs...")
+    print("BEGIN PROCESSING: Finding and setting the master release tags for all songs in all albums...")
     print()
     for artistAlbumSongs in allArtistsAlbumSongs:
         albumReleaseId = getReleaseIdForAlbum(artistAlbumSongs)
         
         if (not albumReleaseId):
+            erroredArtistAlbumSongs.append(artistAlbumSongs)
             continue
         
         masterReleaseTags = getMasterReleaseTagsFromNonMasterReleaseId(client, albumReleaseId)
+        
+        if (not masterReleaseTags):
+            erroredArtistAlbumSongs.append(artistAlbumSongs)
+            continue
+            
         print(masterReleaseTags)
         albumSongPaths = artistAlbumSongs['albumSongPaths']
         
         writeTagsToSongs(albumSongPaths, masterReleaseTags)
         print("Master release tags set successfully for all songs in album: ", artistAlbumSongs['album'])
-        print("-------------------------------------------------------------------------------------------------------------------")
-        print("-----------------Sleeping for 6 seconds")
+        print("------------------------------------------------------------------------------------------------------------------- Sleeping for 6 seconds")
         time.sleep(6)
+    
+    print('########################################################################################################################')
+    print()
+    print("All songs in the music library processed")
+    print(len(erroredArtistAlbumSongs), " albums had an error in finding the master tags. See errored albums below:")
+    print()
+    
+    for errorAlbum in erroredArtistAlbumSongs:
+        print("Artist: ", errorAlbum['artist'], "Album: ", errorAlbum['album'], "Songs: ")
+        
+        for song in errorAlbum['albumSongPaths']:
+            print(getDeepestObjectInPath(song))
+        
+        print("----------------------------------------------------------------------------------------")
     
     print()    
     print("ALL FINISHED, now leaving this script....")
