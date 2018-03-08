@@ -108,8 +108,6 @@ def getMasterReleaseUserStats(masterUri):
         time.sleep(60)
         page = urlopen(masterUri)
         
-    print(page.info())
-        
     soup = BeautifulSoup(page, "html.parser")
     
     statsOuterDiv = soup.find("div", {"id": "statistics"})
