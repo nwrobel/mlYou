@@ -6,8 +6,6 @@ from mlu.discogs import auth
 from mlu import common
 import time
 
-erroeredSongs = []
-
 def printScriptIntro():
     print("############ Welcome to the Discogs Master Tag Writer ##############")
     print()
@@ -110,6 +108,8 @@ def getMasterReleaseUserStats(masterUri):
         time.sleep(60)
         page = urlopen(masterUri)
         
+    print(page.info())
+        
     soup = BeautifulSoup(page, "html.parser")
     
     statsOuterDiv = soup.find("div", {"id": "statistics"})
@@ -145,8 +145,14 @@ def getMasterReleaseTagsFromNonMasterReleaseId(client, releaseId):
     
     print("Found master release for album successfully:", masterRelease)
 
-    tags['genres'] = masterRelease.data['genres'] + masterRelease.data['styles']
-    tags['year'] = masterRelease.data['year']
+    try:
+        styles = masterRelease.data['styles']
+    except KeyError:
+        print("'Styles' property not found on the master album object:", masterRelease.title)
+        styles = ''
+        
+    tags['genres'] = masterRelease.data['genres'] + styles
+    tags['date'] = masterRelease.data['year']
     
     masterUserStats = getMasterReleaseUserStats(masterRelease.data['uri'])
     tags["DISCOGS_RATING"] = masterUserStats["DISCOGS_RATING"]
