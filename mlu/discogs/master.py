@@ -107,6 +107,7 @@ def getMasterReleaseUserStats(masterUri):
         print("Too many requests...server returned a 429. Waiting 60 seconds before sending more requests.")
         time.sleep(60)
         page = urlopen(masterUri)
+
         
     soup = BeautifulSoup(page, "html.parser")
     
@@ -168,7 +169,7 @@ def writeTagsToSongs(songPaths, masterReleaseTags):
         for songPath in songPaths:
             audioFile = mutagen.File(songPath)
             audioFile['genre'] = masterReleaseTags['genres']
-            audioFile['year'] = str(masterReleaseTags['year'])
+            audioFile['date'] = str(masterReleaseTags['date'])
             audioFile["DISCOGS_RATING"] = masterReleaseTags["DISCOGS_RATING"]
             audioFile["DISCOGS_VOTES"] = masterReleaseTags["DISCOGS_VOTES"]
             audioFile["DISCOGS_USERS_HAVE"] = masterReleaseTags["DISCOGS_USERS_HAVE"]
