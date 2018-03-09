@@ -148,7 +148,7 @@ def getMasterReleaseTagsFromNonMasterReleaseId(client, releaseId):
         styles = masterRelease.data['styles']
     except KeyError:
         print("'Styles' property not found on the master album object:", masterRelease.title)
-        styles = ''
+        styles = []
         
     tags['genres'] = masterRelease.data['genres'] + styles
     tags['date'] = masterRelease.data['year']
