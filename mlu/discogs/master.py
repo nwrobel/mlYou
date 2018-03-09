@@ -87,8 +87,14 @@ def getReleaseIdForAlbum(artistAlbumSongs):
     
     # Get the releaseId for the album based on the first song in the album.
     # We assume all the songs in the album already have a releaseId
-    # because we run this script AFTER getting tags through foobar
-    selectedSongPath = songPaths[0]
+    # because we are supposed to run this script AFTER getting tags through foobar
+    try:
+        selectedSongPath = songPaths[0]
+    except IndexError:
+        print("Error while trying to extract the Discogs_Release_Id from the first song in the album ", artistAlbumSongs['artist'], " - ", artistAlbumSongs['album'])
+        print("The first song doesn't exist! Album directory must be empty...skipping this album")
+        return 0
+    
     audioFile = mutagen.File(selectedSongPath)
      
     try:
@@ -214,11 +220,13 @@ def run():
         
         if (not albumReleaseId):
             erroredArtistAlbumSongs.append(artistAlbumSongs)
+            print("-----------------------------------------------------------------------------------------------------------")
             continue
         
         masterReleaseTags = getMasterReleaseTagsFromNonMasterReleaseId(client, albumReleaseId)
         
         if (not masterReleaseTags):
+            print("-----------------------------------------------------------------------------------------------------------")           
             erroredArtistAlbumSongs.append(artistAlbumSongs)
             continue
             
@@ -237,7 +245,7 @@ def run():
     print()
     
     for errorAlbum in erroredArtistAlbumSongs:
-        print("Artist: ", errorAlbum['artist'], "Album: ", errorAlbum['album'], "Songs: ")
+        print("Artist: ", errorAlbum['artist'], "| Album: ", errorAlbum['album'], "| Songs: ")
         
         for song in errorAlbum['albumSongPaths']:
             print(getDeepestObjectInPath(song))
