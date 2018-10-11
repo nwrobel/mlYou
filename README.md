@@ -1,4 +1,4 @@
-# Music Library Management Utilities
+# mlYou - Music Library Utilities Suite
 
 ## UNDER CONSTRUCTION
 This project is still in development and not all features listed are available yet.
