@@ -19,7 +19,7 @@ class DiscogsAPIConnection(object):
         self.client = self.createClient()
         
     
-    def createClient(self):
+    def CreateClient(self):
         discogsClientAppName = 'mlyou/0.1'
         userTokenFilepath = common.getProjectRoot() + 'user-token.txt'
     

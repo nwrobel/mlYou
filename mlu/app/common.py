@@ -1,3 +1,13 @@
+'''
+@author: Nick Wrobel
+
+First Created: 12/26/18
+Last Modified: 3/9/19
+
+Module containing "common" (non-specific) functionality that is used throughout
+the MLU project.
+'''
+
 import os
 from os import listdir
 import os.path as path
