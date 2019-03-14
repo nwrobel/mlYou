@@ -9,11 +9,19 @@ throughout the MLU project.
 '''
 
 from pathlib import Path
+import os
 from collections import namedtuple
 
 def FilepathIsValid(filePath):
     filePathObject = Path(filePath)
     if (filePathObject.exists() and filePathObject.is_file()):
+        return True
+    
+    return False
+
+def FolderpathIsValid(folderPath):
+    folderPathObject = Path(folderPath)
+    if (folderPathObject.exists() and folderPathObject.is_dir()):
         return True
     
     return False
@@ -35,26 +43,43 @@ def GetNameAndExtensionFromFileName(fileName):
     fileInfo = namedtuple("fileInfo", ["fileName", "fileExt"])
     return fileInfo(fileName, fileExt)
 
-
-def ChangeRootPathForAllPlaylistEntries(sourcePlaylistFilepath, newPlaylistFilepath, oldRoot, newRoot):
+def GetAllPlaylistFilesInDirRecursive(parentDir):
+    pathObj = Path(parentDir)
+    playlistFileObjs = pathObj.rglob('*.m3u*')
     
-    print("Attempting to load playlist at ", sourcePlaylistFilepath)
-    assert FilepathIsValid(sourcePlaylistFilepath), "The given playlist path is invalid or cannot be found"
+    playlistFilePaths = [str(playlistFileObj) for playlistFileObj in playlistFileObjs]
+    return playlistFilePaths
 
-    print("All song entries in this playlist will have their parent paths (root) changed as follows:")
+
+def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, oldRoot, newRoot):
+    
+    print("Attempting to load all playlists in ", sourcePlaylistDir)
+    assert FolderpathIsValid(sourcePlaylistDir), "The given playlist source folder is invalid or cannot be found"
+    playlistFilePaths = GetAllPlaylistFilesInDirRecursive(sourcePlaylistDir)
+
+    print("All song entries in each playlist will have their parent paths (root) changed as follows:")
     print(oldRoot, " --> ", newRoot)
-        
-    newPlaylistLines = []
     
-    with open(sourcePlaylistFilepath, 'r') as file:
-        for line in file:
-            convertedLine = line.replace(oldRoot, newRoot)
-            newPlaylistLines.append(convertedLine)
-                  
-    with open(newPlaylistFilepath, 'w') as newPlaylist:
-        for item in newPlaylistLines:
-            newPlaylist.write(f"{item}\n")
+    print("The following playlists will be converted and have new versions saved in the output dir:")
+    print(playlistFilePaths)
+    
+    
+    for playlistFilePath in playlistFilePaths:
+    
+        playlistFileName = GetFilenameFromFilepath(playlistFilePath)
+        outputPlaylistFilePath = os.path.join(outputPlaylistDir, playlistFileName)
+        
+        newPlaylistLines = []
+        
+        with open(playlistFilePath, 'r') as file:
+            for line in file:
+                convertedLine = line.replace(oldRoot, newRoot)
+                newPlaylistLines.append(convertedLine)
+                      
+        with open(outputPlaylistFilePath, 'w') as newPlaylist:
+            for item in newPlaylistLines:
+                newPlaylist.write(f"{item}\n")
             
             
-    print("Playlist converted successfully: new playlist saved as:", newPlaylistFilepath)
+        print("Playlist converted successfully, saved as:", outputPlaylistFilePath)
     
