@@ -11,7 +11,7 @@ throughout the MLU project.
 from pathlib import Path
 import os
 from collections import namedtuple
-
+ 
 def FilepathIsValid(filePath):
     filePathObject = Path(filePath)
     if (filePathObject.exists() and filePathObject.is_file()):
@@ -32,6 +32,16 @@ def GetFilenameFromFilepath(filePath):
     filePathObject = Path(filePath)
     return filePathObject.name
 
+def CreateDirectory(folderPath):
+    folderPathObject = Path(folderPath)
+    folderPathObject.mkdir(parents=True) 
+    
+def DeleteAllInDirectory(folderPath):
+    pathObj = Path(folderPath)
+    children = pathObj.glob('**/*')
+    
+    for child in children:
+        os.remove(child)
 
 def GetNameAndExtensionFromFileName(fileName):
 
@@ -53,14 +63,42 @@ def GetAllPlaylistFilesInDirRecursive(parentDir):
 
 def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, oldRoot, newRoot):
     
-    print("Attempting to load all playlists in ", sourcePlaylistDir)
-    assert FolderpathIsValid(sourcePlaylistDir), "The given playlist source folder is invalid or cannot be found"
+    print("Attempting to load all playlists in source directory:", sourcePlaylistDir)
+    
+    assert FolderpathIsValid(sourcePlaylistDir), "ERROR: The given playlist source folder is invalid or cannot be found"
     playlistFilePaths = GetAllPlaylistFilesInDirRecursive(sourcePlaylistDir)
+    
+    print("Looking for output directory:", outputPlaylistDir)
+    
+    if (not FolderpathIsValid(outputPlaylistDir)):
+        print("Output directory not found...attempting to create it")
+        CreateDirectory(outputPlaylistDir)
+        
+    else:
+        print("WARNING: Output directory already exists - all files currently within this directory WILL BE DELETED:\n", outputPlaylistDir)        
+        while True:
+            confirmation = input("Are you sure you want to continue? [Y/N]").lower()
+            
+            if (confirmation == 'y'):
+                print("User confirmed, continuing process")
+                break
+            
+            elif (confirmation == 'n'):
+                print("User chose to exit, stopping script")
+                return
+            
+            else:
+                print("Invalid choice: please enter Y or N (case insensitive)")
+                
+        os.remove(outputPlaylistDir)
+        CreateDirectory(outputPlaylistDir)
 
-    print("All song entries in each playlist will have their parent paths (root) changed as follows:")
+
+    print("For each playlist, each music file path entry will have the parent path (root) changed as follows:")
     print(oldRoot, " --> ", newRoot)
     
-    print("The following playlists will be converted and have new versions saved in the output dir:")
+    print("The following playlists will be processed and their new, converted versions will be saved in the output dir")
+    print("(The original playlist files in the source folder will not be modified)")
     print(playlistFilePaths)
     
     
@@ -71,15 +109,28 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
         
         newPlaylistLines = []
         
-        with open(playlistFilePath, 'r') as file:
-            for line in file:
-                convertedLine = line.replace(oldRoot, newRoot)
-                newPlaylistLines.append(convertedLine)
-                      
-        with open(outputPlaylistFilePath, 'w') as newPlaylist:
+        with open(playlistFilePath, mode='r', encoding='utf-8-sig') as file:
+            rawLines = file.readlines()
+            
+        lines = [line.rstrip('\n') for line in rawLines] # remove the newline character
+
+        for line in lines:
+            convertedLine = line.replace(oldRoot, newRoot)
+            newPlaylistLines.append(convertedLine)
+        
+        # Remove the '#' that is sometimes added to playlists when exported from Foobar2000
+        if (len(newPlaylistLines) > 0 and newPlaylistLines[0] == '#'):
+            newPlaylistLines.pop(0)  
+                
+        # Write out the converted lines to a new playlist file in the output dir
+        # with UTF-8 encoding (important!)
+        with open(outputPlaylistFilePath, mode='w', encoding='utf-8') as newPlaylist:
             for item in newPlaylistLines:
-                newPlaylist.write(f"{item}\n")
+                # format string: build the string based on what's in "" - the item var. and the newline
+                newPlaylist.write(f"{item}\n") 
             
             
         print("Playlist converted successfully, saved as:", outputPlaylistFilePath)
+        
+    print("All playlists converted and output to the destination dir successfully!")
     
