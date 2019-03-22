@@ -11,7 +11,21 @@ throughout the MLU project.
 from pathlib import Path
 import os
 from collections import namedtuple
- 
+
+def RemoveTrailingSlash(path):
+    while (path[-1] == '/' or path[-1] == '\\'):
+        path = path[:-1] # remove last char. from string
+        
+    return path
+
+def FixPathSlashDirectionToMatchRootPath(rootPath, path):
+    if ('/' in rootPath):
+        fixedPath = path.replace('\\', '/')
+    elif ('\\' in rootPath):
+        fixedPath = path.replace('/', '\\')
+        
+    return fixedPath
+
 def FilepathIsValid(filePath):
     filePathObject = Path(filePath)
     if (filePathObject.exists() and filePathObject.is_file()):
@@ -67,6 +81,7 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
     
     assert FolderpathIsValid(sourcePlaylistDir), "ERROR: The given playlist source folder is invalid or cannot be found"
     playlistFilePaths = GetAllPlaylistFilesInDirRecursive(sourcePlaylistDir)
+    numPlaylists = len(playlistFilePaths)
     
     print("Looking for output directory:", outputPlaylistDir)
     
@@ -93,13 +108,17 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
         os.remove(outputPlaylistDir)
         CreateDirectory(outputPlaylistDir)
 
+    oldRoot = RemoveTrailingSlash(oldRoot)
+    newRoot = RemoveTrailingSlash(newRoot)
 
     print("For each playlist, each music file path entry will have the parent path (root) changed as follows:")
     print(oldRoot, " --> ", newRoot)
     
-    print("The following playlists will be processed and their new, converted versions will be saved in the output dir")
+    
+    print("The following", numPlaylists, "playlists will be processed and their new, converted versions will be saved in the output dir")
     print("(The original playlist files in the source folder will not be modified)")
-    print(playlistFilePaths)
+    for playlistFilePath in playlistFilePaths:
+        print(playlistFilePath)
     
     
     for playlistFilePath in playlistFilePaths:
@@ -116,6 +135,7 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
 
         for line in lines:
             convertedLine = line.replace(oldRoot, newRoot)
+            convertedLine = FixPathSlashDirectionToMatchRootPath(newRoot, convertedLine)
             newPlaylistLines.append(convertedLine)
         
         # Remove the '#' that is sometimes added to playlists when exported from Foobar2000
@@ -132,5 +152,5 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
             
         print("Playlist converted successfully, saved as:", outputPlaylistFilePath)
         
-    print("All playlists converted and output to the destination dir successfully!")
+    print(numPlaylists, "playlists converted and output to the destination dir successfully!")
     
