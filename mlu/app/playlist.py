@@ -19,9 +19,9 @@ def RemoveTrailingSlash(path):
     return path
 
 def FixPathSlashDirectionToMatchRootPath(rootPath, path):
-    if ('/' in rootPath):
+    if ('/' in rootPath): # rootPath is a unix filepath
         fixedPath = path.replace('\\', '/')
-    elif ('\\' in rootPath):
+    elif ('\\' in rootPath) or (':' in rootPath): # rootpath is a Windows filepath or a Windows drive letter
         fixedPath = path.replace('/', '\\')
         
     return fixedPath
