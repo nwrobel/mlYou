@@ -2,7 +2,11 @@
 Created on Mar 17, 2019
 
 @author: nick.admin
+
+This file contains initialization code, which is used by scripts in the folder to setup project
+variables and paths so that this project's modules can be used.
 '''
+
 
 def PrepareScriptsForExecution():
     import sys, os

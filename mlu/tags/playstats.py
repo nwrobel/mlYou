@@ -1,54 +1,18 @@
-import re 
-import mutagen
-from prettytable import PrettyTable
-from shutil import copyfile
-from time import gmtime, strftime
-import argparse
-from datetime import datetime as datetime2
-import datetime 
-import pathlib
+'''
+mlu.tags.playstats
 
-#------------------------------------------------------------------------------------
-def getPlayMap(mpdLogFilepath):
-    
-    mpdLogFile = open(mpdLogFilepath, "r+")
-    playMap = {}
-    
-    now = datetime.datetime.now()
-    currentYear = str(now.year)
-    
-    for line in mpdLogFile:
-        if "player: played" in line: 
-            song = getSongFromMPDLogLine(line)
-            timePlayed = getTimestampFromMPDLogLine(line, currentYear)
-            
-            try:
-                playMap[song].append(timePlayed)
-                
-            except KeyError:
-                playMap[song] = []
-                playMap[song].append(timePlayed)
-       
-    mpdLogFile.close()
-    return playMap
+This module deals with reading and writing playback-related tag information on audio files.
+'''
 
-#------------------------------------------------------------------------------------
-def printPlayMap(playMap):
-    
-    table = PrettyTable(['Song', 'Play timestamps', 'Add to play_count'])
-    for song, playTimes in playMap.items():
-        playDates = timestampsToDates(playTimes)
-        additionalPlays = len(playDates)
-        table.add_row([song, playDates, additionalPlays])
-    
-    print(table)
+from datetime import datetime
 
-#------------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------------------------
 def timestampToDate(timestamp):
     
-    return datetime2.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M')
+    return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M')
 
-#------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------
 def timestampsToDates(timestamps):
     
     dates = []
@@ -58,32 +22,7 @@ def timestampsToDates(timestamps):
         
     return dates
 
-#------------------------------------------------------------------------------------    
-def timestampToFoobarFormat(timestamp):
-    
-    foobarTimeFormat = (timestamp + 11644473600) * 10000000
-    foobarTimeFormat = format(foobarTimeFormat, ".0f")
-    return foobarTimeFormat
-
-#------------------------------------------------------------------------------------    
-def updatePlayCount(songFilePath, additionalPlays):
-    
-    audioFile = mutagen.File(songFilePath)
-         
-    try:
-        # Make sure all items in the library have the play count tags name
-        # as "play_count", not "plays", "play_counter", etc
-        previousPlaycount = audioFile['play_count'][0]
-    except KeyError:
-        previousPlaycount = 0
-         
-    newPlaycount = int(additionalPlays) + int(previousPlaycount)
-    audioFile['play_count'] = str(newPlaycount)
-    audioFile.save()
-    
-    print(songFilePath, " playcount changed from ", previousPlaycount, " to ", newPlaycount)
-    
- #------------------------------------------------------------------------------------    
+#--------------------------------------------------------------------------------------------------
 def updatePlayTimes(songFilePath, playTimes): 
      
     mostRecentPlaytime = max(playTimes)
@@ -123,85 +62,34 @@ def updatePlayTimes(songFilePath, playTimes):
          
     audioFile.save()
     
-#------------------------------------------------------------------------------------    
-def getArchiveLogFilename():
-    time = strftime("%Y-%m-%d %H.%M.%S", gmtime())
-    archiveLogFilename = "mpd-" + time + ".log"
-    return archiveLogFilename
 
-#------------------------------------------------------------------------------------    
-def archiveLogFile(mpdLogFilepath, mpdLogArchiveDir):
+#--------------------------------------------------------------------------------------------------
+def updatePlayCount(songFilePath, additionalPlays):
     
-    # Makes the archive file directory if it doesn't exist   
-    pathlib.Path(mpdLogArchiveDir).mkdir(exist_ok=True)
-    
-    # get full filepath
-    archiveLogFilepath = mpdLogArchiveDir + getArchiveLogFilename()
-    
-    # Copy the mpd.log file to the archives under a new name (timestamped)
-    copyfile(mpdLogFilepath, archiveLogFilepath)
-    
-    # Delete the contents of mpd.log, so that the file is 'reset'
-    # and we cannot run the script again and mess up the tag values on songs
-    open(mpdLogFilepath, "w").close()
-    
-#------------------------------------------------------------------------------------    
-def getTimestampFromMPDLogLine(line, currentYear):
-    
-    parts = line.split(" ")
-    time = parts[0] + " " + parts[1] + " " +  currentYear + " " + parts[2]
-    print(time)
-    datetime = datetime2.strptime(time, "%b %d %Y %H:%M")
-    epochTime = datetime.timestamp()
-    print(epochTime)
-    
-    return epochTime
-
-#------------------------------------------------------------------------------------    
-def getSongFromMPDLogLine(line):
-    
-    name = re.findall('"([^"]*)"', line)[0]
-    return name
-
-#------------------------------------------------------------------------------------
-def run():
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("musicDir", help="The root directory of the music library")
-    parser.add_argument("-mpdLogs", help="The root directory of the mpd logs")
-    args = parser.parse_args()
-    
-    musicDir = args.musicDir
-    mpdDir = args.mpdLogs
-    mpdLogFilepath = mpdDir + "mpd.log"
-    mpdLogArchiveDir = mpdDir + "parsed-already/"
-    
-    playMap = getPlayMap(mpdLogFilepath)
-     
-    print("The following changes are about to be written to the audio library:")
-    printPlayMap(playMap)
-     
-    answer = input("Do you wish to continue? [y/n]: ")
-      
-    if answer == "y":
-        for song, playTimes in playMap.items():
-            songFilePath = musicDir + song
-            additionalPlays = len(playTimes)
-             
-            updatePlayCount(songFilePath, additionalPlays)
-            updatePlayTimes(songFilePath, playTimes)
+    audioFile = mutagen.File(songFilePath)
          
-        print("Finished writing out data to song tags")
-        print("Starting the archive procedure on mpd.log....")
-        archiveLogFile(mpdLogFilepath, mpdLogArchiveDir)
-        
-        print("#################### All operations complete #############################")
-              
-    else:
-        print("okay, exiting")
-
-###################################################################################################################3
-
-run()
+    try:
+        # Make sure all items in the library have the play count tags name
+        # as "play_count", not "plays", "play_counter", etc
+        previousPlaycount = audioFile['play_count'][0]
+    except KeyError:
+        previousPlaycount = 0
+         
+    newPlaycount = int(additionalPlays) + int(previousPlaycount)
+    audioFile['play_count'] = str(newPlaycount)
+    audioFile.save()
     
+    print(songFilePath, " playcount changed from ", previousPlaycount, " to ", newPlaycount)
+    
+    
+def WriteTagsFromPlaybackData(playbackData):
+    
+    for song, playTimes in playMap.items():
+    songFilePath = musicDir + song
+    additionalPlays = len(playTimes)
+     
+    updatePlayCount(songFilePath, additionalPlays)
+    updatePlayTimes(songFilePath, playTimes)
+
+
 
