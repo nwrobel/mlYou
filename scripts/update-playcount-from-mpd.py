@@ -14,69 +14,70 @@ import argparse
 # This is necessary because these scripts are not located in the root directory of the project, but
 # instead in the 'scripts' folder.
 import setup
-import mlu.mpd.playstats
 setup.PrepareScriptsForExecution()
 
+# import mlu.mpd.playstats
+import mlu.app.common
 
-#--------------------------------------------------------------------------------------------------
-def PrintPlaybackDataTable(playbackData):
+# #--------------------------------------------------------------------------------------------------
+# def PrintPlaybackDataTable(playbackData):
     
-    # (Message) "Log files span dates between <datetimeEarliest> to <datetimeLatest>"
+#     # (Message) "Log files span dates between <datetimeEarliest> to <datetimeLatest>"
     
-    # Playmap:
-    # SongTitle - Artist - NumPlays
+#     # Playmap:
+#     # SongTitle - Artist - NumPlays
     
-    table = PrettyTable(['Song Title', 'Artist', 'Plays'])
+#     table = PrettyTable(['Song Title', 'Artist', 'Plays'])
     
-    for songFilePath, playbackTimes in playbackData.items():  
-        songTitle = '' # mlu.tags.commontags.GetTitle(songFilePath)
-        artist = ''   # mlu.tags.commontags.GetArtist(songFilePath)
-        plays = len(playbackTimes)
-        table.add_row([song, artist, plays])
+#     for songFilePath, playbackTimes in playbackData.items():  
+#         songTitle = '' # mlu.tags.commontags.GetTitle(songFilePath)
+#         artist = ''   # mlu.tags.commontags.GetArtist(songFilePath)
+#         plays = len(playbackTimes)
+#         table.add_row([song, artist, plays])
     
-    print(table)
+#     print(table)
     
 
     
-#--------------------------------------------------------------------------------------------------    
-def Run():
+# #--------------------------------------------------------------------------------------------------    
+# def Run():
     
-    parser = argparse.ArgumentParser()
+#     parser = argparse.ArgumentParser()
     
-    parser.add_argument("musicDir", 
-                        help="Absolute filepath of the root directory of the music library",
-                        type=str)
+#     parser.add_argument("musicDir", 
+#                         help="Absolute filepath of the root directory of the music library",
+#                         type=str)
     
-    parser.add_argument("mpdLogsDir", 
-                        help="Absolute filepath of the root directory of where the MPD logs are stored on this system",
-                        type=str)
+#     parser.add_argument("mpdLogsDir", 
+#                         help="Absolute filepath of the root directory of where the MPD logs are stored on this system",
+#                         type=str)
     
-    args = parser.parse_args()
+#     args = parser.parse_args()
     
-    mpdLogHandler = MPDLogHandler(mpdLogsDir)
-    playbackData = mlu.mpd.playstats.GetPlaybackData(mpdLogHandler)
+#     mpdLogHandler = MPDLogHandler(mpdLogsDir)
+#     playbackData = mlu.mpd.playstats.GetPlaybackData(mpdLogHandler)
          
-    print("The following changes are about to be written to the audio library:")
-    PrintPlaybackDataTable(playbackData)
+#     print("The following changes are about to be written to the audio library:")
+#     PrintPlaybackDataTable(playbackData)
      
-    answer = input("Do you wish to continue? [y/n]: ")
+#     answer = input("Do you wish to continue? [y/n]: ")
       
-    if answer == "y":
+#     if answer == "y":
         
-        # mlu.tags.playstats.WriteTagsFromPlaybackData(playbackData, musicDir)
+#         # mlu.tags.playstats.WriteTagsFromPlaybackData(playbackData, musicDir)
         
 
          
-        print("Finished writing out data to song tags")
-        print("Starting the archive procedure on mpd.log....")
+#         print("Finished writing out data to song tags")
+#         print("Starting the archive procedure on mpd.log....")
         
-        mpdLogHandler.archiveLogFiles()
+#         mpdLogHandler.archiveLogFiles()
         
-        print("#################### All operations complete #############################")
+#         print("#################### All operations complete #############################")
               
-    else:
-        print("okay, exiting")
-        
-        
-Run()
+#     else:
+#         print("okay, exiting")
+def Test():
+
+Test()
 

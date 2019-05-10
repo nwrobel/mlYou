@@ -18,4 +18,4 @@ def PrepareScriptsForExecution():
     
     # Activate the virtual environment, so you can import libraries in the virtualenv
     activateThisFilepath = os.path.join(projectRoot, "py-venv/Scripts/activate_this.py")
-    exec(open(activateThisFilepath).read())
+    exec(open(activateThisFilepath).read(), {'__file__': activateThisFilepath})
