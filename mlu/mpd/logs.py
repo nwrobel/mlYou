@@ -10,6 +10,10 @@ of the mlu.mpd.playstats module.
 import pathlib
 from shutil import copyfile
 from time import gmtime, strftime
+import os.path as path
+
+import mlu.app.common as Common
+
 
 # global variables
 # MAKE A CLASS instead (?)
@@ -20,25 +24,50 @@ mpdDefaultLogFilePath = ''
    # mpdLogArchiveDir = mpdDir + "parsed-already/"
 
 
+# -------------------------------------------------------------------------------------------------
+# BEGIN LOG DATA GET ROUTINE
+
+class MPDLogsHandler:
+   def __init__(self, mpdLogFilePath):
+      self.logRootPath = mpdLogFilePath
+      self.tempLogDir = GetTempLogDirName()
+
+   
+   def CopyLogFilesToTemp(self): 
+      # Create the cache directory to store the log files in temporarily so we can manipulate them
+      Common.CreateDirectory(self.tempLogDir)
+
+      # Get all MPD log files and copy them into the temp dir
+      mpdLogFiles = Common.GetAllFilesDepth1(self.mpdLogFilePath)
+      Common.CopyFilesToFolder(srcFiles=mpdLogFiles, destDir=tempDir)
+
+
+   # Decompresses any compressed, archived log files that are given  
+   def DecompressLogFiles(self):
+      mpdLogFiles = Common.GetAllFilesDepth1(self.tempLogDir)
+      gzippedLogFiles = []
+
+      for logFile in mpdLogFiles:
+         if (Common.GetFileExtension(logFile) != "gz")
+            gzippedLogFiles.append(logFile)
+
+      for gzippedLogFile in gzippedLogFiles:
+         pass
+
+       
+
+   def GetTempLogDirName(self):
+      return path.join(Common.GetProjectRoot(), "cache/mpdlogs")
+
+
+
 # Read in all log file lines from all log files and return all the logfile lines to caller
 # PUBLIC
 def GetAllLogLines():
     pass
 
 
-# Moves all the read log files to the "parsed-already" directory
-# Meant to be called after all the log files and lines that were returned have been consumed
-# by the caller, and they are ready to archive the read logs now.
-def ArchiveParsedLogFiles():
-    
-    # Makes the archive file directory if it doesn't exist   
-    pathlib.Path(mpdArchivedLogDir).mkdir(exist_ok=True)
-    
-    # get full filepath
-    archiveLogFilepath = mpdLogArchiveDir + getArchiveLogFilename()
-    
-    # Copy the mpd.log file to the archives under a new name (timestamped)
-    copyfile(mpdLogFilepath, archiveLogFilepath)
+
 
 # Get a list of the paths of all the valid logfiles found in the logfile dir
 def GetAllLogFiles(mpdLogDir):
@@ -53,9 +82,7 @@ def IdentifyCompressedLogFiles():
 def IdentifyDefaultLogFile():
     pass
 
-# Decompresses any compressed, archived log files that are given  
-def DecompressLogFiles():
-    pass
+
 
 
 
@@ -86,3 +113,16 @@ def ResetDefaultLogFile():
     
 
 
+# Moves all the read log files to the "parsed-already" directory
+# Meant to be called after all the log files and lines that were returned have been consumed
+# by the caller, and they are ready to archive the read logs now.
+# def ArchiveParsedLogFiles():
+    
+#     # Makes the archive file directory if it doesn't exist   
+#     pathlib.Path(mpdArchivedLogDir).mkdir(exist_ok=True)
+    
+#     # get full filepath
+#     archiveLogFilepath = mpdLogArchiveDir + getArchiveLogFilename()
+    
+#     # Copy the mpd.log file to the archives under a new name (timestamped)
+#     copyfile(mpdLogFilepath, archiveLogFilepath)

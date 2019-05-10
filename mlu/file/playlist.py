@@ -11,6 +11,7 @@ throughout the MLU project.
 from pathlib import Path
 import os
 from collections import namedtuple
+from mlu.app.common import CreateDirectory
 
 def RemoveTrailingSlash(path):
     while (path[-1] == '/' or path[-1] == '\\'):
@@ -46,10 +47,7 @@ def GetFilenameFromFilepath(filePath):
     filePathObject = Path(filePath)
     return filePathObject.name
 
-def CreateDirectory(folderPath):
-    folderPathObject = Path(folderPath)
-    folderPathObject.mkdir(parents=True) 
-    
+
 def DeleteAllInDirectory(folderPath):
     pathObj = Path(folderPath)
     children = pathObj.glob('**/*')
