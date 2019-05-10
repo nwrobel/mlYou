@@ -2,7 +2,7 @@
 @author: Nick Wrobel
 
 First Created: 3/9/19
-Last Modified: 3/9/19
+Last Modified: 5/10/19
 
 Module containing functionality related to working with playlist data, used 
 throughout the MLU project.

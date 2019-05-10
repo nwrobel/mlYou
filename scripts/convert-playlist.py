@@ -26,7 +26,7 @@ import setup
 setup.PrepareScriptsForExecution()
 
 import argparse
-import mlu.app.playlist
+import mlu.file.playlist 
 
 parser = argparse.ArgumentParser()
 
@@ -50,7 +50,7 @@ parser.add_argument("newRoot",
 
 args = parser.parse_args()
 
-mlu.app.playlist.ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir=args.sourcePlaylistDir, 
+mlu.file.playlist.ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir=args.sourcePlaylistDir, 
                                              outputPlaylistDir=args.outputPlaylistDir, 
                                              oldRoot=args.oldRoot, 
                                              newRoot=args.newRoot)
