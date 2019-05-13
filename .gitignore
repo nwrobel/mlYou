@@ -1,4 +1,5 @@
 .pvdevproject
 .project
+.vscode
 user-token.txt
 py-venv/*
