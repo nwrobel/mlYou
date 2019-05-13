@@ -6,7 +6,9 @@
 # Please refer to the README.md on Github or in this directory for setup troubleshooting and for
 # information on how to use the features of MLU!
 
-$pythonVenvLocation = '.\py-venv'
+# This script is located in <projectRoot>\setup folder
+$pythonVenvLocation = '..\py-venv'
+$pipRequirementsLocation = '..\requirements.txt'
 
 function Deploy-MLUProject {
 
@@ -24,7 +26,7 @@ function Deploy-MLUProject {
         Write-Host "Version requirement check failed!" -ForegroundColor Red
         Write-Host "This project requires that python version 3.7 or higher be installed, so that a virtual environment can be created using python3.7 interpreter" -ForegroundColor Red
 
-        Write-Host "`nTo fix this error, do the following steps:" -ForegroundColor Magenta
+        Write-Host "`nTo fix this error, exit this script and do the following steps:" -ForegroundColor Magenta
         Write-Host "    - Ensure that the latest version of python3 is installed and updated on your system" 
         Write-Host "    - Ensure that your system's PATH variable includes the installation directory for python3, and that it is listed BEFORE any other python installation directories"
         Write-Host "    - Ensure that the 'virtualenv' command points to the correct executable by running 'Get-Command virtualenv' and checking the Source property"
@@ -32,7 +34,7 @@ function Deploy-MLUProject {
 
         Write-Host "`nAlternative setup method:" -ForegroundColor Magenta 
         Write-Host "If you don't want to modify your system PATH variable, input the path to your 'virtualenv.exe' program, located in the 'Scripts' directory of your python3 installation directory,
-        and I will try to create the virtual environment using this executable. Do try this, input 'P' when prompted to do so."
+        and I will try to create the virtual environment using this executable. To try this, input 'P' when prompted to do so."
         
         Write-Host "`nIf none of the above steps succeed, please refer to the documentation in the README to set up the project manually." -ForegroundColor Magenta
 
@@ -143,7 +145,7 @@ function Install-MLUPythonPackages {
     } 
 
     Write-Host "Installing Pip packages into virtual environment" -ForegroundColor Cyan
-    pip install -r ./requirements.txt
+    pip install -r $pipRequirementsLocation
     
 }
 
