@@ -9,11 +9,9 @@ the MLU project.
 '''
 
 import os
-from os import listdir
 from pathlib import Path
-import os.path as path
-from os.path import join
-from shutil import copy2
+import gzip
+import shutil
 
 
 # -------------------------------------------------------------------------------------------------
@@ -74,30 +72,51 @@ def CreateDirectory(folderPath):
 #
 def CopyFilesToFolder(srcFiles, destDir):
     for file in srcFiles:
-        copy2(file, destDir)
+        shutil.copy2(file, destDir)
 
+
+# Returns the name of the file, containing its extension from the given filepath.
+#
+def GetFilename(filePath):
+    filePathObject = Path(filePath)
+    return filePathObject.name
 
 # Returns the file extension for a file, given its filepath - specifically, the final .something
 # in the given filename.
 # Returns an empty string if no file extension found.
 #
-def GetFileExtension(filePath):
-    parts = fileName.split(".")
+def GetFileExtension(filepath):
+    filePathObject = Path(filePath)
+    return filePathObject.suffix
 
-    # if there is no extension found, make sure the index does not go out of bounds (error)
-    try:
-        fileExt = parts[-1] # get the 1st last item (or, the last item) in the list
-    except IndexError:
-        fileExt = ''
 
-    return fileExt
+# Returns the "base" name of the file, given the filepath. For example, returns 'playlist.m3u' for
+# a file named 'playlist.m3u.tar'
+#
+def GetFileBaseName(filePath):
+    filePathObject = Path(filePath)
+    return filePathObject.stem
+
+
+def JoinPaths(path1, path2):
+    return os.path.join(path1, path2)
+
+# Decompresses a single .gz file and creates a decompressed output file in the desired location.
+# This only works for single files which are compressed, not for multi-file archives.
+#
+def DecompressSingleGZFile(gzippedFilePath, decompFilePath):
+    with gzip.open(gzippedFilePath, 'rb') as inputFile:
+        with open(decompFilePath, 'wb') as outputFile:
+            shutil.copyfileobj(inputFile, outputFile)
 
 
 # Gets the absolute filepath for the root of the MLU project.
+# NOTE: use JoinPaths to join this project root returned from here with any other path part,
+# so trailing slashes don't need to be considered.
 #
 def getProjectRoot():
     thisModulePath = os.path.dirname(os.path.realpath(__file__))
-    projectRoot = path.abspath(path.join(thisModulePath ,".."))
-    return (projectRoot + '/')
+    projectRoot = os.path.abspath(os.path.join(thisModulePath ,".."))
+    return projectRoot
 
     

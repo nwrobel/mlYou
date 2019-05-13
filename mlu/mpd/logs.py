@@ -7,11 +7,7 @@ This module deals with reading, writing, moving, and copying MPD log files to su
 of the mlu.mpd.playstats module.
 '''
 
-import pathlib
-from shutil import copyfile
 from time import gmtime, strftime
-import os.path as path
-
 import mlu.app.common as Common
 
 
@@ -48,16 +44,19 @@ class MPDLogsHandler:
       gzippedLogFiles = []
 
       for logFile in mpdLogFiles:
-         if (Common.GetFileExtension(logFile) != "gz")
+         if (Common.GetFileExtension(logFile) == "gz")
             gzippedLogFiles.append(logFile)
 
-      for gzippedLogFile in gzippedLogFiles:
-         pass
+      # Decompress each gz file and output the uncompressed logs to the temp dir
+      for gzippedLogFilePath in gzippedLogFiles:
+         gzippedBaseFilename = Common.GetFileBaseName(gzippedLogFilePath)
+         extractedFilepath = Common.JoinPaths(self.tempLogDir, gzippedBaseFilename)
+         Common.DecompressSingleGZFile(gzippedLogFilePath, extractedFilepath)
 
-       
+
 
    def GetTempLogDirName(self):
-      return path.join(Common.GetProjectRoot(), "cache/mpdlogs")
+      return Common.JoinPaths(Common.GetProjectRoot(), "cache/mpdlogs")
 
 
 

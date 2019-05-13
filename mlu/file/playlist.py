@@ -13,6 +13,9 @@ import os
 from collections import namedtuple
 from mlu.app.common import CreateDirectory
 
+# TODO - MOVE THESE DIRECTORY FUNCTIONS TO COMMON MODULE
+# TODO - REWRITE SOME DIR FUNCTIONS USING pathlib
+
 def RemoveTrailingSlash(path):
     while (path[-1] == '/' or path[-1] == '\\'):
         path = path[:-1] # remove last char. from string
