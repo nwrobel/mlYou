@@ -61,11 +61,13 @@ def GetAllFilesAndFolders(rootPath):
     paths = [str(child) for child in children]
     return paths
 
+
 # Creates the given directory path
 # 
 def CreateDirectory(folderPath):
     folderPathObject = Path(folderPath)
     folderPathObject.mkdir(parents=True) 
+
 
 # Copies the given files (filepaths) to the specified directory
 # This uses copy2, which also copies metadata and permissions on files
@@ -75,11 +77,21 @@ def CopyFilesToFolder(srcFiles, destDir):
         copy2(file, destDir)
 
 
-# Returns the file extenstion for a file, given its filepath
+# Returns the file extension for a file, given its filepath - specifically, the final .something
+# in the given filename.
+# Returns an empty string if no file extension found.
+#
 def GetFileExtension(filePath):
     parts = fileName.split(".")
-    fileExt = parts[-1] # get the 1st last item (or, the last item) in the list
+
+    # if there is no extension found, make sure the index does not go out of bounds (error)
+    try:
+        fileExt = parts[-1] # get the 1st last item (or, the last item) in the list
+    except IndexError:
+        fileExt = ''
+
     return fileExt
+
 
 # Gets the absolute filepath for the root of the MLU project.
 #
