@@ -49,6 +49,16 @@ def GetAllFilesDepth1(rootPath):
 
     return files
 
+# Gets filepaths of all files within a root folder that have a given file extension
+#
+# def GetAllFilesByExtension(rootPath, fileExtension):
+#     pathObj = Path(rootPath)
+#     regexQuery = '*.' + fileExtension
+#     desiredFiles = pathObj.rglob(regexQuery)
+    
+#     desiredFilepaths = [str(file) for file in desiredFiles]
+#     return desiredFilepaths
+
 
 # Gets the filepaths of all files AND folders within the given root directory, recursively.
 #  
@@ -74,6 +84,11 @@ def CopyFilesToFolder(srcFiles, destDir):
     for file in srcFiles:
         shutil.copy2(file, destDir)
 
+# Delete the given files given their filepaths
+def DeleteFiles(filePaths):
+    for filePath in filePaths:
+        os.remove(filePath)
+
 
 # Returns the name of the file, containing its extension from the given filepath.
 #
@@ -85,7 +100,7 @@ def GetFilename(filePath):
 # in the given filename.
 # Returns an empty string if no file extension found.
 #
-def GetFileExtension(filepath):
+def GetFileExtension(filePath):
     filePathObject = Path(filePath)
     return filePathObject.suffix
 
@@ -114,7 +129,7 @@ def DecompressSingleGZFile(gzippedFilePath, decompFilePath):
 # NOTE: use JoinPaths to join this project root returned from here with any other path part,
 # so trailing slashes don't need to be considered.
 #
-def getProjectRoot():
+def GetProjectRoot():
     thisModulePath = os.path.dirname(os.path.realpath(__file__))
     projectRoot = os.path.abspath(os.path.join(thisModulePath ,".."))
     return projectRoot

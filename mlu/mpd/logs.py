@@ -5,6 +5,11 @@ Created on May 5, 2019
 
 This module deals with reading, writing, moving, and copying MPD log files to support operations
 of the mlu.mpd.playstats module.
+
+The MPDLogsHandler class focuses on reading in all the current MPD logs and returning a single array
+of log lines - each line has 2 properties:
+- text: what the log actually says (minus the string timestamp info)
+- timestamp: Epoch timestamp for when this log occured, with correct year caclulated
 '''
 
 from time import gmtime, strftime
@@ -28,14 +33,33 @@ class MPDLogsHandler:
       self.logRootPath = mpdLogFilePath
       self.tempLogDir = GetTempLogDirName()
 
+   def GetProcessedLogLines(self):
+      self.CopyLogFilesToTemp()
+      self.DecompressLogFiles()
+
+      # GetLogFilesContextCurrentYear - get user to enter in the year that each log file has entries
+      # up until - this year will be the 'current' year for that log file when timestamps are updated
+      # this can be skipped based on param passed to the loghandler
+      # Make an dict: logfilepath -> contextCurrentYear
+
+      # ProcessAllLogFileLines
+      # - Use the dict created earlier - for each logfile:
+      #     Read in all lines into raw array
+      #     For each log line:
+      #           Get correct, full timestamp w/ corrected year (getTimestampFromMPDLogLine)
+      #           Get the text-only part of the log line (remove text-based timestamp and other unneeded info)
+      #           Make a LogLine object with the timestamp and text properties
+      #           Add this object to the "master" processed LogLine array for all log lines
+      # - Sort the object array based on the timestamp property, least recent to most recent
+      # - Return the array from this function back to caller to use
    
    def CopyLogFilesToTemp(self): 
       # Create the cache directory to store the log files in temporarily so we can manipulate them
       Common.CreateDirectory(self.tempLogDir)
 
       # Get all MPD log files and copy them into the temp dir
-      mpdLogFiles = Common.GetAllFilesDepth1(self.mpdLogFilePath)
-      Common.CopyFilesToFolder(srcFiles=mpdLogFiles, destDir=tempDir)
+      mpdLogFiles = Common.GetAllFilesDepth1(self.logRootPath)
+      Common.CopyFilesToFolder(srcFiles=mpdLogFiles, destDir=self.tempLogDir)
 
 
    # Decompresses any compressed, archived log files that are given  
@@ -44,7 +68,7 @@ class MPDLogsHandler:
       gzippedLogFiles = []
 
       for logFile in mpdLogFiles:
-         if (Common.GetFileExtension(logFile) == "gz")
+         if (Common.GetFileExtension(logFile) == "gz"):
             gzippedLogFiles.append(logFile)
 
       # Decompress each gz file and output the uncompressed logs to the temp dir
@@ -53,12 +77,26 @@ class MPDLogsHandler:
          extractedFilepath = Common.JoinPaths(self.tempLogDir, gzippedBaseFilename)
          Common.DecompressSingleGZFile(gzippedLogFilePath, extractedFilepath)
 
+      # Delete the original compressed .gz files
+      Common.DeleteFiles(gzippedLogFiles)
 
 
-   def GetTempLogDirName(self):
-      return Common.JoinPaths(Common.GetProjectRoot(), "cache/mpdlogs")
 
 
+
+def GetTempLogDirName():
+   return Common.JoinPaths(Common.GetProjectRoot(), "cache/mpdlogs")
+
+def getTimestampFromMPDLogLine(line, currentYear):
+    
+    parts = line.split(" ")
+    time = parts[0] + " " + parts[1] + " " +  currentYear + " " + parts[2]
+    print(time)
+    datetime = datetime2.strptime(time, "%b %d %Y %H:%M")
+    epochTime = datetime.timestamp()
+    print(epochTime)
+    
+    return epochTime
 
 # Read in all log file lines from all log files and return all the logfile lines to caller
 # PUBLIC
@@ -70,15 +108,6 @@ def GetAllLogLines():
 
 # Get a list of the paths of all the valid logfiles found in the logfile dir
 def GetAllLogFiles(mpdLogDir):
-    pass
-
-# Finds compressed log files from a list of log files
-def IdentifyCompressedLogFiles():
-    pass
-
-# Finds which log file is the default "mpd.log" that has last been written to
-# This file must exist after the process is complete
-def IdentifyDefaultLogFile():
     pass
 
 
