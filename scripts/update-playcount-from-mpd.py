@@ -22,6 +22,8 @@ import mlu.app.common
 #--------------------------------------------------------------------------------------------------    
 def Run():
     
+    print("NOTE: each log file must not span more than 1 year of log entries:")
+    print("The difference between the dates of the first and last log line must NOT be more than 1 year\n")
     parser = argparse.ArgumentParser()
     
     parser.add_argument("musicDir", 
