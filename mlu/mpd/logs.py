@@ -12,18 +12,9 @@ of MPDLogLine objects - each object has 2 properties:
 - timestamp: Epoch timestamp for when this log occured, with correct year caclulated
 '''
 
-from time import gmtime, strftime
+from time import strftime
 import datetime
 import mlu.app.common as Common
-
-
-# global variables
-# MAKE A CLASS instead (?)
-mpdLogDir = ''
-mpdArchivedLogDir = ''
-mpdDefaultLogFilePath = ''
-   # mpdLogFilepath = mpdDir + "mpd.log"
-   # mpdLogArchiveDir = mpdDir + "parsed-already/"
 
 
 # -------------------------------------------------------------------------------------------------
@@ -63,8 +54,11 @@ class LogFileTimeInfo:
 
       # Find the oldest possible entry time for this log file based on the most recent entry time above,
       # assuming that all the logfiles span no more than 1 year (this is a requirement)
+      # NOTE: I use timestamps throughout my code, but we need to convert to datetime object to use
+      # the timedelta() function
       lastEntryDatetime = datetime.datetime.fromtimestamp(lastEntryTime)
-      minEntryTime = lastEntryDatetime + datetime.timedelta(years=-1)
+      minEntryDateTime = lastEntryDatetime + datetime.timedelta(years=-1)
+      minEntryTime = datetime.datetime.timestamp(minEntryDateTime)
 
       # Find the first entry time:
       #  - add current year to the first entry month+day to make full date
@@ -88,7 +82,7 @@ class LogFileTimeInfo:
 
 class MPDLogsHandler:
    def __init__(self, mpdLogFilepath, promptForLogFileYears=False):
-      self.logRootPath = mpdLogFilepath
+      self.mpdLogPath = mpdLogFilepath
       self.tempLogDir = GetTempLogDirName()
       self.promptForLogFileYears = promptForLogFileYears
       self.logFileContextCurrentYear = {}
@@ -106,7 +100,7 @@ class MPDLogsHandler:
       Common.CreateDirectory(self.tempLogDir)
 
       # Get all MPD log files and copy them into the temp dir
-      mpdLogFiles = Common.GetAllFilesDepth1(self.logRootPath)
+      mpdLogFiles = Common.GetAllFilesDepth1(self.mpdLogPath)
       Common.CopyFilesToFolder(srcFiles=mpdLogFiles, destDir=self.tempLogDir)
 
 
@@ -248,17 +242,17 @@ def GetTextFromMPDLogLine(line):
 
 
 
-def GetArchivedLogFileName():
-    time = strftime("%Y-%m-%d %H.%M.%S", gmtime())
-    archiveLogFilename = "mpd-" + time + ".log"
-    return archiveLogFilename
+# def GetArchivedLogFileName():
+#     time = strftime("%Y-%m-%d %H.%M.%S", gmtime())
+#     archiveLogFilename = "mpd-" + time + ".log"
+#     return archiveLogFilename
 
 
 # Delete the contents of mpd.log, so that the file is 'reset', and the file still exists.
 # and we cannot run the script again and mess up the tag values on songs
-def ResetDefaultLogFile():
+# def ResetDefaultLogFile():
 
-    open(mpdLogFilepath, "w").close()
+#     open(mpdLogFilepath, "w").close()
     
 
 
