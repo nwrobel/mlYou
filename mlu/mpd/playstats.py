@@ -16,6 +16,7 @@ instances - each instance has 4 properties:
 import re 
 from datetime import datetime
 import dateutil.relativedelta
+import mutagen
 
 
 import mlu.mpd.logs
@@ -54,12 +55,25 @@ class PlaybackInstance:
         self.playbackDuration = playbackDuration
         self.songDuration = self.GetSongDuration()
 
+        # If we pass '1' as the playback duration, this special value indicates that the exact playback duration is unknown,
+        # so we just set it to the song duration
         if (self.playbackDuration == 1):
             self.playbackDuration = self.songDuration
 
+        # Throw exceptions if the plaback duration is wrong
+        if (self.playbackDuration > self.songDuration):
+            raise("ERROR: calculated playback duration is greater than the song's total duration, playback instance: " + self.songFilepath)
+
+        if (self.playbackDuration <= 0):
+            raise("ERROR: calculated playback duration is less than 0, playback instance: " + self.songFilepath)
+
     # Use filepath to get the file properties, use the duration property
     def GetSongDuration(self):
-        return ''
+        audioFile = mutagen.File(self.songFilepath)
+        durationSeconds = audioFile.info.length
+        durationTimestamp = ConvertSecondsToTimestamp(durationSeconds)
+        
+        return durationTimestamp
 
 #---------------------------------------
     # for line in playbackLogLines:
@@ -88,19 +102,24 @@ class PlaybackInstance:
 #             (ex: if song play is last log line - no indication when play stopped - set duraton to song's duration)
 #           Make the PlaybackInstance object from these 4 properties found
 #       Have loop go to the next line - we will do the above again next time we hit the next consecutive 'playback' line
+# 
+# These playback instances will be filtered to get the list of playbacks to actually count
+# for the playbacks remaining,  these objects will be 
+# passed to another module to be displayed in the UI, cached, compared with the current file tag values,
+# and then finally used to update the current tags for these song files
 #
 class MPDPlaybackInstanceCollector:
     def __init__(self, mpdLogFilepath):
         self.mpdLogPath = mpdLogFilepath
 
-    def CollectPlaybackInstances(self):
-        allPlaybackInstances = self.GetPlaybackData()
+    def GetPlaybackInstances(self):
+        allPlaybackInstances = self.FormPlaybackInstances()
         validPlaybackInstances = FilterFalsePlaybacks(allPlaybackInstances)
         return validPlaybackInstances
 
     # Returns playback data based on all data found in the logs from MPDLogsHandler
     # Creates the data structure described in comment header block
-    def GetPlaybackData(self):
+    def FormPlaybackInstances(self):
         mpdLogHandler = mlu.mpd.logs.MPDLogsHandler(mpdLogFilepath=self.mpdLogPath)
         mpdLogLines = mpdLogHandler.GetProcessedLogLines()
         allPlaybackInstances = []
@@ -155,12 +174,32 @@ class MPDPlaybackInstanceCollector:
 #  from this PlaybackInstance array, use the 2 duration properties on each item in the array to 
 # compare them to each other and determine whether or not to count that instance as a "true play" or a skip
 # do this in another function - filter out the ones that aren't true plays (not played long enough, etc)
-#
-# for the array objects remaining,  these objects will be 
-# passed to another module to be displayed in the UI, cached, compared with the current file tag values,
-# and then finally used to update the current tags for these song files  
+# 
+# 
+# Rules for playback instance to be counted as "true" playback:
+# - It takes about 30 seconds, due to latency, for a song to be skipped from MPD client, so:
+# --- If song duration is at least 2 minutes, playback duration must be at least 25% of the song duration
+# --- If song duration is less than 2 minutes, playback duration must be at least 50% of the song duration
+#  
 def FilterFalsePlaybacks(playbackInstances):
-    return playbackInstances
+
+    songDurationThresholdSeconds = 120
+
+    truePlaybackInstances = []
+    songDurationThresholdTimestamp = ConvertSecondsToTimestamp(songDurationThresholdSeconds)
+
+    for playbackInstance in playbackInstances:
+        # If song duration is at least 2 min. long
+        if (playbackInstance.songDuration >= songDurationThresholdTimestamp):
+            playbackDurationThreshold = playbackInstance.songDuration * 0.25
+
+        else:
+            playbackDurationThreshold = playbackInstance.songDuration * 0.5
+
+        if (playbackInstance.playbackDuration >= playbackDurationThreshold):
+            truePlaybackInstances.append(playbackInstance)
+
+    return truePlaybackInstances
 
 
 
@@ -172,5 +211,65 @@ def SubtractTimestamps(leftTimestamp, rightTimestamp):
     diffDt = dateutil.relativedelta.relativedelta (leftDt, rightDt)
 
     return datetime.datetime.timestamp(diffDt)
+
+
+def ConvertSecondsToTimestamp(seconds):
+    secondsDt = datetime.timedelta(seconds=seconds)
+    secondsTimestamp = datetime.datetime.timestamp(secondsDt)
+    return secondsTimestamp
+
+
+#--------------------------------------------------------------------------------------------------
+# Pass the playback instances array to a class "SongPlaybackRecordCollector" in the mlu.mpd.playstats module, where it can be compressed down into a simpler form
+# that contains only 1 element for each unique song played (no duplicate song play instances are in the array)
+# We call this form a SongPlaybackRecord object
+#
+# 
+class SongPlaybackRecord:
+    def __init__(self, songFilepath, playbackTimes):
+        self.songFilepath = songFilepath
+        self.playbackTimes = playbackTimes
+
+
+class SongPlaybackRecordCollector:
+    def __init__(self, playbackInstances):
+        self.playbackInstances = playbackInstances
+
+    def GetSongPlaybackRecords(self):
+        allSongPlaybackRecords = []
+
+        # Get a list of all the unique song filepaths by taking the songFilepath property from each object in the playbackInstances array
+        allSongFilepaths = list((playback.songFilepath for playback in self.playbackInstances))
+        uniqueSongFilepaths = set(allSongFilepaths) # cast this list to a set, elminiating duplicate song filepaths
+
+        # Go thru each song filepath in this unique list:
+        #   For each one, get all the playbackInstances this song has (must be at least 1)
+        #   Combine these instances into one SongPlaybackRecord by setting the songFilepath and combining the playbackTimes into an array
+        #   Add the new SongPlaybackRecord to the master list of these records
+        # Return this list of records, so it can be used by the top-level script
+        for uniqueSongFilepath in uniqueSongFilepaths:
+            playbacksMatchingCurrentSong = self.GetPlaybackInstancesForSongFilepath(uniqueSongFilepath)
+            songPlaybackRecord = self.MergePlaybackInstancesIntoSongPlaybackRecord(playbacksMatchingCurrentSong)
+            allSongPlaybackRecords.append(songPlaybackRecord)
+
+        return allSongPlaybackRecords
+
+
+    def GetPlaybackInstancesForSongFilepath(self, songFilepath):
+        matchingPlaybackInstances = []
+
+        for playbackInstance in self.playbackInstances:
+            if (playbackInstance.songFilepath == songFilepath):
+                matchingPlaybackInstances.append(playbackInstance)
+
+        return matchingPlaybackInstances
+
+
+    def MergePlaybackInstancesIntoSongPlaybackRecord(self, songPlaybackInstances):
+        # Get the song filepath - all of the playbackInstances should have the same song filepath, so we can just use the first playbackinstance element
+        songFilepath = songPlaybackInstances[0].songFilepath
+        songPlaybackTimes = list((playback.playbackStartTime for playback in songPlaybackInstances))
+
+        return ( SongPlaybackRecord(songFilepath=songFilepath, playbackTimes=songPlaybackTimes) )
     
 
