@@ -12,6 +12,8 @@ import os
 from pathlib import Path
 import gzip
 import shutil
+import datetime
+
 
 
 # -------------------------------------------------------------------------------------------------
@@ -123,6 +125,15 @@ def DecompressSingleGZFile(gzippedFilePath, decompFilePath):
     with gzip.open(gzippedFilePath, 'rb') as inputFile:
         with open(decompFilePath, 'wb') as outputFile:
             shutil.copyfileobj(inputFile, outputFile)
+
+
+# Converts epoch timestamp int. value to a timestamp that can be displayed and understood
+# format ex) 2012-01-27 02:29:33
+#
+def FormatTimestampForDisplay(timestamp):
+    dt = datetime.datetime.fromtimestamp(timestamp)
+    formattedTime = datetime.datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
+    return formattedTime
 
 
 # Gets the absolute filepath for the root of the MLU project.

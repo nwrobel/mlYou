@@ -14,11 +14,10 @@ instances - each instance has 4 properties:
 - actualPlayDuration
 '''
 import re 
-from datetime import datetime
+import datetime
 import dateutil.relativedelta
-import mutagen
 
-
+import mlu.tags.common
 import mlu.mpd.logs
 
 
@@ -67,12 +66,11 @@ class PlaybackInstance:
         if (self.playbackDuration <= 0):
             raise("ERROR: calculated playback duration is less than 0, playback instance: " + self.songFilepath)
 
-    # Use filepath to get the file properties, use the duration property
+    # Use filepath to get the audio file's common tags, one of which is the duration
     def GetSongDuration(self):
-        audioFile = mutagen.File(self.songFilepath)
-        durationSeconds = audioFile.info.length
+        durationSeconds = mlu.tags.common.GetCommonTags(self.songFilepath)['durationSeconds']
         durationTimestamp = ConvertSecondsToTimestamp(durationSeconds)
-        
+
         return durationTimestamp
 
 #---------------------------------------
@@ -162,7 +160,8 @@ class MPDPlaybackInstanceCollector:
                 # Use the playbackStopLogLine's timestamp to tell when the playback stopped
                 playbackStopTime = playbackStopLogLine.timestamp
                 # Get the playback duration from the difference b/w playback stop and start times (represented as a timestamp)
-                playbackDuration = SubtractTimestamps(leftTimestamp=playbackStopTime, rightTimestamp=playbackStartTime)
+                # playbackDuration = SubtractTimestamps(leftTimestamp=playbackStopTime, rightTimestamp=playbackStartTime)
+                playbackDuration = playbackStopTime - playbackStartTime
 
             # Create the playbackInstance object from the values we found for this playback and add it to the list
             allPlaybackInstances.append( PlaybackInstance(songFilepath=songFilepath, playbackStartTime=playbackStartTime, playbackDuration=playbackDuration) )
@@ -204,13 +203,13 @@ def FilterFalsePlaybacks(playbackInstances):
 
 
 #------------------------------------------------------------------------------------
-def SubtractTimestamps(leftTimestamp, rightTimestamp):
+# def SubtractTimestamps(leftTimestamp, rightTimestamp):
 
-    leftDt = datetime.datetime.fromtimestamp(leftTimestamp)
-    rightDt = datetime.datetime.fromtimestamp(rightTimestamp)
-    diffDt = dateutil.relativedelta.relativedelta (leftDt, rightDt)
+#     leftDt = datetime.datetime.fromtimestamp(leftTimestamp)
+#     rightDt = datetime.datetime.fromtimestamp(rightTimestamp)
+#     diffDt = dateutil.relativedelta.relativedelta (leftDt, rightDt)
 
-    return datetime.datetime.timestamp(diffDt)
+#     return datetime.datetime.timestamp(diffDt)
 
 
 def ConvertSecondsToTimestamp(seconds):

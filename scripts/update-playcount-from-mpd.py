@@ -48,12 +48,11 @@ def Run():
 
     # Pass the playback instances array to a class "SongPlaybackRecordCollector" in the mlu.mpd.playstats module, where it can be compressed down into a simpler form
     # that contains only 1 element for each unique song played (no duplicate song play instances are in the array)
-    # We call this form a songPlaybackRecords object
+    # We call this form a songPlaybackRecord object
     songPlaybackRecordCollector = mlu.mpd.playstats.SongPlaybackRecordCollector(playbackInstances=playbackInstances)
     songPlaybackRecords = songPlaybackRecordCollector.GetSongPlaybackRecords()
 
-
-    # Take these instances and pass to module to display them in table form to use
+    # Take the SongPlaybackRecord instances display them in table form to the user
     PrintPlaybackDataTable(songPlaybackRecords)
 
     # Write out the 3 cache json files:
@@ -93,19 +92,27 @@ def Run():
 
 
 def PrintPlaybackDataTable(songPlaybackRecords):
-    # Playmap:
-    # SongTitle - Artist - NumPlays
 
-    table = PrettyTable(['Song Title', 'Artist', 'Plays Found'])
+    # Create a table, which will have these 4 columns with corresponding header titles
+    table = PrettyTable(['Song Title', 'Artist', '# Plays', 'Play Times'])
 
-    for playbackInstance in playbackInstances:
-        songTitle = '' # mlu.tags.commontags.GetTitle(songFilePath)
-        artist = ''   # mlu.tags.commontags.GetArtist(songFilePath)
-        numPlays = len(playbackTimes)
-        table.add_row([song, artist, plays])
+    for songPlaybackRecord in songPlaybackRecords:
+        # Get the common tags so we can display the ones we need to in the playback table for this song
+        songTags = mlu.tags.common.GetCommonTags(songFilepath=songPlaybackRecord.songFilePath)
 
-    for songFilePath, playbackTimes in playbackData.items():  
+        songTitle = songTags['title']
+        artist = songTags['artist']
+        numPlays = len(songPlaybackRecord.playbackTimes)
+        # Get the playback times: for each playback timestamp on this songPlaybackRecord, format it for display
+        # and return this formatted timestamp
+        playTimes = ( mlu.app.common.FormatTimestampForDisplay(timestamp) for timestamp in songPlaybackRecord.playbackTimes )
 
+        # Add the songPlaybackRecord data we found above to the table as a row
+        table.add_row([songTitle, artist, numPlays, playTimes])
 
+    # Display the table
     print(table)
+
+
+
 
