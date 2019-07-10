@@ -15,7 +15,6 @@ instances - each instance has 4 properties:
 '''
 import re 
 import datetime
-import dateutil.relativedelta
 
 import mlu.tags.common
 import mlu.mpd.logs
@@ -46,7 +45,15 @@ def GetSongFilepathFromMPDLogLine(logLine):
     return name
 
 #-------------------------------
-
+# Class representing an instance in which a single playback of an audio file occurred - contains
+# details about the playback and its time relation to the total song duration
+#
+# These instances will be filtered later based on whether or not the playback time is long enough
+# compared with the total duration of the song - to remove "false" playbacks
+#
+# Objects of this type will later be converted into SongPlaybackRecords, which contain data about
+# all the playback instances for a single audio file
+#
 class PlaybackInstance:
     def __init__(self, songFilepath, playbackStartTime, playbackDuration):
         self.songFilepath = songFilepath
@@ -59,7 +66,7 @@ class PlaybackInstance:
         if (self.playbackDuration == 1):
             self.playbackDuration = self.songDuration
 
-        # Throw exceptions if the plaback duration is wrong
+        # Throw exceptions if the playback duration is wrong
         if (self.playbackDuration > self.songDuration):
             raise("ERROR: calculated playback duration is greater than the song's total duration, playback instance: " + self.songFilepath)
 
@@ -73,19 +80,8 @@ class PlaybackInstance:
 
         return durationTimestamp
 
-#---------------------------------------
-    # for line in playbackLogLines:
-    #     #playbackTimestamp = getTimestampFromMPDLogLine(line, currentYear)
-    #     songPlayedFilePath = getSongFromMPDLogLine(line)
-        
-    #     try:
-    #         playbackData[songPlayedFilePath].append(playbackTimestamp)
-            
-    #     except KeyError:
-    #         playbackData[songPlayedFilePath] = []
-    #         playbackData[songPlayedFilePath].append(playbackTimestamp)
-        
 
+        
 # create MPDLogsHandler instance and use it to get the logline array
 # go through each item in logline array:
 #       check/identify if current line is a 'playback' line (song played, song started/resumed, etc): if so:
@@ -202,16 +198,8 @@ def FilterFalsePlaybacks(playbackInstances):
 
 
 
-#------------------------------------------------------------------------------------
-# def SubtractTimestamps(leftTimestamp, rightTimestamp):
-
-#     leftDt = datetime.datetime.fromtimestamp(leftTimestamp)
-#     rightDt = datetime.datetime.fromtimestamp(rightTimestamp)
-#     diffDt = dateutil.relativedelta.relativedelta (leftDt, rightDt)
-
-#     return datetime.datetime.timestamp(diffDt)
-
-
+# Converts duration given in seconds into an epoch timestamp duration form
+#
 def ConvertSecondsToTimestamp(seconds):
     secondsDt = datetime.timedelta(seconds=seconds)
     secondsTimestamp = datetime.datetime.timestamp(secondsDt)
