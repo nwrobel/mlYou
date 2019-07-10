@@ -22,6 +22,36 @@ import mlu.tags.common
 import mlu.app.common
 import mlu.cache.io
 
+#--------------------------------------------------------------------------------------------------
+def PrintPlaybackDataTable(songPlaybackRecords):
+    
+    # Create a table, which will have these 4 columns with corresponding header titles
+    table = PrettyTable(['Song Title', 'Artist', '# Plays', 'Play Times'])
+
+    for songPlaybackRecord in songPlaybackRecords:
+        # Get the common tags so we can display the ones we need to in the playback table for this song
+        songTags = mlu.tags.common.GetCommonTags(songFilepath=songPlaybackRecord.songFilePath)
+
+        songTitle = songTags['title']
+        artist = songTags['artist']
+        numPlays = len(songPlaybackRecord.playbackTimes)
+        # Get the playback times: for each playback timestamp on this songPlaybackRecord, format it for display
+        # and return this formatted timestamp
+        playTimes = ( mlu.app.common.FormatTimestampForDisplay(timestamp) for timestamp in songPlaybackRecord.playbackTimes )
+
+        # Add the songPlaybackRecord data we found above to the table as a row
+        table.add_row([songTitle, artist, numPlays, playTimes])
+
+    # Display the table
+    print(table)
+
+#--------------------------------------------------------------------------------------------------
+def GetJSONCacheFilepath(cacheFileID):
+    cacheDir = mlu.app.common.JoinPaths(mlu.app.common.GetProjectRoot(), "cache")
+    cacheFilename = "mpd-playstats-cache-" + cacheFileID + ".json"
+    return mlu.app.common.JoinPaths(cacheDir, cacheFilename)
+
+
 #--------------------------------------------------------------------------------------------------    
 def Run():
     
@@ -54,92 +84,55 @@ def Run():
     songPlaybackRecords = songPlaybackRecordCollector.GetSongPlaybackRecords()
 
     # Take the SongPlaybackRecord instances display them in table form to the user
+    print("The following changes are about to be written to the audio library:")
     PrintPlaybackDataTable(songPlaybackRecords)
 
-    # Write out the 3 cache json files:
+    #answer = input("Do you wish to continue? [y/n]: ")
+
+
+    # Write out 3 cache json files:
     #   current playback instances found
     #   current playstats tag values of the songs that will be updated
     #   new tag values that will be set, based on applying the changes from 1 to the tags in 2
-    # use the cache module to write the json and use the tags.playstats module to read old file playstat tag values 
-    # and calculate new ones based on playback instances
-    # Use tags.playstats module to update/write the new tag values, based on the 3rd json cache file
-    # Use tags.playstats module to read the tags back and use the 3rd json cache file to verify integrity of each song's new values
 
-def WritePlaystatsCache(songPlaybackRecords, jsonCacheFilename):
+    # Write 1st cache file: SongPlaybackRecords found from MPD
+    mlu.cache.io.WriteMLUObjectsToJSONFile(songPlaybackRecords, GetJSONCacheFilepath(1))
 
+    # Write 2nd cache file: current SongPlaystatTags values for each song that will be updated
+    songCurrentPlaystatTagsList = []
+    for playbackRecord in songPlaybackRecords:
+        currentTags = mlu.tags.playstats.GetSongCurrentPlaystatTags(playbackRecord.songFilepath)
+        songCurrentPlaystatTagsList.append(currentTags)
 
-def WriteSongPlaybackRecordsToCache(songPlaybackRecords, jsonCacheFilename):
-    mlu.cache.io.WriteMLUObjectsToJSONFile(songPlaybackRecords, jsonCacheFilename)
+    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=songCurrentPlaystatTagsList, outputFilename=GetJSONCacheFilepath(2))
 
+    # Write 3rd cache file: calculate new playstat tags based on playback instances + old tags
+    # and return new, updated SongPlaystatTags values for all the songs
+    allSongsNewPlaystatTags = mlu.tags.playstats.GetUpdatedPlaystatTags(songPlaystatTagsList=songCurrentPlaystatTagsList, songPlaybackRecords=songPlaybackRecords)
+    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=allSongsNewPlaystatTags, outputFilename=GetJSONCacheFilepath(3))
 
-
-def WriteSongsCurrentPlaystatTagsToCache(songPlaybackRecords):
-    # Get list of the filepaths of all the songs that are part of the song playback records
-    songFilepaths = songPlaybackRecordCollector.GetAllSongFilepaths()
-    songsCurrentPlaystatTags = []
-
-    # Get list of SongPlaystatTags for each song - the current tag values these song files have
-    for songFilepath in songFilepaths:
-        tags = mlu.tags.playstats.GetSongCurrentPlaystatTags(songFilepath)
-        songsCurrentPlaystatTags.append(tags)
-
-    # Write these tags as objects to json file cache
-    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=songsCurrentPlaystatTags, outputFilename=jsonCacheFilename)
+    # Use tags.playstats module to update/write the new tag values (same ones we just wrote to the 
+    # 3rd json cache file)
+    tagWriter = mlu.tags.playstats.PlaystatTagWriter(allSongsNewPlaystatTags)
+    tagWriter.WritePlaystatTags()
 
 
-def WriteSongsNewPlaystatTagsToCache(songPlaybackRecords):
-    pass
-
-
-def ReadSongsNewPlaystatTagsFromCache():
-    pass
+    # use the 3rd json cache file to verify integrity of each song's new values: read in the current,
+    # updated playstat tags from the audio files and verify they match the cache file
+    
+    # VerifySongPlaystatTags(allSongsNewPlaystatTags)
 
 
 
 
-    # print("The following changes are about to be written to the audio library:")
-    # PrintPlaybackDataTable(playbackData)
-     
-    # answer = input("Do you wish to continue? [y/n]: ")
+
+
+
+
+ 
       
-    # if answer == "y":
-        
-    #     # mlu.tags.playstats.WriteTagsFromPlaybackData(playbackData, musicDir)
-        
-
-         
-    #     print("Finished writing out data to song tags")
-    #     print("Starting the archive procedure on mpd.log....")
-        
-    #     mpdLogHandler.archiveLogFiles()
-        
-    #     print("#################### All operations complete #############################")
-              
-    # else:
-    #     print("okay, exiting")
 
 
-def PrintPlaybackDataTable(songPlaybackRecords):
-
-    # Create a table, which will have these 4 columns with corresponding header titles
-    table = PrettyTable(['Song Title', 'Artist', '# Plays', 'Play Times'])
-
-    for songPlaybackRecord in songPlaybackRecords:
-        # Get the common tags so we can display the ones we need to in the playback table for this song
-        songTags = mlu.tags.common.GetCommonTags(songFilepath=songPlaybackRecord.songFilePath)
-
-        songTitle = songTags['title']
-        artist = songTags['artist']
-        numPlays = len(songPlaybackRecord.playbackTimes)
-        # Get the playback times: for each playback timestamp on this songPlaybackRecord, format it for display
-        # and return this formatted timestamp
-        playTimes = ( mlu.app.common.FormatTimestampForDisplay(timestamp) for timestamp in songPlaybackRecord.playbackTimes )
-
-        # Add the songPlaybackRecord data we found above to the table as a row
-        table.add_row([songTitle, artist, numPlays, playTimes])
-
-    # Display the table
-    print(table)
 
 
 
