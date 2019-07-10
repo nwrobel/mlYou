@@ -233,9 +233,9 @@ class SongPlaybackRecord:
 class SongPlaybackRecordCollector:
     def __init__(self, playbackInstances):
         self.playbackInstances = playbackInstances
+        self.songPlaybackRecords = []
 
     def GetSongPlaybackRecords(self):
-        allSongPlaybackRecords = []
 
         # Get a list of all the unique song filepaths by taking the songFilepath property from each object in the playbackInstances array
         allSongFilepaths = list((playback.songFilepath for playback in self.playbackInstances))
@@ -249,9 +249,9 @@ class SongPlaybackRecordCollector:
         for uniqueSongFilepath in uniqueSongFilepaths:
             playbacksMatchingCurrentSong = self.GetPlaybackInstancesForSongFilepath(uniqueSongFilepath)
             songPlaybackRecord = self.MergePlaybackInstancesIntoSongPlaybackRecord(playbacksMatchingCurrentSong)
-            allSongPlaybackRecords.append(songPlaybackRecord)
+            self.songPlaybackRecords.append(songPlaybackRecord)
 
-        return allSongPlaybackRecords
+        return self.songPlaybackRecords
 
 
     def GetPlaybackInstancesForSongFilepath(self, songFilepath):
@@ -270,5 +270,9 @@ class SongPlaybackRecordCollector:
         songPlaybackTimes = list((playback.playbackStartTime for playback in songPlaybackInstances))
 
         return ( SongPlaybackRecord(songFilepath=songFilepath, playbackTimes=songPlaybackTimes) )
-    
+
+
+    def GetAllSongFilepaths(self):
+        paths = (songPlaybackRecord.songFilepath for songPlaybackRecord in self.songPlaybackRecords)
+        return paths
 

@@ -11,41 +11,6 @@
 
 import json
 
-def WritePlaystatsCache(songPlaybackRecords):
-    pass
-
-
-def WriteSongPlaybackRecordsToCache(songPlaybackRecords):
-    pass
-
-
-def WriteSongsCurrentPlaystatTagsToCache(songPlaybackRecords):
-    pass
-
-def WriteSongsNewPlaystatTagsToCache(songPlaybackRecords):
-    pass
-
-
-def ReadSongsNewPlaystatTagsFromCache():
-    pass
 
 
 
-#--------------------------------
-def ConvertMLUObjectToJSON(mluObject):
-    jsonString = json.dumps(mluObject.PrepareForJSON())
-    return jsonString
-
-def ConvertMLUObjectListToJSON(mluObjectList):
-    jsonStringList = []
-
-    for obj in mluObjectList:
-        objJson = ConvertMLUObjectToJSON(obj)
-        jsonStringList.append(objJson)
-
-    return json.dumps(jsonStringList)
-
-
-def WriteJSONToFile(jsonString, outputFilename):
-    with open(outputFilename, 'w+') as outfile:
-        json.dump(jsonString, outfile)

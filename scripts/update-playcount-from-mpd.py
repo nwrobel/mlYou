@@ -20,6 +20,7 @@ setup.PrepareScriptsForExecution()
 import mlu.mpd.playstats
 import mlu.tags.common
 import mlu.app.common
+import mlu.cache.io
 
 #--------------------------------------------------------------------------------------------------    
 def Run():
@@ -61,10 +62,37 @@ def Run():
     #   new tag values that will be set, based on applying the changes from 1 to the tags in 2
     # use the cache module to write the json and use the tags.playstats module to read old file playstat tag values 
     # and calculate new ones based on playback instances
-
     # Use tags.playstats module to update/write the new tag values, based on the 3rd json cache file
-
     # Use tags.playstats module to read the tags back and use the 3rd json cache file to verify integrity of each song's new values
+
+def WritePlaystatsCache(songPlaybackRecords, jsonCacheFilename):
+
+
+def WriteSongPlaybackRecordsToCache(songPlaybackRecords, jsonCacheFilename):
+    mlu.cache.io.WriteMLUObjectsToJSONFile(songPlaybackRecords, jsonCacheFilename)
+
+
+
+def WriteSongsCurrentPlaystatTagsToCache(songPlaybackRecords):
+    # Get list of the filepaths of all the songs that are part of the song playback records
+    songFilepaths = songPlaybackRecordCollector.GetAllSongFilepaths()
+    songsCurrentPlaystatTags = []
+
+    # Get list of SongPlaystatTags for each song - the current tag values these song files have
+    for songFilepath in songFilepaths:
+        tags = mlu.tags.playstats.GetSongCurrentPlaystatTags(songFilepath)
+        songsCurrentPlaystatTags.append(tags)
+
+    # Write these tags as objects to json file cache
+    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=songsCurrentPlaystatTags, outputFilename=jsonCacheFilename)
+
+
+def WriteSongsNewPlaystatTagsToCache(songPlaybackRecords):
+    pass
+
+
+def ReadSongsNewPlaystatTagsFromCache():
+    pass
 
 
 

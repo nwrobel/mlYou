@@ -1,3 +1,11 @@
 {
+    "files.autoSave": "afterDelay",
+    "editor.autoIndent": false,
+    "editor.rulers": [100],
+
+    "workbench.colorCustomizations": {
+        "editorRuler.foreground": "#34361b"
+    },
+
     "python.pythonPath": "py-venv\\Scripts\\python.exe"
 }

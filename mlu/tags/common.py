@@ -11,8 +11,8 @@ def GetCommonTags(songFilepath):
     audioFile = mutagen.File(songFilepath)
 
     tags['durationSeconds'] = audioFile.info.length
-    tags['title'] = audioFile['title']
-    tags['artist'] = audioFile['artist']
-    tags['album'] = audioFile['album']
+    tags['title'] = audioFile['TITLE']
+    tags['artist'] = audioFile['ARTIST']
+    tags['album'] = audioFile['ALBUM']
 
     return tags
