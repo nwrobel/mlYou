@@ -42,8 +42,10 @@ def PrintPlaybackDataTable(songPlaybackRecords):
         # Add the songPlaybackRecord data we found above to the table as a row
         table.add_row([songTitle, artist, numPlays, playTimes])
 
-    # Display the table
+    # Display the table, begin and end it with a newline to look better
+    print()
     print(table)
+    print() 
 
 #--------------------------------------------------------------------------------------------------
 def GetJSONCacheFilepath(cacheFileID):
@@ -74,54 +76,71 @@ def Run():
     
 
     # Create MPDPlaystatsCollector object and call CollectPlaybackInstances to get the playback instances
+    print("Building playback data from log files...")
     playbackInstanceCollector = mlu.mpd.playstats.MPDPlaybackInstanceCollector(mpdLogFilepath=args.mpdLogsDir)
     playbackInstances = playbackInstanceCollector.GetPlaybackInstances()
 
     # Pass the playback instances array to a class "SongPlaybackRecordCollector" in the mlu.mpd.playstats module, where it can be compressed down into a simpler form
     # that contains only 1 element for each unique song played (no duplicate song play instances are in the array)
     # We call this form a songPlaybackRecord object
+    print("Consolidating playback data...")
     songPlaybackRecordCollector = mlu.mpd.playstats.SongPlaybackRecordCollector(playbackInstances=playbackInstances)
     songPlaybackRecords = songPlaybackRecordCollector.GetSongPlaybackRecords()
 
-    # Take the SongPlaybackRecord instances display them in table form to the user
-    print("The following changes are about to be written to the audio library:")
-    PrintPlaybackDataTable(songPlaybackRecords)
-
-    #answer = input("Do you wish to continue? [y/n]: ")
-
 
     # Write out 3 cache json files:
-    #   current playback instances found
-    #   current playstats tag values of the songs that will be updated
-    #   new tag values that will be set, based on applying the changes from 1 to the tags in 2
+    #  1) current playback instances found
+    #  2) current playstats tag values of the songs that will be updated
+    #  3) new tag values that will be set, based on applying the changes from 1 to the tags in 2
 
     # Write 1st cache file: SongPlaybackRecords found from MPD
+    print("Cache step 1: Writing newly found playback data...")
     mlu.cache.io.WriteMLUObjectsToJSONFile(songPlaybackRecords, GetJSONCacheFilepath(1))
 
     # Write 2nd cache file: current SongPlaystatTags values for each song that will be updated
-    songCurrentPlaystatTagsList = []
-    for playbackRecord in songPlaybackRecords:
-        currentTags = mlu.tags.playstats.GetSongCurrentPlaystatTags(playbackRecord.songFilepath)
-        songCurrentPlaystatTagsList.append(currentTags)
-
-    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=songCurrentPlaystatTagsList, outputFilename=GetJSONCacheFilepath(2))
+    print("Cache step 2: Writing current playstat tags for all songs...")
+    songsToUpdate = (playbackRecord.songFilePath for playbackRecord in songPlaybackRecords)
+    songsCurrentPlaystatTags = mlu.tags.playstats.ReadCurrentPlaystatTagsFromSongs(songFilepaths=songsToUpdate)
+    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=songsCurrentPlaystatTags, outputFilename=GetJSONCacheFilepath(2))
 
     # Write 3rd cache file: calculate new playstat tags based on playback instances + old tags
     # and return new, updated SongPlaystatTags values for all the songs
-    allSongsNewPlaystatTags = mlu.tags.playstats.GetUpdatedPlaystatTags(songPlaystatTagsList=songCurrentPlaystatTagsList, songPlaybackRecords=songPlaybackRecords)
-    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=allSongsNewPlaystatTags, outputFilename=GetJSONCacheFilepath(3))
+    print("Cache step 3: Writing new computed tag values (current tags + playback data) for all songs...")
+    tagUpdateResolver = mlu.tags.playstats.SongPlaystatTagsUpdateResolver(songPlaybackRecords=songPlaybackRecords, songsPlaystatTags=songsCurrentPlaystatTags)
+    songsNewPlaystatTags = tagUpdateResolver.GetUpdatedPlaystatTags()
+    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=songsNewPlaystatTags, outputFilename=GetJSONCacheFilepath(3))
 
-    # Use tags.playstats module to update/write the new tag values (same ones we just wrote to the 
-    # 3rd json cache file)
-    tagWriter = mlu.tags.playstats.PlaystatTagWriter(allSongsNewPlaystatTags)
-    tagWriter.WritePlaystatTags()
+    print("Playback data gathering, caching, and tag preparation complete!\n")
 
+    # Take the SongPlaybackRecord instances display them in table form to the user, once everything
+    # has been prepared and we are ready to write the updated tags
+    print("The following playstat tag updates are ready to write to the audio library:")
+    PrintPlaybackDataTable(songPlaybackRecords)
 
-    # use the 3rd json cache file to verify integrity of each song's new values: read in the current,
-    # updated playstat tags from the audio files and verify they match the cache file
+    # continue if we want to make the changes, otherwise we exit
+    writeChanges = input("Do you wish to continue? [y/n]: ")
+
+    if ( (writeChanges != 'y') and (writeChanges != 'Y') ):
+        print("Exiting due to choice of user")
+        return
     
-    # VerifySongPlaystatTags(allSongsNewPlaystatTags)
 
+    # write the new, updated tag values (same ones we just wrote to the 3rd json cache file) to the
+    # audio files
+    mlu.tags.playstats.WritePlaystatTagsToSongs(songsPlaystatTags=songsNewPlaystatTags)
+
+    # Verify the changes made: read in the current, now updated playstat tags from the audio files 
+    # and verify they match the updated tags list built earlier
+    tagIssueSongs = mlu.tags.playstats.FindSongsWithWrongPlaystatTags(expectedSongsPlaystatTags=songsNewPlaystatTags)
+
+    if (tagIssueSongs):
+        print("Playstats tag verification failed: expected playstat tags and actual tags do not match for song(s):")
+        for song in tagIssueSongs:
+            print(song)
+
+        raise("\nERROR: playstat tag writing failed - examine the above files to resolve incorrect tag data")
+
+        
 
 
 
