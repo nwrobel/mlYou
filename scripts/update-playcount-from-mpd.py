@@ -75,6 +75,11 @@ def Run():
     
 
     # Create MPDPlaystatsCollector object and call CollectPlaybackInstances to get the playback instances
+
+    # Dependency injection - chain:
+    # MPDLogsHandler -> MPDPlaybackInstanceCollector -> SongPlaybackRecordCollector
+    # 
+
     print("Building playback data from log files...")
     playbackInstanceCollector = mlu.mpd.playstats.MPDPlaybackInstanceCollector(mpdLogFilepath=args.mpdLogsDir)
     playbackInstances = playbackInstanceCollector.GetPlaybackInstances()
@@ -94,20 +99,20 @@ def Run():
 
     # Write 1st cache file: SongPlaybackRecords found from MPD
     print("Cache step 1: Writing newly found playback data...")
-    mlu.cache.io.WriteMLUObjectsToJSONFile(songPlaybackRecords, GetJSONCacheFilepath(1))
+    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=songPlaybackRecords, outputFilepath=GetJSONCacheFilepath(1))
 
     # Write 2nd cache file: current SongPlaystatTags values for each song that will be updated
     print("Cache step 2: Writing current playstat tags for all songs...")
     songsToUpdate = (playbackRecord.songFilePath for playbackRecord in songPlaybackRecords)
     songsCurrentPlaystatTags = mlu.tags.playstats.ReadCurrentPlaystatTagsFromSongs(songFilepaths=songsToUpdate)
-    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=songsCurrentPlaystatTags, outputFilename=GetJSONCacheFilepath(2))
+    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=songsCurrentPlaystatTags, outputFilepath=GetJSONCacheFilepath(2))
 
     # Write 3rd cache file: calculate new playstat tags based on playback instances + old tags
     # and return new, updated SongPlaystatTags values for all the songs
     print("Cache step 3: Writing new computed tag values (current tags + playback data) for all songs...")
     tagUpdateResolver = mlu.tags.playstats.SongPlaystatTagsUpdateResolver(songPlaybackRecords=songPlaybackRecords, songsPlaystatTags=songsCurrentPlaystatTags)
     songsNewPlaystatTags = tagUpdateResolver.GetUpdatedPlaystatTags()
-    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=songsNewPlaystatTags, outputFilename=GetJSONCacheFilepath(3))
+    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=songsNewPlaystatTags, outputFilepath=GetJSONCacheFilepath(3))
 
     print("Playback data gathering, caching, and tag preparation complete!\n")
 
