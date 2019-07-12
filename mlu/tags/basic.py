@@ -6,7 +6,7 @@ import mutagen
 #   artist
 #   album
 #
-def GetCommonTags(songFilepath):
+def GetBasicTags(songFilepath):
     tags = {}
     audioFile = mutagen.File(songFilepath)
 

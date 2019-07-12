@@ -80,14 +80,14 @@ class LogFileTimeInfo:
       return (firstEntryTime, lastEntryTime)
       
 
-class MPDLogsHandler:
-   def __init__(self, mpdLogFilepath, promptForLogFileYears=False):
-      self.mpdLogPath = mpdLogFilepath
+class MPDLogLineCollector:
+   def __init__(self, mpdLogDir, promptForLogFileYears):
+      self.mpdLogDir = mpdLogDir
       self.tempLogDir = GetTempLogDirName()
       self.promptForLogFileYears = promptForLogFileYears
       self.logFileContextCurrentYear = {}
 
-   def GetProcessedLogLines(self):
+   def GetMPDLogLines(self):
       self.CopyLogFilesToTemp()
       self.DecompressLogFiles()
       self.SetLogFilesContextCurrentYear()
@@ -100,7 +100,7 @@ class MPDLogsHandler:
       mlu.common.file.CreateDirectory(self.tempLogDir)
 
       # Get all MPD log files and copy them into the temp dir
-      mpdLogFiles = mlu.common.file.GetAllFilesDepth1(self.mpdLogPath)
+      mpdLogFiles = mlu.common.file.GetAllFilesDepth1(self.mpdLogDir)
       mlu.common.file.CopyFilesToFolder(srcFiles=mpdLogFiles, destDir=self.tempLogDir)
 
 

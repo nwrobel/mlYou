@@ -102,9 +102,9 @@ class PlaybackInstance:
 # passed to another module to be displayed in the UI, cached, compared with the current file tag values,
 # and then finally used to update the current tags for these song files
 #
-class MPDPlaybackInstanceCollector:
-    def __init__(self, mpdLogFilepath):
-        self.mpdLogPath = mpdLogFilepath
+class PlaybackInstanceCollector:
+    def __init__(self, mpdLogLineCollector):
+        self.mpdLogLineCollector = mpdLogLineCollector
 
     def GetPlaybackInstances(self):
         allPlaybackInstances = self.FormPlaybackInstances()
@@ -114,8 +114,7 @@ class MPDPlaybackInstanceCollector:
     # Returns playback data based on all data found in the logs from MPDLogsHandler
     # Creates the data structure described in comment header block
     def FormPlaybackInstances(self):
-        mpdLogHandler = mlu.mpd.logs.MPDLogsHandler(mpdLogFilepath=self.mpdLogPath)
-        mpdLogLines = mpdLogHandler.GetProcessedLogLines()
+        mpdLogLines = self.mpdLogLineCollector.GetMPDLogLines()
         allPlaybackInstances = []
 
         for (index, currentLine) in enumerate(mpdLogLines):
@@ -219,11 +218,13 @@ class SongPlaybackRecord:
 
 
 class SongPlaybackRecordCollector:
-    def __init__(self, playbackInstances):
-        self.playbackInstances = playbackInstances
-        self.songPlaybackRecords = []
+    def __init__(self, playbackInstanceCollector):
+        self.playbackInstanceCollector = playbackInstanceCollector
+        self.playbackInstances = []
+        self.songPlaybackRecords = [] # ???????????????????????????? do we need this?
 
     def GetSongPlaybackRecords(self):
+        self.playbackInstances = self.playbackInstanceCollector.GetPlaybackInstances()
 
         # Get a list of all the unique song filepaths by taking the songFilepath property from each object in the playbackInstances array
         allSongFilepaths = list((playback.songFilepath for playback in self.playbackInstances))

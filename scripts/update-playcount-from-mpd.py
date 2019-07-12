@@ -17,8 +17,9 @@ from prettytable import PrettyTable
 import setup
 setup.PrepareScriptsForExecution()
 
-import mlu.mpd.playstats
-import mlu.tags.common
+import mlu.mpd.plays
+import mlu.mpd.logs
+import mlu.tags.basic
 import mlu.common.time
 import mlu.common.file
 import mlu.cache.io
@@ -31,7 +32,7 @@ def PrintPlaybackDataTable(songPlaybackRecords):
 
     for songPlaybackRecord in songPlaybackRecords:
         # Get the common tags so we can display the ones we need to in the playback table for this song
-        songTags = mlu.tags.common.GetCommonTags(songFilepath=songPlaybackRecord.songFilePath)
+        songTags = mlu.tags.basic.GetCommonTags(songFilepath=songPlaybackRecord.songFilePath)
 
         songTitle = songTags['title']
         artist = songTags['artist']
@@ -64,38 +65,38 @@ def Run():
     parser = argparse.ArgumentParser()
     
     parser.add_argument("musicDir", 
-                        help="Absolute filepath of the root directory of the music library",
+                        help="Absolute filepath of the root directory of the music library on this system.",
                         type=str)
     
     parser.add_argument("mpdLogsDir", 
-                        help="Absolute filepath of the root directory of where the MPD logs are stored on this system",
+                        help="Absolute filepath of the root directory where the MPD logs are stored on this system.",
                         type=str)
+
+    parser.add_argument("--noLogfileAgePrompt",
+                        help="Skip the user prompt to enter the year last modified for each MPD log file. If skipped, the present year will be used by default.",
+                        action='store_true')
     
     args = parser.parse_args()
     
-
-    # Create MPDPlaystatsCollector object and call CollectPlaybackInstances to get the playback instances
-
     # Dependency injection - chain:
     # MPDLogsHandler -> MPDPlaybackInstanceCollector -> SongPlaybackRecordCollector
-    # 
-
-    print("Building playback data from log files...")
-    playbackInstanceCollector = mlu.mpd.playstats.MPDPlaybackInstanceCollector(mpdLogFilepath=args.mpdLogsDir)
-    playbackInstances = playbackInstanceCollector.GetPlaybackInstances()
-
-    # Pass the playback instances array to a class "SongPlaybackRecordCollector" in the mlu.mpd.playstats module, where it can be compressed down into a simpler form
+    
+    # Pass the playback instances array to a class "SongPlaybackRecordCollector" in the mlu.mpd.plays module, where it can be compressed down into a simpler form
     # that contains only 1 element for each unique song played (no duplicate song play instances are in the array)
     # We call this form a songPlaybackRecord object
-    print("Consolidating playback data...")
-    songPlaybackRecordCollector = mlu.mpd.playstats.SongPlaybackRecordCollector(playbackInstances=playbackInstances)
-    songPlaybackRecords = songPlaybackRecordCollector.GetSongPlaybackRecords()
 
+    print("Building playback data structures from log files...")
+    mpdLogLineCollector = mlu.mpd.logs.MPDLogLineCollector(mpdLogDir=args['mpdLogDir'], promptForLogFileYears=args['noLogfileAgePrompt'])
+    playbackInstanceCollector = mlu.mpd.plays.PlaybackInstanceCollector(mpdLogLineCollector=mpdLogLineCollector)
+    songPlaybackRecordCollector = mlu.mpd.plays.SongPlaybackRecordCollector(playbackInstanceCollector=playbackInstanceCollector)
+
+    songPlaybackRecords = songPlaybackRecordCollector.GetSongPlaybackRecords()
 
     # Write out 3 cache json files:
     #  1) current playback instances found
     #  2) current playstats tag values of the songs that will be updated
     #  3) new tag values that will be set, based on applying the changes from 1 to the tags in 2
+    print("Caching data...")
 
     # Write 1st cache file: SongPlaybackRecords found from MPD
     print("Cache step 1: Writing newly found playback data...")
@@ -128,7 +129,6 @@ def Run():
         print("Exiting due to choice of user")
         return
     
-
     # write the new, updated tag values (same ones we just wrote to the 3rd json cache file) to the
     # audio files
     mlu.tags.playstats.WritePlaystatTagsToSongs(songsPlaystatTags=songsNewPlaystatTags)
