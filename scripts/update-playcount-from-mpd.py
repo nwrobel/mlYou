@@ -19,7 +19,7 @@ setup.PrepareScriptsForExecution()
 
 import mlu.mpd.playstats
 import mlu.tags.common
-import mlu.app.common
+import mlu.common.time
 import mlu.cache.io
 
 #--------------------------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ def PrintPlaybackDataTable(songPlaybackRecords):
         numPlays = len(songPlaybackRecord.playbackTimes)
         # Get the playback times: for each playback timestamp on this songPlaybackRecord, format it for display
         # and return this formatted timestamp
-        playTimes = ( mlu.app.common.FormatTimestampForDisplay(timestamp) for timestamp in songPlaybackRecord.playbackTimes )
+        playTimes = ( mlu.common.time.FormatTimestampForDisplay(timestamp) for timestamp in songPlaybackRecord.playbackTimes )
 
         # Add the songPlaybackRecord data we found above to the table as a row
         table.add_row([songTitle, artist, numPlays, playTimes])
