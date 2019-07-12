@@ -43,9 +43,7 @@ def PrintPlaybackDataTable(songPlaybackRecords):
         table.add_row([songTitle, artist, numPlays, playTimes])
 
     # Display the table, begin and end it with a newline to look better
-    print()
-    print(table)
-    print() 
+    print("\n" + table + "\n")
 
 #--------------------------------------------------------------------------------------------------
 def GetJSONCacheFilepath(cacheFileID):

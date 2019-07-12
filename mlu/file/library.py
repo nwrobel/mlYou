@@ -6,3 +6,6 @@ Created on May 5, 2019
 This module handles functionality related to retreiving information related to the music library
 as a whole. 
 '''
+
+def GetAllAudioFilepathsInLibrary():
+    pass

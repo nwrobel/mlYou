@@ -1,11 +1,7 @@
 '''
-@author: Nick Wrobel
+mlu.file.playlist
 
-First Created: 3/9/19
-Last Modified: 5/10/19
-
-Module containing functionality related to working with playlist data, used 
-throughout the MLU project.
+Module containing functionality related to working with audio playlists.
 '''
 
 from pathlib import Path
