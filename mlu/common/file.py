@@ -1,5 +1,5 @@
 '''
-mlu.file.ops
+mlu.common.file
 
 This module contains functionality related to performing file/directory operations: getting, 
 renaming, deleting, and moving.
@@ -71,6 +71,24 @@ def GetAllFilesAndFolders(rootPath):
     return paths
 
 
+def GetAllFilesByExtension(rootPath, fileExt):
+    """
+    Gets the filepaths of all files contained within the given root directory that have the given 
+    file extension. Searches for files recursively. Give file extension with the dot.
+
+    ex) GetAllFilesByExtension("C:\temp", ".mp3")
+    """
+    allFiles = GetAllFilesRecursive(rootPath)
+    matchingFilepaths = []
+
+    for filepath in allFiles:
+        currentFileExt = GetFileExtension(filepath)
+        if (currentFileExt == fileExt):
+            matchingFilepaths.append(filepath)
+
+    return matchingFilepaths
+
+
 def CreateDirectory(folderPath):
     """
     Creates the directory specified by the given directory path.
@@ -91,10 +109,18 @@ def CopyFilesToFolder(srcFiles, destDir):
 
 def DeleteFiles(filePaths):
     """
-    Deletes all files and/or folders, given a list of paths.
+    Deletes all files and/or folders, given a list of paths of files/folders to delete.
     """
     for filePath in filePaths:
         os.remove(filePath)
+
+
+def DeleteAllFromDirectory(directoryPath):
+    """
+    Deletes all files and/or folders contained within the given root directory.
+    """
+    allPaths = GetAllFilesAndFolders(directoryPath)
+    DeleteFiles(allPaths)
 
 
 def GetFilename(filePath):
@@ -109,7 +135,7 @@ def GetFilename(filePath):
 def GetFileExtension(filePath):
     """
     Returns the file extension of a file, given its filepath. Specifically, this returns the final 
-    ".something" in the given file's name.
+    ".something" in the given file's name. File extension is returned including the dot.
     Returns an empty string if no file extension exists.
     """
     filePathObject = Path(filePath)
@@ -137,6 +163,26 @@ def JoinPaths(path1, path2):
     """
     return os.path.join(path1, path2)
 
+
+def FileExists(filePath):
+    """
+    Checks if the file at the given filepath exists (boolean)
+    """
+    filePathObject = Path(filePath)
+    if (filePathObject.exists() and filePathObject.is_file()):
+        return True
+    
+    return False
+
+def FolderExists(folderPath):
+    """
+    Checks if the folder at the given path exists (boolean)
+    """
+    folderPathObject = Path(folderPath)
+    if (folderPathObject.exists() and folderPathObject.is_dir()):
+        return True
+    
+    return False
 
 def DecompressSingleGZFile(gzippedFilePath, decompFilePath):
     """

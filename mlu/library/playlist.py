@@ -7,7 +7,7 @@ Module containing functionality related to working with audio playlists.
 from pathlib import Path
 import os
 from collections import namedtuple
-from mlu.app.common import CreateDirectory
+import mlu.common.file
 
 # TODO - MOVE THESE DIRECTORY FUNCTIONS TO COMMON MODULE
 # TODO - REWRITE SOME DIR FUNCTIONS USING pathlib
@@ -26,65 +26,23 @@ def FixPathSlashDirectionToMatchRootPath(rootPath, path):
         
     return fixedPath
 
-def FilepathIsValid(filePath):
-    filePathObject = Path(filePath)
-    if (filePathObject.exists() and filePathObject.is_file()):
-        return True
-    
-    return False
-
-def FolderpathIsValid(folderPath):
-    folderPathObject = Path(folderPath)
-    if (folderPathObject.exists() and folderPathObject.is_dir()):
-        return True
-    
-    return False
-
-
-def GetFilenameFromFilepath(filePath):
-    
-    filePathObject = Path(filePath)
-    return filePathObject.name
-
-
-def DeleteAllInDirectory(folderPath):
-    pathObj = Path(folderPath)
-    children = pathObj.glob('**/*')
-    
-    for child in children:
-        os.remove(child)
-
-def GetNameAndExtensionFromFileName(fileName):
-
-    parts = fileName.split(".")
-    fileExt = parts[-1] # get the 1st last item (or, the last item) in the list
-    del parts[:-1] # remove the last item from the list
-    fileName = parts.join(".") # put the filename back together, in case of filenames like "file.playlist.m3u"
-    
-    fileInfo = namedtuple("fileInfo", ["fileName", "fileExt"])
-    return fileInfo(fileName, fileExt)
-
-def GetAllPlaylistFilesInDirRecursive(parentDir):
-    pathObj = Path(parentDir)
-    playlistFileObjs = pathObj.rglob('*.m3u*')
-    
-    playlistFilePaths = [str(playlistFileObj) for playlistFileObj in playlistFileObjs]
-    return playlistFilePaths
-
 
 def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, oldRoot, newRoot):
     
     print("Attempting to load all playlists in source directory:", sourcePlaylistDir)
     
-    assert FolderpathIsValid(sourcePlaylistDir), "ERROR: The given playlist source folder is invalid or cannot be found"
-    playlistFilePaths = GetAllPlaylistFilesInDirRecursive(sourcePlaylistDir)
+    assert mlu.common.file.FolderExists(sourcePlaylistDir), "ERROR: The given playlist source folder is invalid or cannot be found"
+    
+    playlistFilePathsM3U = mlu.common.file.GetAllFilesByExtension(sourcePlaylistDir, ".m3u")
+    playlistFilePathsM3U8 = mlu.common.file.GetAllFilesByExtension(sourcePlaylistDir, ".m3u8")
+    playlistFilePaths = playlistFilePathsM3U + playlistFilePathsM3U8
     numPlaylists = len(playlistFilePaths)
     
     print("Looking for output directory:", outputPlaylistDir)
     
-    if (not FolderpathIsValid(outputPlaylistDir)):
+    if (not mlu.common.file.FolderExists(outputPlaylistDir)):
         print("Output directory not found...attempting to create it")
-        CreateDirectory(outputPlaylistDir)
+        mlu.common.file.CreateDirectory(outputPlaylistDir)
         
     else:
         print("WARNING: Output directory already exists - all files currently within this directory WILL BE DELETED:\n", outputPlaylistDir)        
@@ -103,7 +61,7 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
                 print("Invalid choice: please enter Y or N (case insensitive)")
                 
         os.remove(outputPlaylistDir)
-        CreateDirectory(outputPlaylistDir)
+        mlu.common.file.CreateDirectory(outputPlaylistDir)
 
     oldRoot = RemoveTrailingSlash(oldRoot)
     newRoot = RemoveTrailingSlash(newRoot)
@@ -120,7 +78,7 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
     
     for playlistFilePath in playlistFilePaths:
     
-        playlistFileName = GetFilenameFromFilepath(playlistFilePath)
+        playlistFileName = mlu.common.file.GetFilename(playlistFilePath)
         outputPlaylistFilePath = os.path.join(outputPlaylistDir, playlistFileName)
         
         newPlaylistLines = []

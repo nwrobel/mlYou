@@ -20,6 +20,7 @@ setup.PrepareScriptsForExecution()
 import mlu.mpd.playstats
 import mlu.tags.common
 import mlu.common.time
+import mlu.common.file
 import mlu.cache.io
 
 #--------------------------------------------------------------------------------------------------
@@ -47,9 +48,9 @@ def PrintPlaybackDataTable(songPlaybackRecords):
 
 #--------------------------------------------------------------------------------------------------
 def GetJSONCacheFilepath(cacheFileID):
-    cacheDir = mlu.app.common.JoinPaths(mlu.app.common.GetProjectRoot(), "cache")
+    cacheDir = mlu.common.file.JoinPaths(mlu.common.file.GetProjectRoot(), "cache")
     cacheFilename = "mpd-playstats-cache-" + cacheFileID + ".json"
-    return mlu.app.common.JoinPaths(cacheDir, cacheFilename)
+    return mlu.common.file.JoinPaths(cacheDir, cacheFilename)
 
 
 #--------------------------------------------------------------------------------------------------    

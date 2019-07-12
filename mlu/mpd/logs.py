@@ -14,7 +14,7 @@ of MPDLogLine objects - each object has 2 properties:
 
 from time import strftime
 import datetime
-import mlu.app.common as Common
+import mlu.common.file
 
 
 # -------------------------------------------------------------------------------------------------
@@ -97,37 +97,37 @@ class MPDLogsHandler:
    
    def CopyLogFilesToTemp(self): 
       # Create the cache directory to store the log files in temporarily so we can manipulate them
-      Common.CreateDirectory(self.tempLogDir)
+      mlu.common.file.CreateDirectory(self.tempLogDir)
 
       # Get all MPD log files and copy them into the temp dir
-      mpdLogFiles = Common.GetAllFilesDepth1(self.mpdLogPath)
-      Common.CopyFilesToFolder(srcFiles=mpdLogFiles, destDir=self.tempLogDir)
+      mpdLogFiles = mlu.common.file.GetAllFilesDepth1(self.mpdLogPath)
+      mlu.common.file.CopyFilesToFolder(srcFiles=mpdLogFiles, destDir=self.tempLogDir)
 
 
    # Decompresses any compressed, archived log files that are given  
    def DecompressLogFiles(self):
-      mpdLogFiles = Common.GetAllFilesDepth1(self.tempLogDir)
+      mpdLogFiles = mlu.common.file.GetAllFilesDepth1(self.tempLogDir)
       gzippedLogFiles = []
 
       for logFile in mpdLogFiles:
-         if (Common.GetFileExtension(logFile) == "gz"):
+         if (mlu.common.file.GetFileExtension(logFile) == "gz"):
             gzippedLogFiles.append(logFile)
 
       # Decompress each gz file and output the uncompressed logs to the temp dir
       for gzippedLogFilePath in gzippedLogFiles:
-         gzippedBaseFilename = Common.GetFileBaseName(gzippedLogFilePath)
-         extractedFilepath = Common.JoinPaths(self.tempLogDir, gzippedBaseFilename)
-         Common.DecompressSingleGZFile(gzippedLogFilePath, extractedFilepath)
+         gzippedBaseFilename = mlu.common.file.GetFileBaseName(gzippedLogFilePath)
+         extractedFilepath = mlu.common.file.JoinPaths(self.tempLogDir, gzippedBaseFilename)
+         mlu.common.file.DecompressSingleGZFile(gzippedLogFilePath, extractedFilepath)
 
       # Delete the original compressed .gz files
-      Common.DeleteFiles(gzippedLogFiles)
+      mlu.common.file.DeleteFiles(gzippedLogFiles)
 
    # SetLogFilesContextCurrentYear - get user to enter in the year that each log file has entries
    # up until - this year will be the 'current' year for that log file when timestamps are updated
    # this can be skipped based on param passed to the loghandler
    # Make an dict: logfilepath -> contextCurrentYear
    def SetLogFilesContextCurrentYear(self):
-      mpdLogFiles = Common.GetAllFilesDepth1(self.tempLogDir)
+      mpdLogFiles = mlu.common.file.GetAllFilesDepth1(self.tempLogDir)
       currentCalendarYear = GetCurrentYear()
 
       if (self.promptForLogFileYears):
@@ -138,7 +138,7 @@ class MPDLogsHandler:
          # Perform validation on the year entered: should not be more than the actual current year
          # or less than 1960
          for logfilepath in mpdLogFiles:
-            logfilename = Common.GetFilename(logfilepath)
+            logfilename = mlu.common.file.GetFilename(logfilepath)
             currentEntryComplete = False
 
             # Loop until the user enters a valid date to validate input year
@@ -168,7 +168,7 @@ class MPDLogsHandler:
    # - Sort the object array based on the timestamp property, least recent to most recent
    # - Return the array from this function back to caller to use
    def ProcessAllLogFileLines(self):
-      mpdLogFiles = Common.GetAllFilesDepth1(self.tempLogDir)
+      mpdLogFiles = mlu.common.file.GetAllFilesDepth1(self.tempLogDir)
       allMPDLogLines = []
 
       for logfilepath in mpdLogFiles:
@@ -196,7 +196,7 @@ def GetCurrentYear():
    return int(currentYear) 
 
 def GetTempLogDirName():
-   return Common.JoinPaths(Common.GetProjectRoot(), "cache/mpdlogs")
+   return mlu.common.file.JoinPaths(mlu.common.file.GetProjectRoot(), "cache/mpdlogs")
 
 def GetCorrectTimestampFromMPDLogLine(line, logfileTimeInfo):
    timestamp = FormTimestampFromMPDLogLine(line=line, year=logfileTimeInfo.contextCurrentYear) 
