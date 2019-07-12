@@ -32,7 +32,7 @@ def PrintPlaybackDataTable(songPlaybackRecords):
 
     for songPlaybackRecord in songPlaybackRecords:
         # Get the common tags so we can display the ones we need to in the playback table for this song
-        songTags = mlu.tags.basic.GetCommonTags(songFilepath=songPlaybackRecord.songFilePath)
+        songTags = mlu.tags.basic.GetBasicTags(songFilepath=songPlaybackRecord.songFilePath)
 
         songTitle = songTags['title']
         artist = songTags['artist']
