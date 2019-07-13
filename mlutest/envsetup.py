@@ -8,7 +8,7 @@ variables and paths so that this project's modules can be used.
 '''
 
 
-def PrepareScriptsForExecution():
+def PreparePythonProjectEnvironment():
     import sys, os
     
     # Add project root to PYTHONPATH so MLU modules can be imported

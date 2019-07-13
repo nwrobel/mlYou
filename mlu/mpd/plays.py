@@ -16,7 +16,7 @@ instances - each instance has 4 properties:
 import re 
 import datetime
 
-import mlu.tags.common
+import mlu.tags.basic
 import mlu.mpd.logs
 
 
@@ -75,7 +75,7 @@ class PlaybackInstance:
 
     # Use filepath to get the audio file's common tags, one of which is the duration
     def GetSongDuration(self):
-        durationSeconds = mlu.tags.common.GetCommonTags(self.songFilepath)['durationSeconds']
+        durationSeconds = mlu.tags.basic.GetCommonTags(self.songFilepath)['durationSeconds']
         durationTimestamp = ConvertSecondsToTimestamp(durationSeconds)
 
         return durationTimestamp

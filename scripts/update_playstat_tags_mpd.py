@@ -14,8 +14,8 @@ from prettytable import PrettyTable
 # Do setup processing so that this script can import all the needed modules from the "mlu" package.
 # This is necessary because these scripts are not located in the root directory of the project, but
 # instead in the 'scripts' folder.
-import setup
-setup.PrepareScriptsForExecution()
+import envsetup
+envsetup.PreparePythonProjectEnvironment()
 
 import mlu.mpd.plays
 import mlu.mpd.logs
