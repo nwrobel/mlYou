@@ -12,6 +12,9 @@ instances - each instance has 4 properties:
 - playStartTime
 - instancePlayDuration
 - actualPlayDuration
+
+TODO: update playback filtering to check if there are 2 or more playbacks of the same song within
+about 0-10 min. of each other - these are most likely caused by MPD disconnect/reconnecting and shouldn't be counted
 '''
 import re 
 import datetime
@@ -75,7 +78,7 @@ class PlaybackInstance:
 
     # Use filepath to get the audio file's common tags, one of which is the duration
     def GetSongDuration(self):
-        durationSeconds = mlu.tags.basic.GetCommonTags(self.songFilepath)['durationSeconds']
+        durationSeconds = mlu.tags.basic.GetBasicTags(self.songFilepath)['durationSeconds']
         durationTimestamp = ConvertSecondsToTimestamp(durationSeconds)
 
         return durationTimestamp
@@ -214,7 +217,7 @@ def ConvertSecondsToTimestamp(seconds):
 class SongPlaybackRecord:
     def __init__(self, songFilepath, playbackTimes):
         self.songFilepath = songFilepath
-        self.playbackTimes = playbackTimes
+        self.playbackTimes = playbackTimes # should be a list of epoch timestamps
 
 
 class SongPlaybackRecordCollector:

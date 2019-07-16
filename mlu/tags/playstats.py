@@ -2,11 +2,15 @@
 mlu.tags.playstats
 
 This module deals with reading and writing playback-related tag information on audio files.
+
+TODO:
+when reading playback tags, convert them to epoch timestamps and create them from a list from a semicolon seperated string
+when writing tags, convert times to formatted strings as string seperated by semicolons
 '''
 
 from collections import OrderedDict
 import mutagen
-import mlu.mpd.playstats
+import mlu.mpd.plays
 
 # Class representing the data structure holding the various tag values of a song for the playstats tags
 # that we are dealing with - 3 tags: PLAY_COUNT, TIME_LAST_PLAYED, ALL_TIMES_PLAYED
@@ -15,7 +19,7 @@ class SongPlaystatTags:
         self.songFilepath = songFilepath
         self.playCount = playCount
         self.timeLastPlayed = timeLastPlayed
-        self.allTimesPlayed = allTimesPlayed
+        self.allTimesPlayed = allTimesPlayed # should be a list of epoch timestamps
 
 
 # class PlaystatTagReader ?

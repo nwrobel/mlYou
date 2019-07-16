@@ -143,20 +143,3 @@ def Run():
             print(song)
 
         raise("\nERROR: playstat tag writing failed - examine the above files to resolve incorrect tag data")
-
-        
-
-
-
-
-
-
-
- 
-      
-
-
-
-
-
-
