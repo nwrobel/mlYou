@@ -11,7 +11,10 @@ mlutest.envsetup.PreparePythonProjectEnvironment()
 from mlu.cache.io import WriteMLUObjectsToJSONFile, ReadMLUObjectsFromJSONFile
 from mlu.mpd.plays import SongPlaybackRecord
 
-class TestCacheFunctions(unittest.TestCase):
+class TestCacheIOModule(unittest.TestCase):
+"""
+Test case that tests the functions defined within the mlu.cache.io module.
+"""
 
     def setUp(self):
         self.testJsonFilepath = 'D:\\Temp\\mlu-test\\test.json'
@@ -63,16 +66,81 @@ class TestCacheFunctions(unittest.TestCase):
             self.assertTrue(isinstance(jsonDict['playbackTimes'], list))
             self.assertEqual(jsonDict['playbackTimes'], playbackRecords[index].playbackTimes)
 
+    def testReadSingleSongPlaybackRecordFromJsonFile(self):
+        pass
+
+    def testReadMultipleSongPlaybackRecordsFromJsonFile(self):
+        pass
 
 
-def MPDPlaystatsTestSuite():
+class TestCommonTimeFunctions(unittest.TestCase):
+"""
+Test case that tests the functions defined within the mlu.common.time module.
+"""
+
+    def testFormatTimestampForDisplay(self):
+        pass
+
+    def testGetProjectRoot(self):
+        pass
+
+    def testJoinPaths(self):
+        pass
+
+
+class TestCommonFileFunctions(unittest.TestCase):
+"""
+Test case that tests the functions defined within the mlu.common.file module.
+"""
+    pass
+
+
+class TestMPDLogsModule(unittest.TestCase):
+"""
+Test case that tests the classes and functions defined within the mlu.mpd.logs module.
+"""
+    pass
+
+
+class TestMPDPlaysModule(unittest.TestCase):
+"""
+Test case that tests the classes and functions defined within the mlu.mpd.plays module.
+"""
+    pass
+
+
+class TestBasicTagsModule(unittest.TestCase):
+"""
+Test case that tests the classes and functions defined within the mlu.tags.basic module.
+"""
+    pass
+
+
+class TestPlaystatsTagsModule(unittest.TestCase):
+"""
+Test case that tests the classes and functions defined within the mlu.tags.playstats module.
+"""
+    pass
+
+
+class WholeIntegrationTest(unittest.TestCase):
+"""
+Test case to test the entire MPD playstats tags update script, end to end. This is an integration
+test, not a unit test, and it utilizes all the modules the script uses. The script is executed
+as it would be normally, but this test case checks the results against expected results to verify 
+accuracy after setting up input test data.
+"""
+    pass
+
+
+def GetMPDPlaystatsTestSuite():
     suite = unittest.TestSuite()
     suite.addTest(TestCacheFunctions())
     return suite
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner()
-    runner.run(MPDPlaystatsTestSuite())
+    runner.run(GetMPDPlaystatsTestSuite())
 
 
 

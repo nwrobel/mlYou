@@ -5,6 +5,9 @@ This module contains functionality related to performing file/directory operatio
 renaming, deleting, and moving.
 '''
 
+# TODO: go thru the current project code to see if any of these functions are currently unused
+# TODO: use params to merge similar/common functions into less functions that have more features
+
 import os
 from pathlib import Path
 import gzip
