@@ -16,19 +16,20 @@ def WriteMLUObjectsToJSONFile(mluObjects, outputFilepath):
     of the properties for each object in the JSON file follows the same order as the properties
     are defined in that class.
     """
-    with open(outputFilepath, 'w+') as outfile:
+    with open(outputFilepath, "w+") as outfile:
         json.dump(mluObjects, outfile, default=_prepareMLUObjectForJSON)
 
 
 def ReadMLUObjectsFromJSONFile(inputFilepath, mluClassDefinition):
     """
     Given an input JSON filepath, reads in one or more JSON-encoded MLU objects (class instances)
-    and converts them back into their original python objects of the given type.
+    and converts them back into their original python objects of the given type. Returns a list
+    of one or more MLU objects of given type, retrieved from the json data.
 
     Note: mluClassDefinition must be the class name/class definition for the type of object
     that each JSON item in the file represents.
     """
-    with open(inputFilepath, 'r') as inputfile:
+    with open(inputFilepath, "r") as inputfile:
         mluObjDicts = json.load(inputfile)
         
     # Create a list with one element if only one object dictionary is read from the given json file

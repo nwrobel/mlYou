@@ -22,8 +22,11 @@ def GetProjectRoot():
     so trailing slashes don't need to be considered.
     """
     thisModulePath = os.path.dirname(os.path.realpath(__file__))
-    projectRoot = os.path.abspath(os.path.join(thisModulePath ,".."))
+    projectRoot = JoinPaths(thisModulePath ,"..\\..")
     return projectRoot
+
+def GetTestResourceFilesDirectory():
+    return JoinPaths(GetProjectRoot(), "mlutest\\test-resources")
 
 
 def GetAllFilesRecursive(rootPath):
@@ -164,7 +167,8 @@ def JoinPaths(path1, path2):
 
     ex) JoinPaths("C:\prog\temp", "..\test.txt") --> "C:\prog\test.txt" 
     """
-    return os.path.join(path1, path2)
+    joined = os.path.join(path1, path2)
+    return os.path.abspath(joined)
 
 
 def FileExists(filePath):
