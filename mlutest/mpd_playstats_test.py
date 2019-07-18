@@ -1,8 +1,6 @@
 import unittest
 import json
 import os
-import datetime
-
 
 # Do setup processing so that this script can import all the needed modules from the "mlu" package.
 # This is necessary because these scripts are not located in the root directory of the project, but
@@ -10,23 +8,21 @@ import datetime
 import mlutest.envsetup
 mlutest.envsetup.PreparePythonProjectEnvironment()
 
-
 from mlu.cache.io import WriteMLUObjectsToJSONFile, ReadMLUObjectsFromJSONFile
 from mlu.mpd.plays import SongPlaybackRecord
 import mlu.common.file 
+import mlutest.common
 
 
 class TestCacheIOWriteObjectsToJson(unittest.TestCase):
     """
     Test case that tests the functions defined within the mlu.cache.io module.
     """
-
     def setUp(self):
         self.testJsonOutFilepath = mlu.common.file.JoinPaths(mlu.common.file.GetTestResourceFilesDirectory(), "testwrite.json")
 
     def tearDown(self):
-        # os.remove(self.testJsonOutFilepath)
-        pass
+        os.remove(self.testJsonOutFilepath)
 
     # Test case helper functions -------------------------------------------------------------------
     def getSingleTestSongPlaybackRecord(self):
@@ -35,7 +31,7 @@ class TestCacheIOWriteObjectsToJson(unittest.TestCase):
             playbackTimes=[2425353456, 452345972, 32920224573, 49572439587]
         )
 
-    # TODO - refactor this into a GetRandomTestSongPlaybackRecord() function, to generate entropy in test data
+    # TODO - use the mlutest.common functions to generate random test data to create these objects instead
     # TODO - add records with some empty values
     def getMultipleTestSongPlaybackRecords(self):
         records = [
@@ -52,7 +48,25 @@ class TestCacheIOWriteObjectsToJson(unittest.TestCase):
         return results
 
     # Tests ----------------------------------------------------------------------------------------
-    def testWriteSingleSongPlaybackRecordToJsonFile(self):
+
+    # Setup
+    # Define random test data and use it to create pre-made objects 
+    # Define test filepath for json files to be written to
+    #
+    # Test run
+    # Write out json files from test objects
+    # Use json.load to read data from json file into dict data structures
+    # check that each dict matches the properties for each test object 
+    #
+    # Teardown
+    # Delete test filepath for where the test json files were written to during the test run
+
+    def testWriteSingleMLUObjectToJSON(self):
+        """
+        Ensure that we can write out an instance of different MLU objects to JSON accurately
+        and as expected. This is not a test for these object classes: just for the cache function.
+        """
+        # Write single SongPlaybackRecord
         playbackRecord = self.getSingleTestSongPlaybackRecord()
         WriteMLUObjectsToJSONFile(mluObjects=playbackRecord, outputFilepath=self.testJsonOutFilepath)
         jsonFileContent = self.readTestJsonFile()
@@ -62,7 +76,8 @@ class TestCacheIOWriteObjectsToJson(unittest.TestCase):
         self.assertTrue(isinstance(jsonFileContent['playbackTimes'], list))
         self.assertEqual(jsonFileContent['playbackTimes'], playbackRecord.playbackTimes)
 
-    def testWriteMultipleSongPlaybackRecordsToJsonFile(self):
+
+    def testWriteMultipleMLUObjectsToJSON(self):
         playbackRecords = self.getMultipleTestSongPlaybackRecords()
         WriteMLUObjectsToJSONFile(mluObjects=playbackRecords, outputFilepath=self.testJsonOutFilepath)
         jsonFileContent = self.readTestJsonFile()
@@ -84,6 +99,19 @@ class TestCacheIOReadObjectsFromJson(unittest.TestCase):
         self.testJsonInSingleFilepath = mlu.common.file.JoinPaths(mlu.common.file.GetTestResourceFilesDirectory(), "testreadsingle.json")
         self.testJsonInListFilepath = mlu.common.file.JoinPaths(mlu.common.file.GetTestResourceFilesDirectory(), "testreadlist.json")
 
+    # Test Setup
+    # Use Random functions to create random test data needed for test objects
+    # save this data in dictionaries
+    # use json.dump to write them to test json files
+
+    # Test run
+    # Have test read in the json files to objects
+    # check that each object's attributes match our test data, saved above
+
+    # Test Teardown
+    # Delete the test json files we created during setup
+
+
     def testReadSingleSongPlaybackRecordFromJsonFile(self):
         playbackRecords = ReadMLUObjectsFromJSONFile(inputFilepath=self.testJsonInSingleFilepath, mluClassDefinition=SongPlaybackRecord)
 
@@ -101,14 +129,6 @@ class TestCommonTimeFunctions(unittest.TestCase):
     """
     Test case that tests the functions defined within the mlu.common.time module.
     """
-
-
-    def getCurrentTimestamp(self):
-        dt = datetime.datetime.now()
-        return datetime.datetime.timestamp(dt)
-
-
-
     def testFormatTimestampForDisplay(self):
         pass
 

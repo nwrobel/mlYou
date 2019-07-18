@@ -29,6 +29,18 @@ def ApplyDeltaYearsToTimestamp(startTimestamp, years):
 
     return newTimestamp
 
+def ApplyDeltaSecondsToTimestamp(startTimestamp, seconds):
+    """
+    Given a starting time timestamp and a number of seconds, this returns a new epoch timestamp which represents
+    that time X seconds before or after the given timestamp. Years can be positive to add time or 
+    negative to subtract time. 
+    """
+    startDt = datetime.datetime.fromtimestamp(startTimestamp)
+    newDt = startDt + datetime.timedelta(seconds=seconds)
+    newTimestamp = datetime.datetime.timestamp(newDt)
+
+    return newTimestamp
+
 
 def ConvertSecondsToTimestamp(seconds):
     """
@@ -46,6 +58,14 @@ def GetCurrentYear():
     """
     currentYear = (datetime.datetime.now()).year  
     return int(currentYear) 
+
+
+def getCurrentTimestamp():
+    """
+    Returns the current time as an epoch timestamp.
+    """
+    dt = datetime.datetime.now()
+    return datetime.datetime.timestamp(dt)
 
 
 
