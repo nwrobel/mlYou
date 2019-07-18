@@ -15,6 +15,7 @@ of MPDLogLine objects - each object has 2 properties:
 from time import strftime
 import datetime
 import mlu.common.file
+import mlu.common.time
 
 
 # -------------------------------------------------------------------------------------------------
@@ -53,12 +54,9 @@ class LogFileTimeInfo:
       lastEntryTime = FormTimestampFromMPDLogLine(lastEntry, self.contextCurrentYear)
 
       # Find the oldest possible entry time for this log file based on the most recent entry time above,
-      # assuming that all the logfiles span no more than 1 year (this is a requirement)
-      # NOTE: I use timestamps throughout my code, but we need to convert to datetime object to use
-      # the timedelta() function
-      lastEntryDatetime = datetime.datetime.fromtimestamp(lastEntryTime)
-      minEntryDateTime = lastEntryDatetime + datetime.timedelta(years=-1)
-      minEntryTime = datetime.datetime.timestamp(minEntryDateTime)
+      # assuming that all the logfiles span no more than 1 year (this is a requirement for this script to work)
+      # Simply subtract 1 year from the log file's lastEntryTime
+      minEntryTime = mlu.common.time.ApplyDeltaYearsToTimestamp(startTimestamp=lastEntryTime, years=-1)
 
       # Find the first entry time:
       #  - add current year to the first entry month+day to make full date
@@ -83,7 +81,7 @@ class LogFileTimeInfo:
 class MPDLogLineCollector:
    def __init__(self, mpdLogDir, promptForLogFileYears):
       self.mpdLogDir = mpdLogDir
-      self.tempLogDir = GetTempLogDirName()
+      self.tempLogDir = GetMPDLogCacheDirName()
       self.promptForLogFileYears = promptForLogFileYears
       self.logFileContextCurrentYear = {}
 
@@ -128,7 +126,7 @@ class MPDLogLineCollector:
    # Make an dict: logfilepath -> contextCurrentYear
    def SetLogFilesContextCurrentYear(self):
       mpdLogFiles = mlu.common.file.GetAllFilesDepth1(self.tempLogDir)
-      currentCalendarYear = GetCurrentYear()
+      currentCalendarYear = mlu.common.time.GetCurrentYear()
 
       if (self.promptForLogFileYears):
          print("Please enter the logfile's context current year for each log file (the year when each log file was last written to...year of the date of the last log line in each log file)")
@@ -191,11 +189,7 @@ class MPDLogLineCollector:
 # MODULE HELPER FUNCTIONS
 #
 
-def GetCurrentYear():
-   currentYear = (datetime.datetime.now()).year  
-   return int(currentYear) 
-
-def GetTempLogDirName():
+def GetMPDLogCacheDirName():
    return mlu.common.file.JoinPaths(mlu.common.file.GetProjectRoot(), "cache/mpdlogs")
 
 def GetCorrectTimestampFromMPDLogLine(line, logfileTimeInfo):
@@ -216,9 +210,11 @@ def GetCorrectTimestampFromMPDLogLine(line, logfileTimeInfo):
 def FormTimestampFromMPDLogLine(line, year):
     lineParts = line.split(" ")
     lineTime = lineParts[0] + " " + lineParts[1] + " " +  year + " " + lineParts[2]
+
+    # Tell the datetime library how to parse this time string from the MPD log line into a timestamp value
     lineFormattedTime = datetime.datetime.strptime(lineTime, "%b %d %Y %H:%M")
     epochTimestamp = lineFormattedTime.timestamp()
-    return int(epochTimestamp)
+    return epochTimestamp
 
 
 def GetTextFromMPDLogLine(line):

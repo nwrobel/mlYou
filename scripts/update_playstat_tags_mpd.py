@@ -32,17 +32,15 @@ def PrintPlaybackDataTable(songPlaybackRecords):
 
     for songPlaybackRecord in songPlaybackRecords:
         # Get the common tags so we can display the ones we need to in the playback table for this song
-        songTags = mlu.tags.basic.GetBasicTags(songFilepath=songPlaybackRecord.songFilePath)
+        songTags = mlu.tags.basic.getSongBasicTags(songFilepath=songPlaybackRecord.songFilePath)
 
-        songTitle = songTags['title']
-        artist = songTags['artist']
         numPlays = len(songPlaybackRecord.playbackTimes)
         # Get the playback times: for each playback timestamp on this songPlaybackRecord, format it for display
         # and return this formatted timestamp
         playTimes = ( mlu.common.time.FormatTimestampForDisplay(timestamp) for timestamp in songPlaybackRecord.playbackTimes )
 
         # Add the songPlaybackRecord data we found above to the table as a row
-        table.add_row([songTitle, artist, numPlays, playTimes])
+        table.add_row([songTags.title, songTags.artist, numPlays, playTimes])
 
     # Display the table, begin and end it with a newline to look better
     print("\n" + table + "\n")

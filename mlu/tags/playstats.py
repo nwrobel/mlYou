@@ -8,9 +8,7 @@ when reading playback tags, convert them to epoch timestamps and create them fro
 when writing tags, convert times to formatted strings as string seperated by semicolons
 '''
 
-from collections import OrderedDict
 import mutagen
-import mlu.mpd.plays
 
 # Class representing the data structure holding the various tag values of a song for the playstats tags
 # that we are dealing with - 3 tags: PLAY_COUNT, TIME_LAST_PLAYED, ALL_TIMES_PLAYED

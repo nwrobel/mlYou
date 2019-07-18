@@ -1,6 +1,8 @@
 import unittest
 import json
 import os
+import datetime
+
 
 # Do setup processing so that this script can import all the needed modules from the "mlu" package.
 # This is necessary because these scripts are not located in the root directory of the project, but
@@ -99,6 +101,13 @@ class TestCommonTimeFunctions(unittest.TestCase):
     """
     Test case that tests the functions defined within the mlu.common.time module.
     """
+
+
+    def getCurrentTimestamp(self):
+        dt = datetime.datetime.now()
+        return datetime.datetime.timestamp(dt)
+
+
 
     def testFormatTimestampForDisplay(self):
         pass

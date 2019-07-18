@@ -17,11 +17,8 @@ TODO: update playback filtering to check if there are 2 or more playbacks of the
 about 0-10 min. of each other - these are most likely caused by MPD disconnect/reconnecting and shouldn't be counted
 '''
 import re 
-import datetime
-
 import mlu.tags.basic
-import mlu.mpd.logs
-
+import mlu.common.time
 
 
 # Returns a list of lines which contain playback information (filters out the non-info lines)
@@ -78,8 +75,8 @@ class PlaybackInstance:
 
     # Use filepath to get the audio file's common tags, one of which is the duration
     def GetSongDuration(self):
-        durationSeconds = mlu.tags.basic.GetBasicTags(self.songFilepath)['durationSeconds']
-        durationTimestamp = ConvertSecondsToTimestamp(durationSeconds)
+        durationSeconds = mlu.tags.basic.getSongBasicTags(self.songFilepath).durationSeconds
+        durationTimestamp = mlu.common.time.ConvertSecondsToTimestamp(durationSeconds)
 
         return durationTimestamp
 
@@ -183,7 +180,7 @@ def FilterFalsePlaybacks(playbackInstances):
     songDurationThresholdSeconds = 120
 
     truePlaybackInstances = []
-    songDurationThresholdTimestamp = ConvertSecondsToTimestamp(songDurationThresholdSeconds)
+    songDurationThresholdTimestamp = mlu.common.time.ConvertSecondsToTimestamp(songDurationThresholdSeconds)
 
     for playbackInstance in playbackInstances:
         # If song duration is at least 2 min. long
@@ -200,12 +197,7 @@ def FilterFalsePlaybacks(playbackInstances):
 
 
 
-# Converts duration given in seconds into an epoch timestamp duration form
-#
-def ConvertSecondsToTimestamp(seconds):
-    secondsDt = datetime.timedelta(seconds=seconds)
-    secondsTimestamp = datetime.datetime.timestamp(secondsDt)
-    return secondsTimestamp
+
 
 
 #--------------------------------------------------------------------------------------------------
