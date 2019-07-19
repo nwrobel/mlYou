@@ -15,6 +15,9 @@ def WriteMLUObjectsToJSONFile(mluObjects, outputFilepath):
     converts each one to JSON, and dumps the JSON array to the given output filepath. The order
     of the properties for each object in the JSON file follows the same order as the properties
     are defined in that class.
+
+    The properties that will be written out for a class instance are those returned when running
+    the code "vars(object)", where object is the instance of the given class.
     """
     with open(outputFilepath, "w+") as outfile:
         json.dump(mluObjects, outfile, default=_prepareMLUObjectForJSON)

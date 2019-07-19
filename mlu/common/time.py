@@ -9,11 +9,14 @@ import datetime
 
 def FormatTimestampForDisplay(timestamp):
     """
-    Converts a given epoch timestamp (integer) value to a string timestamp format that can be displayed and 
-    easily understood. Output format example: "2012-01-27 02:29:33"
+    Converts a given epoch timestamp value to a string timestamp format that can be displayed and 
+    easily understood. Output format example: "2012-01-27 02:29:33". If the given epoch timestamp
+    contains a fractional (decimal) part, it will be rounded to remove it so it can be displayed
+    in the output format YYYY-MM-DD HH-MM-SS.
     """
-    dt = datetime.datetime.fromtimestamp(timestamp)
-    formattedTime = datetime.datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
+    roundedTimestamp = round(timestamp)
+    dt = datetime.datetime.fromtimestamp(roundedTimestamp)
+    formattedTime = datetime.datetime.strptime(str(dt), "%Y-%m-%d %H:%M:%S")
     return formattedTime
 
 

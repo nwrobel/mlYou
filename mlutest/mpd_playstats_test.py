@@ -5,8 +5,8 @@ import os
 # Do setup processing so that this script can import all the needed modules from the "mlu" package.
 # This is necessary because these scripts are not located in the root directory of the project, but
 # instead in the 'scripts' folder.
-import mlutest.envsetup
-mlutest.envsetup.PreparePythonProjectEnvironment()
+import envsetup
+envsetup.PreparePythonProjectEnvironment()
 
 from mlu.cache.io import WriteMLUObjectsToJSONFile, ReadMLUObjectsFromJSONFile
 from mlu.mpd.plays import SongPlaybackRecord
@@ -16,7 +16,9 @@ import mlutest.common
 
 class TestCacheIOWriteObjectsToJson(unittest.TestCase):
     """
-    Test case that tests the functions defined within the mlu.cache.io module.
+    Test case that tests the function "WriteMLUObjectsToJSONFile" of the mlu.cache.io module.
+    Ensure that we can write out one or more instances of different MLU objects to JSON accurately
+    and as expected. This is not a test for these object classes: just for the cache function.
     """
     def setUp(self):
         self.testJsonOutFilepath = mlu.common.file.JoinPaths(mlu.common.file.GetTestResourceFilesDirectory(), "testwrite.json")
@@ -25,23 +27,15 @@ class TestCacheIOWriteObjectsToJson(unittest.TestCase):
         os.remove(self.testJsonOutFilepath)
 
     # Test case helper functions -------------------------------------------------------------------
-    def getSingleTestSongPlaybackRecord(self):
-        return SongPlaybackRecord(
-            songFilepath="C:\\songs\\artist\\song1.mp3",
-            playbackTimes=[2425353456, 452345972, 32920224573, 49572439587]
-        )
 
-    # TODO - use the mlutest.common functions to generate random test data to create these objects instead
-    # TODO - add records with some empty values
-    def getMultipleTestSongPlaybackRecords(self):
-        records = [
-            SongPlaybackRecord(songFilepath="C:\\songs\\artist\\song1.mp3", playbackTimes=[2425333456, 462345972, 32950224573, 49562439587]),
-            SongPlaybackRecord(songFilepath="/data/music/Nine Fall/03. Nine Fall - Observer.flac", playbackTimes=[2425333456, 462345972, 32950224573, 49562439587]),
-            SongPlaybackRecord(songFilepath="C:\\songs\\art\\s1.mp3", playbackTimes=[2425333456, 462345972, 32950224573, 49562439587]),
-            SongPlaybackRecord(songFilepath="C:\\songs\\t\\hi.mp3", playbackTimes=[2425333456, 462345972, 32950224573, 49562439587])
-        ]
-        return records
+    def getTestSongPlaybackRecord(self):
+        # Use  the mlutest.common functions to generate random test data to make the test instance
+        filepath = mlutest.common.getRandomFilepath()
+        numPlaybackTimes = mlutest.common.getRandomNumber(min=1, max=50)
+        playbackTimes = [mlutest.common.getRandomTimestamp() for x in range(numPlaybackTimes)]
+        return SongPlaybackRecord(songFilepath=filepath, playbackTimes=playbackTimes)
 
+    
     def readTestJsonFile(self):
         with open(self.testJsonOutFilepath, 'r') as inputfile:
             results = json.load(inputfile)
@@ -62,11 +56,16 @@ class TestCacheIOWriteObjectsToJson(unittest.TestCase):
     # Delete test filepath for where the test json files were written to during the test run
 
     def testWriteSingleMLUObjectToJSON(self):
-        """
-        Ensure that we can write out an instance of different MLU objects to JSON accurately
-        and as expected. This is not a test for these object classes: just for the cache function.
-        """
-        # Write single SongPlaybackRecord
+  
+        # Generate test object instance: <some custom MLU object>
+        # Test - write this object to the test json filepath (actual data)
+        # Check - file should exist
+        # Read Results - read in the expected data from the test json output file
+        # Check - compare actual to expected data
+
+        # Do this for several MLU object types (we don't need to do it for all of them):
+        # SongPlaybackRecord, SongPlaystatTags, MPDLogLine
+
         playbackRecord = self.getSingleTestSongPlaybackRecord()
         WriteMLUObjectsToJSONFile(mluObjects=playbackRecord, outputFilepath=self.testJsonOutFilepath)
         jsonFileContent = self.readTestJsonFile()
@@ -94,6 +93,10 @@ class TestCacheIOWriteObjectsToJson(unittest.TestCase):
 
 class TestCacheIOReadObjectsFromJson(unittest.TestCase):
     """
+    Test case that tests the function "ReadMLUObjectsFromJSONFile" of the mlu.cache.io module.
+    Ensure that we can read JSON files containing one or more serialized MLU object instances of 
+    different types, and that the correct objects are created accurately and as expected. 
+    This is not a test for these object classes: just for the cache function.
     """    
     def setUp(self):
         self.testJsonInSingleFilepath = mlu.common.file.JoinPaths(mlu.common.file.GetTestResourceFilesDirectory(), "testreadsingle.json")

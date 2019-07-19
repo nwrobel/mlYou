@@ -5,6 +5,9 @@ This module contains functions that are commonly needed/used by various MLU unit
 mlutest package. They deal with setting up and teardown of test cases and creation of random test
 data.
 """
+import envsetup
+envsetup.PreparePythonProjectEnvironment()
+
 
 from random import randrange
 from random import choice
@@ -15,12 +18,12 @@ import mlu.common.time
 
 def getRandomTimestamp():
     """
-    Returns a pseudo-random epoch timestamp for a time in the past within around the past 15 years.
+    Returns a pseudo-random epoch timestamp for a time sometime in the past 15 years.
     """
     now = mlu.common.time.getCurrentTimestamp()
     # 500 million seconds ~ 15 years of range
     # make it negative to go into the past
-    deltaSeconds = -(randrange(500000000)) 
+    deltaSeconds = -(getRandomNumber(min=0, max=500000000)) 
     randomTimestamp = mlu.common.time.ApplyDeltaSecondsToTimestamp(startTimestamp=now, seconds=deltaSeconds)
 
     return randomTimestamp
@@ -37,18 +40,18 @@ def getRandomFilepath():
     maxFileOrFolderNameLength = 15
 
     # Create the random file name and extension, and random drive letter
-    randomFilenameLength = randrange(maxFileOrFolderNameLength) + 1
-    randomFileName = getRandomString(randomFilenameLength)
-    randomFileExt = getRandomString(3)
-    randomDriveLetter = (choice(ascii_letters)).upper
+    randomFilenameLength = getRandomNumber(min=1, max=maxFileOrFolderNameLength)
+    randomFileName = getRandomString(length=randomFilenameLength)
+    randomFileExt = getRandomString(length=3)
+    randomDriveLetter = (choice(ascii_letters)).upper()
 
     # Set up the random filepath and find a random depth for how deep the random file will be
     randomFilepath = randomDriveLetter + ":\\"
-    randomDepth = randrange(maxDepth) + 1
+    randomDepth = getRandomNumber(min=1, max=maxDepth)
 
     # Create random subfolder names and append them to the random filepath until depth is satisfied
     for d in range(randomDepth):
-        folderNameLength = randrange(maxFileOrFolderNameLength) + 1
+        folderNameLength = getRandomNumber(min=1, max=maxFileOrFolderNameLength)
         folderName = getRandomString(folderNameLength)
         randomFilepath += folderName + "\\"
 
@@ -63,4 +66,10 @@ def getRandomString(length):
     """
     return (''.join(choice(ascii_lowercase) for i in range(length)))
 
-getRandomFilepath()
+
+def getRandomNumber(min, max):
+    """
+    Returns a pseudo-random integer that is greater than or equal to the given minimum and less than
+    or equal to the given maximum numbers.
+    """
+    return randrange(start=min, stop=(max + 1))
