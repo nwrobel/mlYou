@@ -10,6 +10,8 @@ envsetup.PreparePythonProjectEnvironment()
 
 from mlu.cache.io import WriteMLUObjectsToJSONFile, ReadMLUObjectsFromJSONFile
 from mlu.mpd.plays import SongPlaybackRecord
+from mlu.tags.playstats import SongPlaystatTags
+from mlu.mld.logs import MPDLogLine
 import mlu.common.file 
 import mlutest.common
 
@@ -31,11 +33,22 @@ class TestCacheIOWriteObjectsToJson(unittest.TestCase):
     def getTestSongPlaybackRecord(self):
         # Use  the mlutest.common functions to generate random test data to make the test instance
         filepath = mlutest.common.getRandomFilepath()
-        numPlaybackTimes = mlutest.common.getRandomNumber(min=1, max=50)
+        numPlaybackTimes = mlutest.common.getRandomNumber(min=1, max=100)
         playbackTimes = [mlutest.common.getRandomTimestamp() for x in range(numPlaybackTimes)]
         return SongPlaybackRecord(songFilepath=filepath, playbackTimes=playbackTimes)
 
-    
+    def getTestSongPlaystatTags(self):
+        filepath = mlutest.common.getRandomFilepath()
+        playCount = mlutest.common.getRandomNumber(min=1, max=100)
+        timeLastPlayed = mlutest.common.getRandomTimestamp()
+        allTimesPlayed = [mlutest.common.getRandomTimestamp() for x in range(playCount - 1)]
+        return SongPlaystatTags(songFilepath=filepath, playCount=playCount, timeLastPlayed=timeLastPlayed, allTimesPlayed=allTimesPlayed)
+
+    def getTestMPDLogLine(self):
+        text = mlutest.common.getRandomString(length=120, allowDigits=True, allowUppercase=True, allowSpecial=True, allowSpace=True)
+        timestamp = mlutest.common.getRandomTimestamp()
+        return MPDLogLine(text=text, timestamp=timestamp)
+
     def readTestJsonFile(self):
         with open(self.testJsonOutFilepath, 'r') as inputfile:
             results = json.load(inputfile)
@@ -55,24 +68,63 @@ class TestCacheIOWriteObjectsToJson(unittest.TestCase):
     # Teardown
     # Delete test filepath for where the test json files were written to during the test run
 
-    def testWriteSingleMLUObjectToJSON(self):
-  
-        # Generate test object instance: <some custom MLU object>
-        # Test - write this object to the test json filepath (actual data)
-        # Check - file should exist
-        # Read Results - read in the expected data from the test json output file
-        # Check - compare actual to expected data
+    # Do this for several MLU object types (we don't need to do it for all of them):
+    # SongPlaybackRecord, SongPlaystatTags, MPDLogLine
 
-        # Do this for several MLU object types (we don't need to do it for all of them):
-        # SongPlaybackRecord, SongPlaystatTags, MPDLogLine
+    def testWriteSingleMLUObjectToJSON_SongPlaybackRecord(self):
+        # Generate test object instance: SongPlaybackRecord
+        playbackRecord = self.getTestSongPlaybackRecord()
 
-        playbackRecord = self.getSingleTestSongPlaybackRecord()
+        # Run the code: write this object to the test json filepath
         WriteMLUObjectsToJSONFile(mluObjects=playbackRecord, outputFilepath=self.testJsonOutFilepath)
+
+        # Check - output file should exist
+        self.assertTrue(mlu.common.file.FileExists(self.testJsonOutFilepath))
+
+        # Read Results - read in the expected data from the test json output file
         jsonFileContent = self.readTestJsonFile()
 
+        # Check - compare actual to expected data
         self.assertTrue(isinstance(jsonFileContent, dict))
         self.assertEqual(jsonFileContent['songFilepath'], playbackRecord.songFilepath)
         self.assertTrue(isinstance(jsonFileContent['playbackTimes'], list))
+        self.assertEqual(jsonFileContent['playbackTimes'], playbackRecord.playbackTimes)
+
+    def testWriteSingleMLUObjectToJSON_SongPlaystatTags(self):
+
+        playstatTags = self.getTestSongPlaystatTags()
+        WriteMLUObjectsToJSONFile(mluObjects=playstatTags, outputFilepath=self.testJsonOutFilepath)
+
+        self.assertTrue(mlu.common.file.FileExists(self.testJsonOutFilepath))
+
+        jsonFileContent = self.readTestJsonFile()
+
+        # Check - compare actual to expected data
+        self.assertTrue(isinstance(jsonFileContent, dict))
+        self.assertEqual(jsonFileContent['songFilepath'], playstatTags.songFilepath)
+        self.assertEqual(jsonFileContent['playCount'], playstatTags.playCount)
+        self.assertEqual(jsonFileContent['timeLastPlayed'], playstatTags.timeLastPlayed)
+        self.assertTrue(isinstance(jsonFileContent['allTimesPlayed'], list))
+        self.assertEqual(jsonFileContent['allTimesPlayed'], playstatTags.allTimesPlayed)
+
+    # TODO - finish this test
+    def testWriteSingleMLUObjectToJSON_MPDLogLine(self):
+        # Generate test object instance: SongPlaybackRecord
+        playbackRecord = self.getTestSongPlaybackRecord()
+
+        # Run the code: write this object to the test json filepath
+        WriteMLUObjectsToJSONFile(mluObjects=playbackRecord, outputFilepath=self.testJsonOutFilepath)
+
+        # Check - output file should exist
+        self.assertTrue(mlu.common.file.FileExists(self.testJsonOutFilepath))
+
+        # Read Results - read in the expected data from the test json output file
+        jsonFileContent = self.readTestJsonFile()
+
+        # Check - compare actual to expected data
+        self.assertTrue(isinstance(jsonFileContent, dict))
+        self.assertEqual(jsonFileContent['songFilepath'], playbackRecord.songFilepath)
+        self.assertTrue(isinstance(jsonFileContent['playbackTimes'], list)) 
         self.assertEqual(jsonFileContent['playbackTimes'], playbackRecord.playbackTimes)
 
 

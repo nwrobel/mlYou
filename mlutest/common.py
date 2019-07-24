@@ -11,7 +11,7 @@ envsetup.PreparePythonProjectEnvironment()
 
 from random import randrange
 from random import choice
-from string import ascii_letters, ascii_lowercase
+from string import ascii_uppercase, ascii_lowercase, digits
 
 import mlu.common.time
 
@@ -41,9 +41,9 @@ def getRandomFilepath():
 
     # Create the random file name and extension, and random drive letter
     randomFilenameLength = getRandomNumber(min=1, max=maxFileOrFolderNameLength)
-    randomFileName = getRandomString(length=randomFilenameLength)
-    randomFileExt = getRandomString(length=3)
-    randomDriveLetter = (choice(ascii_letters)).upper()
+    randomFileName = getRandomString(length=randomFilenameLength, allowDigits=True, allowUppercase=True, allowSpecial=True)
+    randomFileExt = getRandomString(length=3, allowDigits=True)
+    randomDriveLetter = (choice(ascii_uppercase)).upper()
 
     # Set up the random filepath and find a random depth for how deep the random file will be
     randomFilepath = randomDriveLetter + ":\\"
@@ -52,19 +52,42 @@ def getRandomFilepath():
     # Create random subfolder names and append them to the random filepath until depth is satisfied
     for d in range(randomDepth):
         folderNameLength = getRandomNumber(min=1, max=maxFileOrFolderNameLength)
-        folderName = getRandomString(folderNameLength)
+        folderName = getRandomString(length=folderNameLength, allowDigits=True, allowUppercase=True, allowSpecial=True)
         randomFilepath += folderName + "\\"
 
     # Add the filename and extension to the parent dir path to complete the filepath
     randomFilepath += randomFileName + "." + randomFileExt
     return randomFilepath
 
+ 
+def getRandomString(length, allowDigits=False, allowUppercase=False, allowSpecial=False, allowSpace=False):
+    """
+    Returns a pseudo-random string of the given length. By default, the string will be composed of 
+    only lowercase letters (no digits). You can also specify that digits, uppercase letters, and 
+    a select few special characters should be included as possible characters in the output random
+    string. 
 
-def getRandomString(length):
+    Params
+    - length: number of charaters the output string should have
+    - allowUppercase: whether or not uppercase letters are allowed in the output string
+    - allowSpecial: whether or not these additional characters are allowed in the output string: 
+        !@#$%^&()[],~+-=_
+    - allowSpace: whether or not spaces are allowed
     """
-    Returns a pseudo-random string, composed of only lowercase letters (no digits).
-    """
-    return (''.join(choice(ascii_lowercase) for i in range(length)))
+    # Build list of allowable charaters in the random string
+    allowedChars = ascii_lowercase
+
+    if (allowUppercase):
+        allowedChars += ascii_uppercase
+    if (allowDigits):
+        allowedChars += digits
+    if (allowSpecial):
+        allowedChars += "!@#$%^&()[],~+-=_"
+    if (allowSpace):
+        allowedChars += " "
+
+    # Use random.choice to return a random char from those allowed, and do this Length times
+    return (''.join(choice(allowedChars) for i in range(length)))
 
 
 def getRandomNumber(min, max):
