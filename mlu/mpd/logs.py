@@ -99,7 +99,7 @@ class MPDLogLineCollector:
 
       # Get all MPD log files and copy them into the temp dir
       mpdLogFiles = mlu.common.file.GetAllFilesDepth1(self.mpdLogDir)
-      mlu.common.file.CopyFilesToFolder(srcFiles=mpdLogFiles, destDir=self.tempLogDir)
+      mlu.common.file.CopyFilesToDirectory(srcFiles=mpdLogFiles, destDir=self.tempLogDir)
 
 
    # Decompresses any compressed, archived log files that are given  
@@ -111,14 +111,13 @@ class MPDLogLineCollector:
          if (mlu.common.file.GetFileExtension(logFile) == "gz"):
             gzippedLogFiles.append(logFile)
 
-      # Decompress each gz file and output the uncompressed logs to the temp dir
+      # Decompress each gz file, output each uncompressed log file to the temp dir, and delete
+      # each original compressed .gz file
       for gzippedLogFilePath in gzippedLogFiles:
          gzippedBaseFilename = mlu.common.file.GetFileBaseName(gzippedLogFilePath)
          extractedFilepath = mlu.common.file.JoinPaths(self.tempLogDir, gzippedBaseFilename)
          mlu.common.file.DecompressSingleGZFile(gzippedLogFilePath, extractedFilepath)
-
-      # Delete the original compressed .gz files
-      mlu.common.file.DeleteFiles(gzippedLogFiles)
+         mlu.common.file.DeleteFile(gzippedLogFilePath)
 
    # SetLogFilesContextCurrentYear - get user to enter in the year that each log file has entries
    # up until - this year will be the 'current' year for that log file when timestamps are updated

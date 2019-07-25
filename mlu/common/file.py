@@ -29,6 +29,17 @@ def GetTestResourceFilesDirectory():
     return JoinPaths(GetProjectRoot(), "mlutest\\test-resources")
 
 
+def GetAllFilesAndDirectoriesRecursive(rootPath):
+    """
+    Gets the filepaths of all files AND folders within the given root directory, recursively.
+    """
+    pathObj = Path(rootPath)
+    children = pathObj.glob('**/*')
+    
+    paths = [str(child) for child in children]
+    return paths
+
+
 def GetAllFilesRecursive(rootPath):
     """
     Gets the filepaths of all files in the given root directory and all of its subdirectories.
@@ -44,7 +55,7 @@ def GetAllFilesRecursive(rootPath):
     return allFiles
 
 
-def GetAllDirsDepth1(rootPath):
+def GetAllDirectoriesDepth1(rootPath):
     """
     Gets the directory path of all folders in the given root directory, limited to depth 1. It does
     not get directories contained within the root directory's subfolders. Also does not get files.
@@ -64,17 +75,6 @@ def GetAllFilesDepth1(rootPath):
     files = [x for x in path.iterdir() if x.is_file()]
 
     return files
-
-
-def GetAllFilesAndFolders(rootPath):
-    """
-    Gets the filepaths of all files AND folders within the given root directory, recursively.
-    """
-    pathObj = Path(rootPath)
-    children = pathObj.glob('**/*')
-    
-    paths = [str(child) for child in children]
-    return paths
 
 
 def GetAllFilesByExtension(rootPath, fileExt):
@@ -103,7 +103,7 @@ def CreateDirectory(folderPath):
     folderPathObject.mkdir(parents=True) 
 
 
-def CopyFilesToFolder(srcFiles, destDir):
+def CopyFilesToDirectory(srcFiles, destDir):
     """
     Given a list of source filepaths and a single destination directory path, this copies the files 
     to that destination. Metadata and permissions are preserved and will be the same as the originals
@@ -113,20 +113,18 @@ def CopyFilesToFolder(srcFiles, destDir):
         shutil.copy2(file, destDir)
 
 
-def DeleteFiles(filePaths):
+def DeleteFile(filePath):
     """
-    Deletes all files and/or folders, given a list of paths of files/folders to delete.
+    Deletes a single file, given the filepath. Does not delete directories.
     """
-    for filePath in filePaths:
-        os.remove(filePath)
+    os.remove(filePath)
 
 
-def DeleteAllFromDirectory(directoryPath):
+def DeleteDirectory(directoryPath):
     """
-    Deletes all files and/or folders contained within the given root directory.
+    Deletes the given directory and all files/folders contained within it, recursively.
     """
-    allPaths = GetAllFilesAndFolders(directoryPath)
-    DeleteFiles(allPaths)
+    shutil.rmtree(directoryPath)
 
 
 def GetFilename(filePath):

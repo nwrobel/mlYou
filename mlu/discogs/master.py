@@ -60,10 +60,10 @@ def getAllArtistsAlbumsSongs(musicDir):
     
     allArtistsAlbumSongs = []
     
-    allArtistDirs = common.getAllDirsDepth1(musicDir)
+    allArtistDirs = common.GetAllDirectoriesDepth1(musicDir)
     
     for artistDir in allArtistDirs:
-        albumDirs = common.getAllDirsDepth1(artistDir)
+        albumDirs = common.GetAllDirectoriesDepth1(artistDir)
         
         for albumDir in albumDirs:
             albumSongs = common.getAllFilesRecursive(albumDir)

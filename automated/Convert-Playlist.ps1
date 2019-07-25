@@ -1,9 +1,9 @@
 # These variables here represent the arguments to be passed to the convert-playlist.py script.
 # Modify them to suit your automation needs.
 $args = [PSCustomObject]@{
-    SourcePlaylistDir = "D:\Temp\mlu\convert-playlists-in"
-    OutputPlaylistDir = "D:\Temp\mlu\convert-playlists-out"
-    OldRoot = 'Z:\'
+    SourcePlaylistDir = "C:\Users\user\nick-data\~Temp\convert-playlists-in"
+    OutputPlaylistDir = "C:\Users\user\nick-data\~Temp\convert-playlists-out"
+    OldRoot = 'C:\Users\user'
     NewRoot = '/datastore/nick/'
 }
 

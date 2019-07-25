@@ -4,9 +4,6 @@ mlu.file.playlist
 Module containing functionality related to working with audio playlists.
 '''
 
-from pathlib import Path
-import os
-from collections import namedtuple
 import mlu.common.file
 
 # TODO - MOVE THESE DIRECTORY FUNCTIONS TO COMMON MODULE
@@ -60,7 +57,7 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
             else:
                 print("Invalid choice: please enter Y or N (case insensitive)")
                 
-        os.remove(outputPlaylistDir)
+        mlu.common.file.DeleteDirectory(outputPlaylistDir)
         mlu.common.file.CreateDirectory(outputPlaylistDir)
 
     oldRoot = RemoveTrailingSlash(oldRoot)
@@ -69,43 +66,35 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
     print("For each playlist, each music file path entry will have the parent path (root) changed as follows:")
     print(oldRoot, " --> ", newRoot)
     
-    
-    print("The following", numPlaylists, "playlists will be processed and their new, converted versions will be saved in the output dir")
-    print("(The original playlist files in the source folder will not be modified)")
     for playlistFilePath in playlistFilePaths:
-        print(playlistFilePath)
-    
-    
-    for playlistFilePath in playlistFilePaths:
-    
-        playlistFileName = mlu.common.file.GetFilename(playlistFilePath)
-        outputPlaylistFilePath = os.path.join(outputPlaylistDir, playlistFileName)
-        
-        newPlaylistLines = []
-        
-        with open(playlistFilePath, mode='r', encoding='utf-8-sig') as file:
-            rawLines = file.readlines()
-            
-        lines = [line.rstrip('\n') for line in rawLines] # remove the newline character
+        print("Converting playlist:", playlistFilePath)
 
-        for line in lines:
-            convertedLine = line.replace(oldRoot, newRoot)
+        # Each output playlist will have a .m3u8 extension by default, even if original was .m3u
+        # This ensures support for UTF-8 encoding always will be used
+        outputPlaylistFileName = mlu.common.file.GetFileBaseName(playlistFilePath) + ".m3u8"
+        outputPlaylistFilePath = mlu.common.file.JoinPaths(outputPlaylistDir, outputPlaylistFileName)
+        
+        # Read in all lines from the original playlist
+        with open(playlistFilePath, mode='r', encoding='utf-8-sig') as file:
+            originalLines = file.readlines()
+
+        # Remove the '#' that is sometimes added to playlists when exported from Foobar2000
+        if (len(originalLines) > 0 and originalLines[0] == '#\n'):
+            originalLines.pop(0) 
+        
+        # Convert each line and add the result to the list of new playlist lines
+        newPlaylistLines = []
+        for originalLine in originalLines:
+            convertedLine = originalLine.replace(oldRoot, newRoot)
             convertedLine = FixPathSlashDirectionToMatchRootPath(newRoot, convertedLine)
             newPlaylistLines.append(convertedLine)
-        
-        # Remove the '#' that is sometimes added to playlists when exported from Foobar2000
-        if (len(newPlaylistLines) > 0 and newPlaylistLines[0] == '#'):
-            newPlaylistLines.pop(0)  
-                
+               
         # Write out the converted lines to a new playlist file in the output dir
         # with UTF-8 encoding (important!)
-        with open(outputPlaylistFilePath, mode='w', encoding='utf-8') as newPlaylist:
-            for item in newPlaylistLines:
-                # format string: build the string based on what's in "" - the item var. and the newline
-                newPlaylist.write(f"{item}\n") 
-            
-            
-        print("Playlist converted successfully, saved as:", outputPlaylistFilePath)
+        with open(outputPlaylistFilePath, mode='w+', encoding='utf-8') as newPlaylist:
+            newPlaylist.writelines(newPlaylistLines)
+  
+        print("Playlist converted successfully! New file:", outputPlaylistFilePath)
         
     print(numPlaylists, "playlists converted and output to the destination dir successfully!")
     

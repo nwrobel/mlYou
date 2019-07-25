@@ -22,11 +22,11 @@ as an API separately from the scripts and the UI, such as for use in other proje
 # Do setup processing so that this script can import all the needed modules from the "mlu" package.
 # This is necessary because these scripts are not located in the root directory of the project, but
 # instead in the 'scripts' folder.
-import setup
-setup.PrepareScriptsForExecution()
+import envsetup
+envsetup.PreparePythonProjectEnvironment()
 
 import argparse
-import mlu.file.playlist 
+import mlu.library.playlist 
 
 parser = argparse.ArgumentParser()
 
@@ -47,10 +47,9 @@ parser.add_argument("newRoot",
                     type=str)
 
 
-
 args = parser.parse_args()
 
-mlu.file.playlist.ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir=args.sourcePlaylistDir, 
+mlu.library.playlist.ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir=args.sourcePlaylistDir, 
                                              outputPlaylistDir=args.outputPlaylistDir, 
                                              oldRoot=args.oldRoot, 
                                              newRoot=args.newRoot)
