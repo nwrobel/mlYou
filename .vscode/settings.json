@@ -9,7 +9,7 @@
 
     "python.pythonPath": "py-venv\\Scripts\\python.exe",
 
-    "python.testing.unittestEnabled": false,
+    "python.testing.unittestEnabled": true,
     "python.testing.unittestArgs": [
         "-v",
         "-s",
