@@ -1,11 +1,11 @@
 $VerbosePreference = 'Continue'
 $ErrorActionPreference = 'Stop'
 
+$pyCacheDirs = Get-ChildItem -Filter "__pycache__" -Directory -Recurse
+$pyCacheDirs | Remove-Item -Force -Recurse -Confirm:$false
+
 $pycFiles = Get-ChildItem -Filter "*.pyc" -File -Recurse
 $pycFiles | Remove-Item -Force
-
-$pyCacheDirs = Get-ChildItem -Filter "__pycache__" -Directory -Recurse
-$pyCacheDirs | Remove-Item -Force
 
 Write-Host "The following cache files/folders were deleted:"
 $pycFiles | Select-Object -ExpandProperty FullName

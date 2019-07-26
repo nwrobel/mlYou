@@ -46,10 +46,9 @@ def PrintPlaybackDataTable(songPlaybackRecords):
     print("\n" + table + "\n")
 
 #--------------------------------------------------------------------------------------------------
-def GetJSONCacheFilepath(cacheFileID):
-    cacheDir = mlu.common.file.JoinPaths(mlu.common.file.GetProjectRoot(), "cache")
-    cacheFilename = "mpd-playstats-cache-" + cacheFileID + ".json"
-    return mlu.common.file.JoinPaths(cacheDir, cacheFilename)
+def GetJSONCacheFilepath(cacheFileID ):
+    jsonFilename = "mpd-playstats-cache-" + cacheFileID + ".json"
+    return mlu.common.file.JoinPaths(mlu.common.file.GetMLUCacheDirectory(), jsonFilename)
 
 
 #--------------------------------------------------------------------------------------------------    

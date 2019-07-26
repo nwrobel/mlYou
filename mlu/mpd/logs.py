@@ -24,7 +24,7 @@ import mlu.common.time
 # Class representing a single log from an MPD log - 2 properties:
 #  text: what the log actually says (minus the string timestamp info)
 #  timestamp: Epoch timestamp for when this log occured, with correct year caclulated
-class MPDLogLine:
+class _MPDLogLine:
    def __init__(self, timestamp, text):
       self.text = text
       self.timestamp = timestamp
@@ -34,7 +34,7 @@ class MPDLogLine:
 #  contextCurrentYear: the year of the date of the last log line, provided by the user since the log lines have no year in the timestamps
 #  firstEntryTime: timestamp of the the oldest (first) log line in the log file
 #  lastEntryTime: timestamp of the the most recent (last) log line in the log file
-class LogFileTimeInfo:
+class _LogFileTimeInfo:
    def __init__(self, logfilepath, contextCurrentYear):
       self.logfilepath = logfilepath
       self.contextCurrentYear = contextCurrentYear
@@ -51,7 +51,7 @@ class LogFileTimeInfo:
       lastEntry = loglines[-1] # get last item in list
 
       # Last entry time must have the same year as currentcontextyear (it's the year of the date of last log entry)
-      lastEntryTime = FormTimestampFromMPDLogLine(lastEntry, self.contextCurrentYear)
+      lastEntryTime = _getCorrectTimestampFromMPDLogLine(lastEntry, self.contextCurrentYear)
 
       # Find the oldest possible entry time for this log file based on the most recent entry time above,
       # assuming that all the logfiles span no more than 1 year (this is a requirement for this script to work)
@@ -64,11 +64,11 @@ class LogFileTimeInfo:
       #  ---- if so, decrement the current year and add this to first entry month+day
       #  - check to ensure the calculated full date of first entry is not older than minEntryTime
       #  ---- if so, throw exception
-      firstEntryTime = FormTimestampFromMPDLogLine(firstEntry, self.contextCurrentYear)
+      firstEntryTime = _getCorrectTimestampFromMPDLogLine(firstEntry, self.contextCurrentYear)
       # If the calculated first entry time is wrong, 
       if ( firstEntryTime > lastEntryTime ):
          # Try again with using the previous year
-         firstEntryTime = FormTimestampFromMPDLogLine(firstEntry, (self.contextCurrentYear - 1))
+         firstEntryTime = _getCorrectTimestampFromMPDLogLine(firstEntry, (self.contextCurrentYear - 1))
 
       # Sanity check to ensure the first entry time is not older than the min age for an entry
       # If so, throw exception
@@ -81,8 +81,8 @@ class LogFileTimeInfo:
 class MPDLogLineCollector:
    def __init__(self, mpdLogDir, promptForLogFileYears):
       self.mpdLogDir = mpdLogDir
-      self.tempLogDir = GetMPDLogCacheDirName()
       self.promptForLogFileYears = promptForLogFileYears
+      self.tempLogDir = mlu.common.file.GetMPDLogCacheDirectory()
       self.logFileContextCurrentYear = {}
 
    def GetMPDLogLines(self):
@@ -169,15 +169,15 @@ class MPDLogLineCollector:
       allMPDLogLines = []
 
       for logfilepath in mpdLogFiles:
-         logTimeInfo = LogFileTimeInfo(logfilepath=logfilepath, contextCurrentYear=self.logFileContextCurrentYear[logfilepath])         
+         logTimeInfo = _LogFileTimeInfo(logfilepath=logfilepath, contextCurrentYear=self.logFileContextCurrentYear[logfilepath])         
 
          with open(logfilepath, mode='r') as file:
             rawLogfileLines = file.readlines()
 
          for logLine in rawLogfileLines:
-            lineTimestamp = GetCorrectTimestampFromMPDLogLine(line=logLine, logfileTimeInfo=logTimeInfo)
-            lineText = GetTextFromMPDLogLine(logLine)
-            allMPDLogLines.append( MPDLogLine(timestamp=lineTimestamp, text=lineText) )
+            lineTimestamp = _getCorrectTimestampFromMPDLogLine(line=logLine, logfileTimeInfo=logTimeInfo)
+            lineText = _getTextFromMPDLogLine(logLine)
+            allMPDLogLines.append( _MPDLogLine(timestamp=lineTimestamp, text=lineText) )
 
       # Sort the loglines array - this sorts the array object in place (does not copy/return a new, sorted array)
       allMPDLogLines.sort(key=lambda line: line.timestamp)
@@ -188,16 +188,13 @@ class MPDLogLineCollector:
 # MODULE HELPER FUNCTIONS
 #
 
-def GetMPDLogCacheDirName():
-   return mlu.common.file.JoinPaths(mlu.common.file.GetProjectRoot(), "cache/mpdlogs")
-
-def GetCorrectTimestampFromMPDLogLine(line, logfileTimeInfo):
-   timestamp = FormTimestampFromMPDLogLine(line=line, year=logfileTimeInfo.contextCurrentYear) 
+def _getCorrectTimestampFromMPDLogLine(line, logfileTimeInfo):
+   timestamp = _getTimestampFromMPDLogLine(line=line, year=logfileTimeInfo.contextCurrentYear) 
 
    # If the timestamp formed by using the log's current context year is incorrect (outside the bounds of the first and last entry times),
    # form a new timestamp using the previous year
    if ((timestamp > logfileTimeInfo.lastEntryTime) or (timestamp < logfileTimeInfo.firstEntryTime)):
-      timestamp = FormTimestampFromMPDLogLine( line=line, year=(logfileTimeInfo.contextCurrentYear - 1) ) 
+      timestamp = _getTimestampFromMPDLogLine( line=line, year=(logfileTimeInfo.contextCurrentYear - 1) ) 
 
    # Sanity check: ensure that this new timestamp also is not outside the bounds
    # If it is, raise exception
@@ -206,7 +203,7 @@ def GetCorrectTimestampFromMPDLogLine(line, logfileTimeInfo):
 
    return timestamp
 
-def FormTimestampFromMPDLogLine(line, year):
+def _getTimestampFromMPDLogLine(line, year):
     lineParts = line.split(" ")
     lineTime = lineParts[0] + " " + lineParts[1] + " " +  year + " " + lineParts[2]
 
@@ -216,7 +213,7 @@ def FormTimestampFromMPDLogLine(line, year):
     return epochTimestamp
 
 
-def GetTextFromMPDLogLine(line):
+def _getTextFromMPDLogLine(line):
    lineParts = line.split(":")
    lineText = lineParts[1]
 
@@ -227,40 +224,3 @@ def GetTextFromMPDLogLine(line):
 
    return lineText
 
-
-
-
-
-
-
-    
-
-
-
-# def GetArchivedLogFileName():
-#     time = strftime("%Y-%m-%d %H.%M.%S", gmtime())
-#     archiveLogFilename = "mpd-" + time + ".log"
-#     return archiveLogFilename
-
-
-# Delete the contents of mpd.log, so that the file is 'reset', and the file still exists.
-# and we cannot run the script again and mess up the tag values on songs
-# def ResetDefaultLogFile():
-
-#     open(mpdLogFilepath, "w").close()
-    
-
-
-# Moves all the read log files to the "parsed-already" directory
-# Meant to be called after all the log files and lines that were returned have been consumed
-# by the caller, and they are ready to archive the read logs now.
-# def ArchiveParsedLogFiles():
-    
-#     # Makes the archive file directory if it doesn't exist   
-#     pathlib.Path(mpdArchivedLogDir).mkdir(exist_ok=True)
-    
-#     # get full filepath
-#     archiveLogFilepath = mpdLogArchiveDir + getArchiveLogFilename()
-    
-#     # Copy the mpd.log file to the archives under a new name (timestamped)
-#     copyfile(mpdLogFilepath, archiveLogFilepath)

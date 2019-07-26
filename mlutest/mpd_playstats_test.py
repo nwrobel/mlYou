@@ -1,3 +1,30 @@
+"""
+mpd_playstats_test.py
+
+Module containing all unit and integration tests for the MPD playstats tag updater script functionality
+of the MLU project. Tests include the script itself and all modules, classes, and functions that
+it uses.
+
+Test runing instructions - Run these tests two ways:
+1) Using VSCode, open this file, ensure unittest is enabled in settings.json, and click the tests 
+sidebar and run all tests. 
+2) In the console, cd to the mlutest directory and run "python .\mpd_playstats_test.py"
+
+Notes:
+- for VCCode to discover the tests to run, each test function in every test case must start with the
+word "test", case-sensitive
+- currently, running via VSCode doesn't seem use/run the test suite definition: the order of test 
+execution is done based on their order in the file. Test suite does work when run from command line.
+- for running these tests from command line, each test case must have a runTest() method, which is
+called for every test case class added to the test suite. Put all test methods in each test case in 
+this runTest() 
+"""
+
+# -----------------------------------  ----------------------------------------
+# 
+# 
+
+
 import unittest
 import json
 import os
@@ -11,10 +38,12 @@ envsetup.PreparePythonProjectEnvironment()
 from mlu.cache.io import WriteMLUObjectsToJSONFile, ReadMLUObjectsFromJSONFile
 from mlu.mpd.plays import SongPlaybackRecord
 from mlu.tags.playstats import SongPlaystatTags
-from mlu.mpd.logs import MPDLogLine
+from mlu.mpd.logs import _MPDLogLine
 import mlu.common.file 
 import mlutest.common
 
+################################## mlu.cache.io ####################################################
+#--------------------------------- Module tests-----------------------------------------------------
 
 class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
     """
@@ -37,7 +66,7 @@ class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
 
     Do this test for the following MLU object types - for each type, one test for writing a single 
     object instance and one test for writing multiple object instances:
-        SongPlaybackRecord, SongPlaystatTags, MPDLogLine    
+        SongPlaybackRecord, SongPlaystatTags, _MPDLogLine    
     """
     # -----------------------------Test case helper functions --------------------------------------
     def setUp(self):
@@ -63,7 +92,7 @@ class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
     def getTestMPDLogLine(self):
         text = mlutest.common.getRandomString(length=120, allowDigits=True, allowUppercase=True, allowSpecial=True, allowSpace=True)
         timestamp = mlutest.common.getRandomTimestamp()
-        return MPDLogLine(text=text, timestamp=timestamp)
+        return _MPDLogLine(text=text, timestamp=timestamp)
 
     def readTestJsonFile(self):
         with open(self.testJsonFilepath, 'r') as inputfile:
@@ -71,8 +100,15 @@ class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
         return results
 
     # Tests ----------------------------------------------------------------------------------------
+    def runTest(self):
+        self.testWriteSingleMLUObjectToJSONFile_SongPlaybackRecord()
+        self.testWriteSingleMLUObjectToJSONFile_SongPlaystatTags()
+        self.testWriteSingleMLUObjectToJSONFile_MPDLogLine()
+        self.testWriteMultipleMLUObjectsToJSONFile_SongPlaybackRecord()
+        self.testWriteMultipleMLUObjectsToJSONFile_SongPlaystatTags()
+        self.testWriteMultipleMLUObjectsToJSONFile_MPDLogLine
 
-    def testWriteSingleMLUObjectToJSONFileFile_SongPlaybackRecord(self):
+    def testWriteSingleMLUObjectToJSONFile_SongPlaybackRecord(self):
         # Generate test object instance: SongPlaybackRecord
         playbackRecord = self.getTestSongPlaybackRecord()
 
@@ -108,16 +144,16 @@ class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
 
 
     def testWriteSingleMLUObjectToJSONFile_MPDLogLine(self):
-        mpdlogLine = self.getTestMPDLogLine()
-        WriteMLUObjectsToJSONFile(mluObjects=mpdlogLine, outputFilepath=self.testJsonFilepath)
+        logLine = self.getTestMPDLogLine()
+        WriteMLUObjectsToJSONFile(mluObjects=logLine, outputFilepath=self.testJsonFilepath)
 
         self.assertTrue(mlu.common.file.FileExists(self.testJsonFilepath))
         jsonFileContent = self.readTestJsonFile()
 
         # Check - compare actual to expected data
         self.assertTrue(isinstance(jsonFileContent, dict))
-        self.assertEqual(jsonFileContent['text'], mpdlogLine.text)
-        self.assertEqual(jsonFileContent['timestamp'], mpdlogLine.timestamp)
+        self.assertEqual(jsonFileContent['text'], logLine.text)
+        self.assertEqual(jsonFileContent['timestamp'], logLine.timestamp)
 
 
     def testWriteMultipleMLUObjectsToJSONFile_SongPlaybackRecord(self):
@@ -171,10 +207,10 @@ class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
     def testWriteMultipleMLUObjectsToJSONFile_MPDLogLine(self):
         # Create a random number (at least 2, no more than 40) of test objects
         numTestObjects = mlutest.common.getRandomNumber(min=2, max=40)
-        mpdlogLines = [self.getTestMPDLogLine() for x in range(numTestObjects)]
+        logLines = [self.getTestMPDLogLine() for x in range(numTestObjects)]
 
         # Run the test code to write out the list of objects
-        WriteMLUObjectsToJSONFile(mluObjects=mpdlogLines, outputFilepath=self.testJsonFilepath)
+        WriteMLUObjectsToJSONFile(mluObjects=logLines, outputFilepath=self.testJsonFilepath)
 
         # Check - ensure output file exists
         self.assertTrue(mlu.common.file.FileExists(self.testJsonFilepath))
@@ -186,8 +222,8 @@ class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
 
         for index, jsonDict in enumerate(jsonFileContent):
             self.assertTrue(isinstance(jsonDict, dict))
-            self.assertEqual(jsonDict['text'], mpdlogLines[index].text)
-            self.assertEqual(jsonDict['timestamp'], mpdlogLines[index].timestamp)
+            self.assertEqual(jsonDict['text'], logLines[index].text)
+            self.assertEqual(jsonDict['timestamp'], logLines[index].timestamp)
 
 
 class TestCacheIOReadMLUObjectsFromJSONFile(unittest.TestCase):
@@ -213,7 +249,7 @@ class TestCacheIOReadMLUObjectsFromJSONFile(unittest.TestCase):
 
     Do this test for the following MLU object types - for each type, one test for reading a Json file 
     containing a single object instance, and one test for reading a Json file containing multiple object instances:
-        SongPlaybackRecord, SongPlaystatTags, MPDLogLine   
+        SongPlaybackRecord, SongPlaystatTags, _MPDLogLine   
     """ 
     # ------------------------------- Test Case Helper functions -----------------------------------
 
@@ -247,6 +283,9 @@ class TestCacheIOReadMLUObjectsFromJSONFile(unittest.TestCase):
     def writeTestJsonFile(self, jsonContent):
         with open(self.testJsonFilepath, 'w+') as outputFile:
             json.dump(jsonContent, outputFile)
+
+        if (not mlu.common.file.FileExists(self.testJsonFilepath)):
+            raise Exception("Error creating test JSON input file for TestCacheIOReadMLUObjectsFromJSONFile")
 
     # ---------------------------------- Test Functions --------------------------------------------
 
@@ -290,18 +329,18 @@ class TestCacheIOReadMLUObjectsFromJSONFile(unittest.TestCase):
     def testReadSingleMLUObjectFromJsonFile_MPDLogLine(self):
         # Create test data from random sources and write this data to a test json file that will 
         # be used for input to the ReadJson function
-        mpdlogLineJsonContent = self.getTestJSONFormattedMPDLogLine()
-        self.writeTestJsonFile(jsonContent=mpdlogLineJsonContent)
+        mpdLogLineJsonContent = self.getTestJSONFormattedMPDLogLine()
+        self.writeTestJsonFile(jsonContent=mpdLogLineJsonContent)
 
         # Run the test code to read in the json and serialize it into a list of one or more objects of type
-        mpdlogLine = ReadMLUObjectsFromJSONFile(inputFilepath=self.testJsonFilepath, mluClassDefinition=MPDLogLine)
+        mpdLogLine = ReadMLUObjectsFromJSONFile(inputFilepath=self.testJsonFilepath, mluClassDefinition=_MPDLogLine)
 
         # Check results of the objects read in and compare each object's properties to those of the 
         # original test data
-        self.assertTrue(isinstance(mpdlogLine, list))
-        self.assertEqual(len(mpdlogLine), 1)
-        self.assertEqual(mpdlogLine[0].text, mpdlogLineJsonContent['text'])
-        self.assertEqual(mpdlogLine[0].timestamp, mpdlogLineJsonContent['timestamp'])
+        self.assertTrue(isinstance(mpdLogLine, list))
+        self.assertEqual(len(mpdLogLine), 1)
+        self.assertEqual(mpdLogLine[0].text, mpdLogLineJsonContent['text'])
+        self.assertEqual(mpdLogLine[0].timestamp, mpdLogLineJsonContent['timestamp'])
 
 
     def testReadMultipleMLUObjectsFromJsonFile_SongPlaybackRecord(self):
@@ -358,17 +397,20 @@ class TestCacheIOReadMLUObjectsFromJSONFile(unittest.TestCase):
         self.writeTestJsonFile(jsonContent=mpdLogLinesJsonContent)
 
         # Run the test code to read in the json and serialize it into a list of one or more objects of type
-        mpdlogLines = ReadMLUObjectsFromJSONFile(inputFilepath=self.testJsonFilepath, mluClassDefinition=MPDLogLine)
+        mpdLogLines = ReadMLUObjectsFromJSONFile(inputFilepath=self.testJsonFilepath, mluClassDefinition=_MPDLogLine)
 
         # Check results of the objects read in and compare each object's properties to those of the 
         # original test data
-        self.assertTrue(isinstance(mpdlogLines, list))
-        self.assertEqual(len(mpdlogLines), numTestObjects)
+        self.assertTrue(isinstance(mpdLogLines, list))
+        self.assertEqual(len(mpdLogLines), numTestObjects)
 
-        for index, mpdlogLine in enumerate(mpdlogLines):
-            self.assertEqual(mpdlogLine.text, mpdLogLinesJsonContent[index]['text'])
-            self.assertEqual(mpdlogLine.timestamp, mpdLogLinesJsonContent[index]['timestamp'])                       
+        for index, mpdLogLine in enumerate(mpdLogLines):
+            self.assertEqual(mpdLogLine.text, mpdLogLinesJsonContent[index]['text'])
+            self.assertEqual(mpdLogLine.timestamp, mpdLogLinesJsonContent[index]['timestamp'])                       
 
+
+################################## mlu.common.time #################################################
+#----------------------------------- Module tests---------------------------------------------------
 
 class TestCommonTimeFunctions(unittest.TestCase):
     """
@@ -377,6 +419,9 @@ class TestCommonTimeFunctions(unittest.TestCase):
     def testFormatTimestampForDisplay(self):
         pass
 
+
+################################## mlu.common.file #################################################
+#----------------------------------- Module tests---------------------------------------------------
 
 class TestCommonFileFunctions(unittest.TestCase):
     """
@@ -389,12 +434,38 @@ class TestCommonFileFunctions(unittest.TestCase):
         pass
 
 
-class TestMPDLogsModule(unittest.TestCase):
+##################################### mlu.mpd.logs #################################################
+#----------------------------------- Module tests---------------------------------------------------
+
+# Test helper functions first, since the classes depend on these
+#
+class TestGetTimestampFromMPDLogLine(unittest.TestCase):
+    pass
+
+class TestGetTextFromMPDLogLine(unittest.TestCase):
+    pass
+
+class TestGetCorrectTimestampFromMPDLogLine(unittest.TestCase):
+    pass
+
+class TestMPDLogLineClass(unittest.TestCase):
     """
-    Test case that tests the classes and functions defined within the mlu.mpd.logs module.
+    Test case that tests the private _MPDLogLine class in mlu.mpd.logs module.
     """
     pass
 
+class TestLogFileTimeInfoClass(unittest.TestCase):
+    """
+    Test case that tests the private L_ogFileTimeInfo class in mlu.mpd.logs module.
+    """
+    pass
+
+class TestMPDLogLineCollectorClass(unittest.TestCase):
+    pass
+
+
+################################## mlu.mpd.plays ###################################################
+#----------------------------------- Module tests---------------------------------------------------
 
 class TestMPDPlaysModule(unittest.TestCase):
     """
@@ -403,6 +474,9 @@ class TestMPDPlaysModule(unittest.TestCase):
     pass
 
 
+##########################$######## mlu.tags.basic #################################################
+#----------------------------------- Module tests---------------------------------------------------
+
 class TestBasicTagsModule(unittest.TestCase):
     """
     Test case that tests the classes and functions defined within the mlu.tags.basic module.
@@ -410,12 +484,18 @@ class TestBasicTagsModule(unittest.TestCase):
     pass
 
 
+################################## mlu.tags.playstats ##############################################
+#----------------------------------- Module tests---------------------------------------------------
+
 class TestPlaystatsTagsModule(unittest.TestCase):
     """
     Test case that tests the classes and functions defined within the mlu.tags.playstats module.
     """
     pass
 
+
+############################## MPD Playstat Updater Script #########################################
+#----------------------------------- Integration tests----------------------------------------------
 
 class WholeIntegrationTest(unittest.TestCase):
     """
@@ -427,17 +507,26 @@ class WholeIntegrationTest(unittest.TestCase):
     pass
 
 
+###### TEST SUITE 
+# Main function that defines which unit tests to run for the MPD playstats update tests
+#  
 def GetMPDPlaystatsTestSuite():
     # Test the common modules in MLU first, since other tests sometimes use the functions within them
     # If the tests pass for the common modules, we can assume that the tests for other modules are valid
     # If tests fail for common modules, stop the test execution b/c dependent tests will be affected
     suite = unittest.TestSuite()
+
+    print("TEST SUITE CALLED!!")
+
+    # suite.addTest(TestCommonTimeFunctions())
+    # suite.addTest(TestCommonFileFunctions())
+
     suite.addTest(TestCacheIOWriteMLUObjectsToJSONFile())
     suite.addTest(TestCacheIOReadMLUObjectsFromJSONFile())
     return suite
 
 if __name__ == '__main__':
-    runner = unittest.TextTestRunner()
+    runner = unittest.TextTestRunner(verbosity=2)
     runner.run(GetMPDPlaystatsTestSuite())
 
 
