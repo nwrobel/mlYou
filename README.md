@@ -1,35 +1,81 @@
 # mlYou - Music Library Utilities Suite
 
 ## UNDER CONSTRUCTION
-This project is still in the early stages of development and is not yet usable. 
+This project is still being developed: only features listed under "Current Features" are ready for use. More features are being developed and are coming soon! 
 
 ## Overview
-This is a collection of tools to help you add to, manage, and maintain your music library. 
+This is a collection of tools to help you manage, maintain, and optimize your own music library for a better experience. 
 
-It makes growing and maintaining a music collection of any size super easy, by automating tedious (but necessary) proccesses.
+It makes growing and maintaining a music collection of any size easier by automating necessary (but tedious) proccesses.
 
-The tools assist with music downloading, tagging, and playlist management.
-
-## Current Features and Functionality
-#### Playlist root path fixing
-- Allows broken playlists that have their song path entries pointing to the wrong music library root to be fixed to point to the correct root, preserving your playlist-creation work
-```
-convert-playlist.py OldMusicRootPath NewMusicRootPath SourcePlaylistsFolder DestinationPlaylistsFolder
-```
-
-#### Music Player Daemon (MPD) Playback Statistics Collection and Tag Updates
-- Collects playcount information from MPD's logs and aggregates it to update your songs with the latest playback data as your music is played on your streaming server
-- Populates/updates the following ID3 tag values directly on your played audio files:
---- Play Count
---- Date/time first played
---- Date/time last played
-
-#### Easy-To-Setup Automation of these Scripts
-- The 'automation' folder contains Powershell and Bash scripts that allow you to setup your input data for each script and have it run with that data automatically
-- Once set up, you can created scheduled tasks in your OS to have work automated/done on a regular basis
+The tools currently aim to assist with music organizing and tagging, and playlist management.
 
 #### Cross-Platform Compatible
-Works and tested under Linux (Ubuntu) and Windows. Mac unteested but expected to work simular to linux.
+Works and tested under Linux (Ubuntu) and Windows. Mac untested but expected to work simular to linux.
+
+## Installation/Setup
+- Download/clone this github project, save it on your computer in any location
+- In the mlYou project, open 'setup' folder
+- Windows:
+--- Run the Powershell script .ps1 by running it from the Powershell terminal:
+```
+cd <drive>:\path\to\mlYou
+.\setup\.ps1
+```
+- Linux:
+--- Run the bash script .sh
+```
+cd <drive>:\path\to\mlYou
+.\setup\.sh
+```
+
+## Current Features
+#### Playlist root path fixing
+- Allows broken playlists that have their song path entries pointing to the wrong music library root to be fixed to point to the correct root, preserving your playlist-creation work
+
+##### How to use
+- (Option 1) Run using Python:
+```
+python convert-playlist.py OldMusicRootPath NewMusicRootPath SourcePlaylistsFolder DestinationPlaylistsFolder
+```
+- (Option 2) Run using Powershell:
+--- Open the Powershell script in the 'automation' folder
+--- Change the values of the old/new music root paths and src/dest playlists folders
+--- Save the script
+--- Run from Powershell terminal:
+```
+cd <drive>:\path\to\mlYou
+.\automation\.ps1
+```
+
+- Note: you can use the commands above to create scheduled tasks in your OS to have work automated/done on a regular basis
+
+
+
+## Work-in-Progress Features (Coming Soon!)
+#### Music Player Daemon (MPD) Playback Statistics Collection and Tag Updates
+- Collects and aggregates playcount information from MPD's logs to update your songs with the latest playback data as your music is played on your streaming server
+- Populates/updates the following ID3 tag values directly on your played audio files. These tags can then be used to create autoplaylists and to preserve your playback history:
+--- Play Count
+--- Date/time last played
+--- All date/times played
+
+#### Tools to Maintain your own Votes & Rating System for Songs
+- Music rating can be difficult at times: 
+--- your opinion on a song may vary over time depending on amount played, mood, etc
+--- a single like/dislike or a single static number may not best reflect your opinion of a song
+--- limited granularity of rating values (only 5 possible values in a typical 1-5 system, or 2 in a like/dislike system)
+- Improved rating system: Cast Votes for songs
+ --- Can vote on a single song multiple times (ex: now, and then when you hear it again next month)
+ --- Choose your own vote value range (1-10, 1-100, etc)
+ --- Vote by adding the song to a playlist that corresponds to the desired vote value
+- Rating Value for a song based on Votes
+--- Rating is calculated from the average vote value
+--- Much more wholistic prepresentation of your opinion of the song over time
+- MLU Script will update/manage ID3 Rating tags for songs:
+--- Go through all vote playlists
+--- Add vote to the song's "vote" tag
+--- Update each song's "rating" tag by re-calculating it
 
 
 
