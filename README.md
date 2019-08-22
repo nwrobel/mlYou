@@ -15,18 +15,18 @@ Works and tested under Linux (Ubuntu) and Windows. Mac untested but expected to 
 
 ## Installation/Setup
 - Download/clone this github project, save it on your computer in any location
-- In the mlYou project, open 'setup' folder
+- In the mlYou project, open `setup` folder
 - Windows:
---- Run the Powershell script .ps1 by running it from the Powershell terminal:
+--- Run the Powershell script `deploy-windows.ps1` by running it from the Powershell terminal:
 ```
 cd <drive>:\path\to\mlYou
-.\setup\.ps1
+.\setup\deploy-windows.ps1
 ```
 - Linux:
---- Run the bash script .sh
+--- Run the bash script `deploy-linux.sh`
 ```
 cd <drive>:\path\to\mlYou
-.\setup\.sh
+.\setup\deploy-linux.sh
 ```
 
 ## Current Features
@@ -39,13 +39,13 @@ cd <drive>:\path\to\mlYou
 python convert-playlist.py OldMusicRootPath NewMusicRootPath SourcePlaylistsFolder DestinationPlaylistsFolder
 ```
 - (Option 2) Run using Powershell:
---- Open the Powershell script in the 'automation' folder
+--- Open the Powershell script `Convert-Playlist.ps1` in the `automated` folder
 --- Change the values of the old/new music root paths and src/dest playlists folders
 --- Save the script
 --- Run from Powershell terminal:
 ```
 cd <drive>:\path\to\mlYou
-.\automation\Convert-Playlist.ps1
+.\automated\Convert-Playlist.ps1
 ```
 - Note: you can use the commands above to create scheduled tasks in your OS to have work automated/done on a regular basis
 
