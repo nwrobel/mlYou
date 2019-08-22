@@ -24,8 +24,8 @@ cd <drive>:\path\to\mlYou\setup
 ```
 - Linux: Run the bash script `deploy-linux.sh`
 ```
-cd <drive>:\path\to\mlYou\setup
-.\deploy-linux.sh
+cd /path/to/mlYou/setup
+./deploy-linux.sh
 ```
 
 ## Current Features
@@ -36,7 +36,8 @@ cd <drive>:\path\to\mlYou\setup
 ##### (Option 1) Run using Python
 - Run from the terminal:
 ```
-python convert-playlist.py OldMusicRootPath NewMusicRootPath SourcePlaylistsFolder DestinationPlaylistsFolder
+cd <drive>:\path\to\mlYou\scripts
+python .\convert-playlist.py OldMusicRootPath NewMusicRootPath SourcePlaylistsFolder DestinationPlaylistsFolder
 ```
 ##### (Option 2) Run using Powershell
 - Open the Powershell script `Convert-Playlist.ps1` in the `automated` folder
@@ -44,8 +45,8 @@ python convert-playlist.py OldMusicRootPath NewMusicRootPath SourcePlaylistsFold
 - Save the script
 - Run from Powershell terminal:
 ```
-cd <drive>:\path\to\mlYou
-.\automated\Convert-Playlist.ps1
+cd \path\to\mlYou\automated
+.\Convert-Playlist.ps1
 ```
 - Note: you can use the commands above to create scheduled tasks in your OS to have work automated/done on a regular basis
 
