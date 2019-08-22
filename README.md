@@ -45,11 +45,9 @@ python convert-playlist.py OldMusicRootPath NewMusicRootPath SourcePlaylistsFold
 --- Run from Powershell terminal:
 ```
 cd <drive>:\path\to\mlYou
-.\automation\.ps1
+.\automation\Convert-Playlist.ps1
 ```
-
 - Note: you can use the commands above to create scheduled tasks in your OS to have work automated/done on a regular basis
-
 
 
 ## Work-in-Progress Features (Coming Soon!)
