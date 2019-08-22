@@ -16,33 +16,32 @@ Works and tested under Linux (Ubuntu) and Windows. Mac untested but expected to 
 ## Installation/Setup
 - Download/clone this github project, save it on your computer in any location
 - In the mlYou project, open `setup` folder
-- Windows:
---- Run the Powershell script `deploy-windows.ps1` by running it from the Powershell terminal:
+- Windows: Run the Powershell script `deploy-windows.ps1` by running it from the Powershell terminal:
 ```
 cd <drive>:\path\to\mlYou
 .\setup\deploy-windows.ps1
 ```
-- Linux:
---- Run the bash script `deploy-linux.sh`
+- Linux: Run the bash script `deploy-linux.sh`
 ```
 cd <drive>:\path\to\mlYou
 .\setup\deploy-linux.sh
 ```
 
 ## Current Features
-#### Playlist root path fixing
+### Playlist root path fixing
 - Allows broken playlists that have their song path entries pointing to the wrong music library root to be fixed to point to the correct root, preserving your playlist-creation work
 
-##### How to use
-- (Option 1) Run using Python:
+#### How to use
+##### (Option 1) Run using Python
+- Run from the terminal:
 ```
 python convert-playlist.py OldMusicRootPath NewMusicRootPath SourcePlaylistsFolder DestinationPlaylistsFolder
 ```
-- (Option 2) Run using Powershell:
---- Open the Powershell script `Convert-Playlist.ps1` in the `automated` folder
---- Change the values of the old/new music root paths and src/dest playlists folders
---- Save the script
---- Run from Powershell terminal:
+##### (Option 2) Run using Powershell
+- Open the Powershell script `Convert-Playlist.ps1` in the `automated` folder
+- Change the values of the old/new music root paths and src/dest playlists folders
+- Save the script
+- Run from Powershell terminal:
 ```
 cd <drive>:\path\to\mlYou
 .\automated\Convert-Playlist.ps1
