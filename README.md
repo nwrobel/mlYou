@@ -14,17 +14,18 @@ The tools currently aim to assist with music organizing and tagging, and playlis
 Works and tested under Linux (Ubuntu) and Windows. Mac untested but expected to work simular to linux.
 
 ## Installation/Setup
+- Install the latest version of Python on your system, if you don't have it already (Python 3.7 or greater is required)
 - Download/clone this github project, save it on your computer in any location
 - In the mlYou project, open `setup` folder
 - Windows: Run the Powershell script `deploy-windows.ps1` by running it from the Powershell terminal:
 ```
-cd <drive>:\path\to\mlYou
-.\setup\deploy-windows.ps1
+cd <drive>:\path\to\mlYou\setup
+.\deploy-windows.ps1
 ```
 - Linux: Run the bash script `deploy-linux.sh`
 ```
-cd <drive>:\path\to\mlYou
-.\setup\deploy-linux.sh
+cd <drive>:\path\to\mlYou\setup
+.\deploy-linux.sh
 ```
 
 ## Current Features
