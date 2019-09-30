@@ -72,8 +72,7 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
         outputPlaylistFilePath = mlu.common.file.JoinPaths(outputPlaylistDir, outputPlaylistFileName)
         
         # Read in all lines from the original playlist
-        with open(playlistFilePath, mode='r', encoding='utf-8-sig') as file:
-            originalLines = file.readlines()
+        originalLines = getAllPlaylistLines(playlistFilePath)
 
         # Remove the '#' that is sometimes added to playlists when exported from Foobar2000
         if (len(originalLines) > 0 and originalLines[0] == '#\n'):
@@ -94,4 +93,11 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
         print("Playlist converted successfully! New file:", outputPlaylistFilePath)
         
     print(numPlaylists, "playlists converted and output to the destination dir successfully!")
+
+
+def getAllPlaylistLines(playlistFilepath):
+    with open(playlistFilepath, mode='r', encoding='utf-8-sig') as file:
+        lines = file.readlines()
+
+    return lines
     
