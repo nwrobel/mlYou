@@ -137,7 +137,7 @@ class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
         self.assertEqual(jsonFileContent['timeLastPlayed'], playstatTags.timeLastPlayed)
         self.assertTrue(isinstance(jsonFileContent['allTimesPlayed'], list))
         self.assertEqual(jsonFileContent['allTimesPlayed'], playstatTags.allTimesPlayed)
-        
+
 
     def testWriteSingleMLUObjectToJSONFile_MPDLogLine(self):
         logLine = self.getTestMPDLogLine()
@@ -410,10 +410,35 @@ class TestCacheIOReadMLUObjectsFromJSONFile(unittest.TestCase):
 
 class TestCommonTimeFunctions(unittest.TestCase):
     """
-    Test case that tests the functions defined within the mlu.common.time module.
+    Test case that tests the functions defined within the mlu.common.time module. 
+
+    NOTE: these tests assume that the current time zone is Eastern/New York (-4 hrs from GMT).
     """
     def testFormatTimestampForDisplay(self):
-        pass
+        testTimestamps = [1539834708, 1439836708, 1239836708.4492]
+        testExpectedFormattedTimes = ['2018-10-17 23:51:48', '2015-08-17 14:38:28', '2009-04-15 19:05:08']
+
+        for index, testTimestamp in enumerate(testTimestamps):
+            testActualFormattedTime = mlu.common.time.formatTimestampForDisplay(testTimestamp)
+            self.assertEqual(testExpectedFormattedTimes[index], testActualFormattedTime)
+
+    def testFormatTimestampForDisplay_ErrorInput(self):
+        testErrorInput = ['1439836708', -1, None, []]
+
+        for errorInput in testErrorInput:
+            with self.assertRaises(Exception) as thrownException:
+                result = mlu.common.time.formatTimestampForDisplay(errorInput)
+
+            with self.assertRaises(UnboundLocalError):
+                print(result)
+
+    
+
+    
+
+
+        
+
 
 
 ################################## mlu.common.file #################################################
