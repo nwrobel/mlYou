@@ -5,8 +5,8 @@ This module contains functions that are commonly needed/used by various MLU unit
 mlutest package. They deal with setting up and teardown of test cases and creation of random test
 data.
 """
-import envsetup
-envsetup.PreparePythonProjectEnvironment()
+import mlutest.envsetup
+mlutest.envsetup.PreparePythonProjectEnvironment()
 
 
 from random import randrange
@@ -24,7 +24,7 @@ def getRandomTimestamp():
     # 500 million seconds ~ 15 years of range
     # make it negative to go into the past
     deltaSeconds = -(getRandomNumber(min=0, max=500000000)) 
-    randomTimestamp = mlu.common.time.ApplyDeltaSecondsToTimestamp(startTimestamp=now, seconds=deltaSeconds)
+    randomTimestamp = mlu.common.time.applyDeltaSecondsToTimestamp(startTimestamp=now, seconds=deltaSeconds)
 
     return randomTimestamp
 

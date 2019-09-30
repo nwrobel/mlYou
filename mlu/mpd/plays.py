@@ -76,7 +76,7 @@ class PlaybackInstance:
     # Use filepath to get the audio file's common tags, one of which is the duration
     def GetSongDuration(self):
         durationSeconds = mlu.tags.basic.getSongBasicTags(self.songFilepath).durationSeconds
-        durationTimestamp = mlu.common.time.ConvertSecondsToTimestamp(durationSeconds)
+        durationTimestamp = mlu.common.time.convertSecondsToTimestamp(durationSeconds)
 
         return durationTimestamp
 
@@ -180,7 +180,7 @@ def FilterFalsePlaybacks(playbackInstances):
     songDurationThresholdSeconds = 120
 
     truePlaybackInstances = []
-    songDurationThresholdTimestamp = mlu.common.time.ConvertSecondsToTimestamp(songDurationThresholdSeconds)
+    songDurationThresholdTimestamp = mlu.common.time.convertSecondsToTimestamp(songDurationThresholdSeconds)
 
     for playbackInstance in playbackInstances:
         # If song duration is at least 2 min. long

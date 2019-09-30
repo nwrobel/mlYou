@@ -56,7 +56,7 @@ class _LogFileTimeInfo:
       # Find the oldest possible entry time for this log file based on the most recent entry time above,
       # assuming that all the logfiles span no more than 1 year (this is a requirement for this script to work)
       # Simply subtract 1 year from the log file's lastEntryTime
-      minEntryTime = mlu.common.time.ApplyDeltaYearsToTimestamp(startTimestamp=lastEntryTime, years=-1)
+      minEntryTime = mlu.common.time.applyDeltaYearsToTimestamp(startTimestamp=lastEntryTime, years=-1)
 
       # Find the first entry time:
       #  - add current year to the first entry month+day to make full date
@@ -125,7 +125,7 @@ class MPDLogLineCollector:
    # Make an dict: logfilepath -> contextCurrentYear
    def SetLogFilesContextCurrentYear(self):
       mpdLogFiles = mlu.common.file.GetAllFilesDepth1(self.tempLogDir)
-      currentCalendarYear = mlu.common.time.GetCurrentYear()
+      currentCalendarYear = mlu.common.time.getCurrentYear()
 
       if (self.promptForLogFileYears):
          print("Please enter the logfile's context current year for each log file (the year when each log file was last written to...year of the date of the last log line in each log file)")

@@ -7,7 +7,7 @@ Module containing "common" functionality related to time and timestamp logic.
 import datetime
 
 
-def FormatTimestampForDisplay(timestamp):
+def formatTimestampForDisplay(timestamp):
     """
     Converts a given epoch timestamp value to a string timestamp format that can be displayed and 
     easily understood. Output format example: "2012-01-27 02:29:33". If the given epoch timestamp
@@ -20,7 +20,7 @@ def FormatTimestampForDisplay(timestamp):
     return formattedTime
 
 
-def ApplyDeltaYearsToTimestamp(startTimestamp, years):
+def applyDeltaYearsToTimestamp(startTimestamp, years):
     """
     Given a starting time timestamp and a number of years, this returns a new epoch timestamp which represents
     that time X years before or after the given timestamp. Years can be positive to add time or 
@@ -32,7 +32,7 @@ def ApplyDeltaYearsToTimestamp(startTimestamp, years):
 
     return newTimestamp
 
-def ApplyDeltaSecondsToTimestamp(startTimestamp, seconds):
+def applyDeltaSecondsToTimestamp(startTimestamp, seconds):
     """
     Given a starting time timestamp and a number of seconds, this returns a new epoch timestamp which represents
     that time X seconds before or after the given timestamp. Years can be positive to add time or 
@@ -45,7 +45,7 @@ def ApplyDeltaSecondsToTimestamp(startTimestamp, seconds):
     return newTimestamp
 
 
-def ConvertSecondsToTimestamp(seconds):
+def convertSecondsToTimestamp(seconds):
     """
     Converts the given duration, represented in seconds, into the duration represented as epoch 
     timestamp duration/time delta.
@@ -55,7 +55,7 @@ def ConvertSecondsToTimestamp(seconds):
     return secondsTimestamp
 
 
-def GetCurrentYear():
+def getCurrentYear():
     """
     Returns the 4 digit integer value of the current calendar year.
     """

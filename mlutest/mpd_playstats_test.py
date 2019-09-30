@@ -20,11 +20,6 @@ called for every test case class added to the test suite. Put all test methods i
 this runTest() 
 """
 
-# -----------------------------------  ----------------------------------------
-# 
-# 
-
-
 import unittest
 import json
 import os
@@ -32,14 +27,15 @@ import os
 # Do setup processing so that this script can import all the needed modules from the "mlu" package.
 # This is necessary because these scripts are not located in the root directory of the project, but
 # instead in the 'scripts' folder.
-import envsetup
-envsetup.PreparePythonProjectEnvironment()
+import mlutest.envsetup
+mlutest.envsetup.PreparePythonProjectEnvironment()
 
 from mlu.cache.io import WriteMLUObjectsToJSONFile, ReadMLUObjectsFromJSONFile
 from mlu.mpd.plays import SongPlaybackRecord
 from mlu.tags.playstats import SongPlaystatTags
 from mlu.mpd.logs import _MPDLogLine
 import mlu.common.file 
+
 import mlutest.common
 
 ################################## mlu.cache.io ####################################################
@@ -100,13 +96,13 @@ class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
         return results
 
     # Tests ----------------------------------------------------------------------------------------
-    def runTest(self):
-        self.testWriteSingleMLUObjectToJSONFile_SongPlaybackRecord()
-        self.testWriteSingleMLUObjectToJSONFile_SongPlaystatTags()
-        self.testWriteSingleMLUObjectToJSONFile_MPDLogLine()
-        self.testWriteMultipleMLUObjectsToJSONFile_SongPlaybackRecord()
-        self.testWriteMultipleMLUObjectsToJSONFile_SongPlaystatTags()
-        self.testWriteMultipleMLUObjectsToJSONFile_MPDLogLine
+    # def runTest(self):
+    #     self.testWriteSingleMLUObjectToJSONFile_SongPlaybackRecord()
+    #     self.testWriteSingleMLUObjectToJSONFile_SongPlaystatTags()
+    #     self.testWriteSingleMLUObjectToJSONFile_MPDLogLine()
+    #     self.testWriteMultipleMLUObjectsToJSONFile_SongPlaybackRecord()
+    #     self.testWriteMultipleMLUObjectsToJSONFile_SongPlaystatTags()
+    #     self.testWriteMultipleMLUObjectsToJSONFile_MPDLogLine
 
     def testWriteSingleMLUObjectToJSONFile_SongPlaybackRecord(self):
         # Generate test object instance: SongPlaybackRecord
@@ -141,7 +137,7 @@ class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
         self.assertEqual(jsonFileContent['timeLastPlayed'], playstatTags.timeLastPlayed)
         self.assertTrue(isinstance(jsonFileContent['allTimesPlayed'], list))
         self.assertEqual(jsonFileContent['allTimesPlayed'], playstatTags.allTimesPlayed)
-
+        
 
     def testWriteSingleMLUObjectToJSONFile_MPDLogLine(self):
         logLine = self.getTestMPDLogLine()
@@ -425,7 +421,7 @@ class TestCommonTimeFunctions(unittest.TestCase):
 
 class TestCommonFileFunctions(unittest.TestCase):
     """
-    Test case that tests the functions defined within the mlu.common.file module.
+    Test cas that tests the functions defined within the mlu.common.file module.
     """
     def testGetProjectRoot(self):
         pass

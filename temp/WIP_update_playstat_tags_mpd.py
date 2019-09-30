@@ -46,7 +46,7 @@ if ((writeChanges == 'm')):
             print("Playback times for record #", recordNumberToEdit, ":")
             # Print the playback times, with a number for each
             for index, playbackTime in enumerate(songPlaybackRecords.playbackTimes)
-                print(index, " - " , mlu.common.time.FormatTimestampForDisplay(playbackTime))
+                print(index, " - " , mlu.common.time.formatTimestampForDisplay(playbackTime))
 
                 playbackToDelete = input("Enter the line number of the playback time you wish to delete")
     
