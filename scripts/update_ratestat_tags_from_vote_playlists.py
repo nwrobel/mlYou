@@ -26,7 +26,7 @@ for currentVoteValue in range(1, 10):
 
     for songFilepath in playlistSongs:
         print("Adding vote value " + currentVoteValue + " to song " + songFilepath)
-        mlu.tags.ratestats.addVoteAndUpdateSongRatestatTags(songFilepath, currentVoteValue)
+        mlu.tags.ratestats.updateSongRatestatTags(songFilepath, newVote=currentVoteValue)
 
 print('Vote/rating data update complete, saved to songs tags successfully! Vote playlists can now be emptied and reset')
 

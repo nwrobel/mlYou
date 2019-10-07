@@ -98,16 +98,23 @@ def GetAllFilesDepth1(rootPath):
 def GetAllFilesByExtension(rootPath, fileExt):
     """
     Gets the filepaths of all files contained within the given root directory that have the given 
-    file extension. Searches for files recursively. Give file extension with the dot.
+    file extension(s). Searches for files recursively. Either a single file extension or a list of 
+    file extensions may be specified. If more than 1 extension is given, files matching any of those
+    extensions are returned (searches using OR). Give file extension(s) with the dot.
 
-    ex) GetAllFilesByExtension("C:\temp", ".mp3")
+    ex) 
+    GetAllFilesByExtension("C:\temp", ".mp3")
+    GetAllFilesByExtension("C:\temp", [".mp3", ".flac"])
     """
+    if (not isinstance(fileExt, list)):
+        fileExt = [fileExt]
+    
     allFiles = GetAllFilesRecursive(rootPath)
     matchingFilepaths = []
 
     for filepath in allFiles:
         currentFileExt = GetFileExtension(filepath)
-        if (currentFileExt == fileExt):
+        if (currentFileExt in fileExt):
             matchingFilepaths.append(filepath)
 
     return matchingFilepaths
