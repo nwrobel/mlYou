@@ -1,3 +1,6 @@
+# TODO: configure, set up, and use logger logging statements instead of print, so messages can be 
+# easily saved into files and pruned down based on log importance level
+
 # Do setup processing so that this script can import all the needed modules from the "mlu" package.
 # This is necessary because these scripts are not located in the root directory of the project, but
 # instead in the 'scripts' folder.

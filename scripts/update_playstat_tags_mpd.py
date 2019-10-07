@@ -8,6 +8,9 @@ Argument-based script to allow the user to update the "Play Count" tags on their
 on playback data contained within MPD (Media Player Daemon) server log files. 
 '''
 
+# TODO: configure, set up, and use logger logging statements instead of print, so messages can be 
+# easily saved into files and pruned down based on log importance level
+
 import argparse
 from prettytable import PrettyTable
 
