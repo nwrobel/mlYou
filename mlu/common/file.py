@@ -37,7 +37,7 @@ def GetMLUCacheDirectory():
     Gets the absolute filepath of the directory where temporary and/or cache files will be written
     to. This dir will be shared by all code in the MLU project.
     """
-    return JoinPaths(GetProjectRoot(), "cache")
+    return JoinPaths(GetProjectRoot(), "cachedata")
 
 def GetMPDLogCacheDirectory():
     """
@@ -225,3 +225,28 @@ def DecompressSingleGZFile(gzippedFilePath, decompFilePath):
     with gzip.open(gzippedFilePath, 'rb') as inputFile:
         with open(decompFilePath, 'wb') as outputFile:
             shutil.copyfileobj(inputFile, outputFile)
+
+def compressFileToArchive(inputFilePath, archiveOutFilePath):
+    '''
+    Compresses one or more files to a .GZ archive, given the absolute input file path(s) and file
+    path for the archive file.
+    '''
+    if (not isinstance(inputFilePath, list)):
+        inputFilePath = [inputFilePath]
+
+    for filepath in inputFilePath:
+        # TODO: FINISH
+        pass
+
+
+def clearFileContents(filePath):
+    '''
+    Removes all the data from the target file by deleting the file and re-creating it as an empty
+    file with 0 bytes of data.
+    '''
+    DeleteFile(filePath)
+
+    emptyFile = open(filePath, 'wb')
+    emptyFile.save()
+
+

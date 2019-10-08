@@ -15,15 +15,21 @@ import mlu.library.playlist
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("votePlaylistsDir", 
+parser.add_argument("votePlaylistsInputDir", 
                     help="absolute filepath of the folder containing the vote playlist files (1.m3u, 2.m3u, ..., 10.m3u) to use as the data source",
                     type=str)
 
+parser.add_argument("votePlaylistsArchiveDir", 
+                    help="absolute filepath of the folder where the archive of the vote playlist files should be saved for backup after the music rating tags are updated",
+                    type=str)
+
 args = parser.parse_args()
+votePlaylists = []
 
 for currentVoteValue in range(1, 10):
     currentVoteValuePlaylistName = currentVoteValue + '.m3u'
-    currentVoteValuePlaylistPath =  mlu.common.file.JoinPaths(args.votePlaylistsDir, currentVoteValuePlaylistName)
+    currentVoteValuePlaylistPath =  mlu.common.file.JoinPaths(args.votePlaylistsInputDir, currentVoteValuePlaylistName)
+    votePlaylists.append(currentVoteValuePlaylistPath)
 
     playlistSongs = mlu.library.playlist.getAllPlaylistLines(currentVoteValuePlaylistPath)
 
@@ -33,3 +39,8 @@ for currentVoteValue in range(1, 10):
 
 print('Vote/rating data update complete, saved to songs tags successfully! Vote playlists can now be emptied and reset')
 
+print('Archiving vote playlists and clearing old data')
+mlu.common.file.compressFileToArchive(inputFilePath=votePlaylists, archiveOutFilePath=args.votePlaylistsArchiveDir)
+
+for votePlaylist in votePlaylists:
+    mlu.common.file.clearFileContents(filePath=votePlaylist)
