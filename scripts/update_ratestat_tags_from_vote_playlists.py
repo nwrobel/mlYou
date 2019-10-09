@@ -18,6 +18,7 @@ logger = mlu.common.logger.getMLULogger()
 # import project-related modules
 import mlu.tags.ratestats
 import mlu.common.file 
+import mlu.common.time
 import mlu.library.playlist
 
 parser = argparse.ArgumentParser()

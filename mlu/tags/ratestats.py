@@ -12,7 +12,6 @@ import mlu.common.logger
 logger = mlu.common.logger.getMLULogger()
 
 import mlu.tags.common
-import mlu.library.musiclib
 
 class VoteValueOutOfRange(Exception):
     pass
