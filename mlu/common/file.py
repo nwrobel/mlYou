@@ -14,7 +14,7 @@ import gzip
 import shutil
 
 
-def GetProjectRoot():
+def getMLUProjectRoot():
     """
     Gets the absolute filepath for the root of the MLU project.
 
@@ -30,14 +30,14 @@ def GetTestResourceFilesDirectory():
     Gets the absolute filepath of the directory where test output and input data files will be saved
     for the Unit tests defined in the mlutest package.
     """
-    return JoinPaths(GetProjectRoot(), "mlutest\\test-resources")
+    return JoinPaths(getMLUProjectRoot(), "mlutest\\test-resources")
 
 def GetMLUCacheDirectory():
     """
     Gets the absolute filepath of the directory where temporary and/or cache files will be written
     to. This dir will be shared by all code in the MLU project.
     """
-    return JoinPaths(GetProjectRoot(), "cachedata")
+    return JoinPaths(getMLUProjectRoot(), "~mlucache")
 
 def GetMPDLogCacheDirectory():
     """

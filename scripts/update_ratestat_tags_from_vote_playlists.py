@@ -7,8 +7,15 @@
 import envsetup
 envsetup.PreparePythonProjectEnvironment()
 
+# import external Python modules
 import argparse
 
+# setup logging for this script using MLU preconfigured logger
+import mlu.common.logger
+mlu.common.logger.initMLULogger()
+logger = mlu.common.logger.getMLULogger()
+
+# import project-related modules
 import mlu.tags.ratestats
 import mlu.common.file 
 import mlu.library.playlist
@@ -30,17 +37,25 @@ for currentVoteValue in range(1, 10):
     currentVoteValuePlaylistName = currentVoteValue + '.m3u'
     currentVoteValuePlaylistPath =  mlu.common.file.JoinPaths(args.votePlaylistsInputDir, currentVoteValuePlaylistName)
     votePlaylists.append(currentVoteValuePlaylistPath)
-
+    
+    logger.info("Reading songs with vote value {} from playlist {}".format(currentVoteValue, currentVoteValuePlaylistPath))
     playlistSongs = mlu.library.playlist.getAllPlaylistLines(currentVoteValuePlaylistPath)
 
     for songFilepath in playlistSongs:
-        print("Adding vote value " + currentVoteValue + " to song " + songFilepath)
+        logger.debug("Adding new vote (value {}) to song {}".format(currentVoteValue, songFilepath))
         mlu.tags.ratestats.updateSongRatestatTags(songFilepath, newVote=currentVoteValue)
 
-print('Vote/rating data update complete, saved to songs tags successfully! Vote playlists can now be emptied and reset')
+logger.info('Music vote/rating data updated successfully!')
 
-print('Archiving vote playlists and clearing old data')
-mlu.common.file.compressFileToArchive(inputFilePath=votePlaylists, archiveOutFilePath=args.votePlaylistsArchiveDir)
+logger.info('Archiving old vote playlists...')
+archiveFilename = ''
+archiveFilePath = mlu.common.file.JoinPaths(args.votePlaylistsArchiveDir, archiveFilename)
 
+mlu.common.file.compressFileToArchive(inputFilePath=votePlaylists, archiveOutFilePath=archiveFilePath)
+logger.info('Vote playlists successfully compressed into archive file {}'.format(archiveFilePath))
+
+logger.info('Emptying already counted votes from vote playlists...')
 for votePlaylist in votePlaylists:
     mlu.common.file.clearFileContents(filePath=votePlaylist)
+
+logger.info('Vote playlists reset successfully, script complete!')
