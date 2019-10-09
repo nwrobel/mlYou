@@ -40,6 +40,7 @@ for currentVoteValue in range(1, 10):
     
     logger.info("Reading songs with vote value {} from playlist {}".format(currentVoteValue, currentVoteValuePlaylistPath))
     playlistSongs = mlu.library.playlist.getAllPlaylistLines(currentVoteValuePlaylistPath)
+    logger.info("Found {} songs in vote value {} playlist...updating their ratestat tags now".format(len(playlistSongs), currentVoteValue))
 
     for songFilepath in playlistSongs:
         logger.debug("Adding new vote (value {}) to song {}".format(currentVoteValue, songFilepath))
@@ -48,7 +49,7 @@ for currentVoteValue in range(1, 10):
 logger.info('Music vote/rating data updated successfully!')
 
 logger.info('Archiving old vote playlists...')
-archiveFilename = ''
+archiveFilename = "[{}] Post-update archived vote data playlists.gz".format(mlu.common.time.getCurrentFormattedTime())
 archiveFilePath = mlu.common.file.JoinPaths(args.votePlaylistsArchiveDir, archiveFilename)
 
 mlu.common.file.compressFileToArchive(inputFilePath=votePlaylists, archiveOutFilePath=archiveFilePath)

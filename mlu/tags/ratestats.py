@@ -7,12 +7,22 @@ and setting the 'VOTES' and 'RATING' tags on songs.
 
 import mutagen
 
+# setup logging for this script using MLU preconfigured logger
+import mlu.common.logger
+logger = mlu.common.logger.getMLULogger()
+
 import mlu.tags.common
 import mlu.library.musiclib
 
-# Class representing the data structure holding the various tag values of a song for the playstats tags
-# that we are dealing with - 3 tags: PLAY_COUNT, TIME_LAST_PLAYED, ALL_TIMES_PLAYED
+class VoteValueOutOfRange(Exception):
+    pass
+
 class _SongRatestatTags:
+    '''
+    Private class which represents the values of the "rating" tags for a single audio file and allows
+    new, updated values to be calculated. This class does not deal with reading from or writing
+    to the file itself.
+    '''
     def __init__(self, songFilepath, votes, rating):
         self.songFilepath = songFilepath
         self.votes = votes # list of numbers (int), each representing a vote
@@ -44,7 +54,7 @@ class _SongRatestatTags:
             raise TypeError("ERROR: _SongRatestatTags - each value in parameter 'votes' must be type integer")
 
         if (vote < 1 or vote > 10):
-            raise TypeError("ERROR: _SongRatestatTags - each value in parameter 'votes' must be an integer between (or equal to) 1 and 10")
+            raise VoteValueOutOfRange("ERROR: _SongRatestatTags - each value in parameter 'votes' must be an integer between (or equal to) 1 and 10")
 
 
 def _readSongRatestatTags(songFilepath):
@@ -57,6 +67,8 @@ def _readSongRatestatTags(songFilepath):
         votes=votesList,
         rating=ratingFloat  
     ) 
+
+    logger.debug("Ratestat tags read successfully from audio file: Name={}, Votes={}, Rating={}".format(ratestatTags.songFilepath, ratestatTags.votes, ratestatTags.rating))
     return ratestatTags
 
 def _writeSongRatestatTags(songRatestatTags):
@@ -67,6 +79,8 @@ def _writeSongRatestatTags(songRatestatTags):
     audioFile['VOTES'] = votesStr
     audioFile['RATING'] = ratingRoundedStr
     audioFile.save()
+
+    logger.debug("Ratestat tags written to audio file successfully: Name={}, Votes={}, Rating={}".format(songRatestatTags.songFilepath, votesStr, ratingRoundedStr))
     
 
 def updateSongRatestatTags(songFilepath, newVote=0):
@@ -80,15 +94,26 @@ def updateSongRatestatTags(songFilepath, newVote=0):
     
 
 def updateAvgRatingForAllLibrarySongs(libraryRootPath):
+    logger.info("Searching for all audio under music library root path {}".format(libraryRootPath))
     librarySongs = mlu.library.musiclib.getAllSongFilepathsInLibrary(libraryRootPath)
+    logger.info("Found {} audio files in music library root path".format(len(librarySongs)))
 
+    logger.info("Finding audio files that need rating tag updated")
+    songsNeedRatingUpdate = []
     for songFilepath in librarySongs:
         audioFile = mutagen.File(songFilepath)
         needsRatingUpdate = int(audioFile['NEEDS_RATING_UPDATE'])
 
         if (needsRatingUpdate == 1):
-            print("Found song that needs rating tag updated: ", songFilepath)
-            updateSongRatestatTags(songFilepath)
+            logger.info("Found file flagged for rating update: {}".format(songFilepath))
+            songsNeedRatingUpdate.append(songFilepath)
+
+    
+    logger.info("Found {} audio files that need rating tag updated...performing updates now".format(len(songsNeedRatingUpdate)))
+    for songFilepath in songsNeedRatingUpdate:
+        updateSongRatestatTags(songFilepath)
+
+    logger.info("Rating tag update process completed successfully")
 
 
 

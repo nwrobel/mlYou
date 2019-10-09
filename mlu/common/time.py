@@ -6,6 +6,8 @@ Module containing "common" functionality related to time and timestamp logic.
 
 import datetime
 
+def getCurrentFormattedTime():
+    return formatTimestampForDisplay(getCurrentTimestamp())
 
 def formatTimestampForDisplay(timestamp):
     """
