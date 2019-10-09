@@ -12,6 +12,11 @@ envsetup.PreparePythonProjectEnvironment()
 
 import argparse
 
+# setup logging for this script using MLU preconfigured logger
+import mlu.common.logger
+mlu.common.logger.initMLULogger()
+logger = mlu.common.logger.getMLULogger()
+
 import mlu.tags.ratestats
 
 parser = argparse.ArgumentParser()
@@ -22,4 +27,19 @@ parser.add_argument("libraryRootDir",
 
 args = parser.parse_args()
 
-mlu.tags.ratestats.updateAvgRatingForAllLibrarySongs(libraryRootPath=args.libraryRootPath)
+logger.info("Searching for all audio under music library root path {}".format(args.libraryRootDir))
+librarySongs = mlu.library.musiclib.getAllSongFilepathsInLibrary(args.libraryRootDir)
+logger.info("Found {} audio files in music library root path".format(len(librarySongs)))
+
+logger.info("Finding audio files that need rating tag updated")
+songsNeedRatingUpdate = []
+for songFilepath in librarySongs:
+    if (mlu.tags.ratestats.songNeedsRatingTagUpdate(songFilepath)):
+        logger.info("Found file flagged for rating update: {}".format(songFilepath))
+        songsNeedRatingUpdate.append(songFilepath)
+
+logger.info("Found {} audio files that need rating tag updated...performing updates now".format(len(songsNeedRatingUpdate)))
+for songFilepath in songsNeedRatingUpdate:
+    mlu.tags.ratestats.updateSongRatestatTags(songFilepath)
+
+logger.info("Rating tag update process completed successfully")

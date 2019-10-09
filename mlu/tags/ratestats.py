@@ -7,7 +7,7 @@ and setting the 'VOTES' and 'RATING' tags on songs.
 
 import mutagen
 
-# setup logging for this script using MLU preconfigured logger
+# setup logging for the module using preconfigured MLU logger
 import mlu.common.logger
 logger = mlu.common.logger.getMLULogger()
 
@@ -91,30 +91,13 @@ def updateSongRatestatTags(songFilepath, newVote=0):
 
     ratestatTags.updateRating()
     _writeSongRatestatTags(ratestatTags)
-    
-
-def updateAvgRatingForAllLibrarySongs(libraryRootPath):
-    logger.info("Searching for all audio under music library root path {}".format(libraryRootPath))
-    librarySongs = mlu.library.musiclib.getAllSongFilepathsInLibrary(libraryRootPath)
-    logger.info("Found {} audio files in music library root path".format(len(librarySongs)))
-
-    logger.info("Finding audio files that need rating tag updated")
-    songsNeedRatingUpdate = []
-    for songFilepath in librarySongs:
-        audioFile = mutagen.File(songFilepath)
-        needsRatingUpdate = int(audioFile['NEEDS_RATING_UPDATE'])
-
-        if (needsRatingUpdate == 1):
-            logger.info("Found file flagged for rating update: {}".format(songFilepath))
-            songsNeedRatingUpdate.append(songFilepath)
-
-    
-    logger.info("Found {} audio files that need rating tag updated...performing updates now".format(len(songsNeedRatingUpdate)))
-    for songFilepath in songsNeedRatingUpdate:
-        updateSongRatestatTags(songFilepath)
-
-    logger.info("Rating tag update process completed successfully")
 
 
+def songNeedsRatingTagUpdate(songFilepath):
+    audioFile = mutagen.File(songFilepath)
+    needsRatingUpdate = int(audioFile['NEEDS_RATING_UPDATE'])
 
-
+    if (needsRatingUpdate == 1):
+        return True
+    else:
+        return False
