@@ -165,11 +165,9 @@ def Run():
     tagIssueSongs = mlu.tags.playstats.FindSongsWithWrongPlaystatTags(expectedSongsPlaystatTags=allSongPlaystatTagsNew)
 
     if (tagIssueSongs):
-        print("Playstats tag verification failed: expected playstat tags and actual tags do not match for song(s):")
-        for song in tagIssueSongs:
-            print(song)
-
-        raise("\nERROR: playstat tag writing failed - examine the above files to resolve incorrect tag data")
+        logger.error("Playstats tag verification failed: one or more songs have incorrect playstat tag values: examine the files below to resolve incorrect tags manually")
+        for songFilePath in tagIssueSongs:
+            logger.error("Incorrect playstat tags: {}".format(songFilePath))
 
     # archive log files and clear/reset mpd logs
     logger.info("Archiving MPD logs...")
