@@ -38,7 +38,7 @@ class _SongRatestatTags:
             self.validateVote(vote)
 
         if ( (not isinstance(self.rating, int)) and (not isinstance(self.rating, float)) ):
-            raise TypeError("ERROR: _SongRatestatTags - parameter 'rating' must an integer or float numeric value")        
+            raise TypeError("ERROR: _SongRatestatTags - parameter 'rating' must an integer or float numeric value")       
 
     def updateRating(self):
         newAvgRating = sum(self.votes) / len(self.votes)
@@ -60,26 +60,35 @@ def _readSongRatestatTags(songFilepath):
     audioFile = mutagen.File(songFilepath)
     votesList = mlu.tags.common.formatAudioTagStringToValuesList(audioFile['VOTES'], valuesAsInt=True)
     ratingFloat = float(audioFile['RATING'])
-
+    
     ratestatTags = _SongRatestatTags(
         songFilepath=songFilepath,
         votes=votesList,
-        rating=ratingFloat  
+        rating=ratingFloat 
     ) 
 
     logger.debug("Ratestat tags read successfully from audio file: Name={}, Votes={}, Rating={}".format(ratestatTags.songFilepath, ratestatTags.votes, ratestatTags.rating))
     return ratestatTags
 
-def _writeSongRatestatTags(songRatestatTags):
+def _writeSongRatestatTags(songRatestatTags, clearNeedsRatingUpdateFlag=True):
     ratingRoundedStr = str(round(songRatestatTags.rating, 2))
     votesStr = mlu.tags.common.formatValuesListToAudioTagString(songRatestatTags.votes)
 
     audioFile = mutagen.File(songRatestatTags.songFilepath)
     audioFile['VOTES'] = votesStr
     audioFile['RATING'] = ratingRoundedStr
-    audioFile.save()
 
+    if (clearNeedsRatingUpdateFlag):
+        audioFile['NEEDS_RATING_UPDATE'] = '0'
+
+    audioFile.save()
     logger.debug("Ratestat tags written to audio file successfully: Name={}, Votes={}, Rating={}".format(songRatestatTags.songFilepath, votesStr, ratingRoundedStr))
+
+    if (clearNeedsRatingUpdateFlag):
+        logger.debug("Ratestat tag 'NEEDS_RATING_UPDATE' flag was reset to 0")
+    else:
+        logger.debug("Ratestat tag 'NEEDS_RATING_UPDATE' flag was NOT reset: this operation was explicitly skipped")
+
     
 
 def updateSongRatestatTags(songFilepath, newVote=0):
