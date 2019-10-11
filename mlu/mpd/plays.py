@@ -206,6 +206,9 @@ def FilterFalsePlaybacks(playbackInstances):
 # We call this form a SongPlaybackRecord object
 #
 # 
+
+# TODO IDEA: create a module function "GroupPlaybackInstancesBySongs", which takes in PlaybackInstances array
+# and outputs an array of "songPlaybackRecord" data objects, like this class does
 class SongPlaybackRecord:
     def __init__(self, songFilepath, playbackTimes):
         self.songFilepath = songFilepath

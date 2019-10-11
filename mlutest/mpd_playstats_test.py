@@ -432,14 +432,6 @@ class TestCommonTimeFunctions(unittest.TestCase):
             with self.assertRaises(UnboundLocalError):
                 print(result)
 
-    
-
-    
-
-
-        
-
-
 
 ################################## mlu.common.file #################################################
 #----------------------------------- Module tests---------------------------------------------------
@@ -525,30 +517,35 @@ class WholeIntegrationTest(unittest.TestCase):
     as it would be normally, but this test case checks the results against expected results to verify 
     accuracy after setting up input test data.
     """
+
+    # make and place mpd log dir with test files in test-resources, along with a test music dir
+    # go through them manually to calculate the expected results of the playcounts, times played for songs
+    # go through songs to manually calculate new tag values expected
+    # then run the code and compare the expected to actual
     pass
 
 
 ###### TEST SUITE 
 # Main function that defines which unit tests to run for the MPD playstats update tests
 #  
-def GetMPDPlaystatsTestSuite():
-    # Test the common modules in MLU first, since other tests sometimes use the functions within them
-    # If the tests pass for the common modules, we can assume that the tests for other modules are valid
-    # If tests fail for common modules, stop the test execution b/c dependent tests will be affected
-    suite = unittest.TestSuite()
+# def GetMPDPlaystatsTestSuite():
+#     # Test the common modules in MLU first, since other tests sometimes use the functions within them
+#     # If the tests pass for the common modules, we can assume that the tests for other modules are valid
+#     # If tests fail for common modules, stop the test execution b/c dependent tests will be affected
+#     suite = unittest.TestSuite()
 
-    print("TEST SUITE CALLED!!")
+#     print("TEST SUITE CALLED!!")
 
-    # suite.addTest(TestCommonTimeFunctions())
-    # suite.addTest(TestCommonFileFunctions())
+#     # suite.addTest(TestCommonTimeFunctions())
+#     # suite.addTest(TestCommonFileFunctions())
 
-    suite.addTest(TestCacheIOWriteMLUObjectsToJSONFile())
-    suite.addTest(TestCacheIOReadMLUObjectsFromJSONFile())
-    return suite
+#     suite.addTest(TestCacheIOWriteMLUObjectsToJSONFile())
+#     suite.addTest(TestCacheIOReadMLUObjectsFromJSONFile())
+#     return suite
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner(verbosity=2)
-    runner.run(GetMPDPlaystatsTestSuite())
+    runner.run(print('runner called'))
 
 
 

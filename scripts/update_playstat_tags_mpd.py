@@ -20,6 +20,11 @@ from prettytable import PrettyTable
 import envsetup
 envsetup.PreparePythonProjectEnvironment()
 
+# setup logging for this script using MLU preconfigured logger
+import mlu.common.logger
+mlu.common.logger.initMLULogger()
+logger = mlu.common.logger.getMLULogger()
+
 import mlu.mpd.plays
 import mlu.mpd.logs
 import mlu.tags.basic
@@ -86,11 +91,27 @@ def Run():
     # We call this form a songPlaybackRecord object
 
     print("Building playback data structures from log files...")
-    mpdLogLineCollector = mlu.mpd.logs.MPDLogLineCollector(mpdLogDir=args['mpdLogDir'], promptForLogFileYears=args['noLogfileAgePrompt'])
-    playbackInstanceCollector = mlu.mpd.plays.PlaybackInstanceCollector(mpdLogLineCollector=mpdLogLineCollector)
-    songPlaybackRecordCollector = mlu.mpd.plays.SongPlaybackRecordCollector(playbackInstanceCollector=playbackInstanceCollector)
+    # MPDLogsManager class
+    # PlaybackRecordsManager class
 
-    songPlaybackRecords = songPlaybackRecordCollector.GetSongPlaybackRecords()
+    # New code using the above:
+    mpdLogsManager = mlu.mpd.logs.MPDLogsManager(mpdLogDir=args['mpdLogDir'])
+    mpdLogsManager.loadMPDLogLines()
+    mpdLogLines = mpdLogsManager.getMPDLogLines()
+
+    playbackRecordsManager = mlu.mpd.plays.PlaybackRecordsManager(mpdLogLines=mpdLogLines)
+    playbackRecordsManager.buildSongPlaybackRecords()
+    songPlaybackRecords = playbackRecordsManager.getSongPlaybackRecords()
+
+    if (playbackRecordsManager.ambiguousPlaybackRecordFound()):
+        mpdLogsManager.preserveMostRecentLogLine()
+
+    # old code
+    # mpdLogLineCollector = mlu.mpd.logs.MPDLogLineCollector(mpdLogDir=args['mpdLogDir'], promptForLogFileYears=args['noLogfileAgePrompt'])
+    # playbackInstanceCollector = mlu.mpd.plays.PlaybackInstanceCollector(mpdLogLineCollector=mpdLogLineCollector)
+    # songPlaybackRecordCollector = mlu.mpd.plays.SongPlaybackRecordCollector(playbackInstanceCollector=playbackInstanceCollector)
+
+    # songPlaybackRecords = songPlaybackRecordCollector.GetSongPlaybackRecords()
 
     # Write out 3 cache json files:
     #  1) current playback instances found
@@ -105,15 +126,21 @@ def Run():
     # Write 2nd cache file: current SongPlaystatTags values for each song that will be updated
     print("Cache step 2: Writing current playstat tags for all songs...")
     songsToUpdate = (playbackRecord.songFilePath for playbackRecord in songPlaybackRecords)
-    songsCurrentPlaystatTags = mlu.tags.playstats.ReadCurrentPlaystatTagsFromSongs(songFilepaths=songsToUpdate)
-    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=songsCurrentPlaystatTags, outputFilepath=GetJSONCacheFilepath(2))
+    allSongPlaystatTagsCurrent = mlu.tags.playstats.ReadPlaystatTagsFromSongs(songFilepaths=songsToUpdate)
+
+    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=allSongPlaystatTagsCurrent, outputFilepath=GetJSONCacheFilepath(2))
 
     # Write 3rd cache file: calculate new playstat tags based on playback instances + old tags
     # and return new, updated SongPlaystatTags values for all the songs
     print("Cache step 3: Writing new computed tag values (current tags + playback data) for all songs...")
-    tagUpdateResolver = mlu.tags.playstats.SongPlaystatTagsUpdateResolver(songPlaybackRecords=songPlaybackRecords, songsPlaystatTags=songsCurrentPlaystatTags)
-    songsNewPlaystatTags = tagUpdateResolver.GetUpdatedPlaystatTags()
-    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=songsNewPlaystatTags, outputFilepath=GetJSONCacheFilepath(3))
+    
+    # new code:
+    allSongPlaystatTagsNew = mlu.tags.playstats.MergeSongPlaystatTagsWithPlaybackRecords(songPlaystatTags=allSongPlaystatTagsCurrent, songPlaybackRecords=songPlaybackRecords)
+
+    # old code:
+    # tagUpdateResolver = mlu.tags.playstats.SongPlaystatTagsUpdateResolver(songPlaybackRecords=songPlaybackRecords, songsPlaystatTags=songsCurrentPlaystatTags)
+    # songsNewPlaystatTags = tagUpdateResolver.GetUpdatedPlaystatTags()
+    mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=allSongPlaystatTagsNew, outputFilepath=GetJSONCacheFilepath(3))
 
     print("Playback data gathering, caching, and tag preparation complete!\n")
 
@@ -131,11 +158,11 @@ def Run():
     
     # write the new, updated tag values (same ones we just wrote to the 3rd json cache file) to the
     # audio files
-    mlu.tags.playstats.WritePlaystatTagsToSongs(songsPlaystatTags=songsNewPlaystatTags)
+    mlu.tags.playstats.WritePlaystatTagsToSongs(songsPlaystatTags=allSongPlaystatTagsNew)
 
     # Verify the changes made: read in the current, now updated playstat tags from the audio files 
     # and verify they match the updated tags list built earlier
-    tagIssueSongs = mlu.tags.playstats.FindSongsWithWrongPlaystatTags(expectedSongsPlaystatTags=songsNewPlaystatTags)
+    tagIssueSongs = mlu.tags.playstats.FindSongsWithWrongPlaystatTags(expectedSongsPlaystatTags=allSongPlaystatTagsNew)
 
     if (tagIssueSongs):
         print("Playstats tag verification failed: expected playstat tags and actual tags do not match for song(s):")
@@ -143,3 +170,11 @@ def Run():
             print(song)
 
         raise("\nERROR: playstat tag writing failed - examine the above files to resolve incorrect tag data")
+
+    # archive log files and clear/reset mpd logs
+    logger.info("Archiving MPD logs...")
+    mpdLogsManager.archiveLogs()
+
+    logger.info("Emptying MPD logs to reset collected playback data...")
+    mpdLogsManager.clearLogs()
+    

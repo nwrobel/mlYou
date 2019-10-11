@@ -49,7 +49,7 @@ for currentVoteValue in range(1, 10):
 
 logger.info('Music vote/rating data updated successfully!')
 
-logger.info('Archiving old vote playlists...')
+logger.info('Archiving vote playlists...')
 archiveFilename = "[{}] Post-update archived vote data playlists.gz".format(mlu.common.time.getCurrentFormattedTime())
 archiveFilePath = mlu.common.file.JoinPaths(args.votePlaylistsArchiveDir, archiveFilename)
 
