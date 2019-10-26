@@ -5,10 +5,16 @@ Module for functionality that is needed/shared between various other mlu.tags mo
 '''
 
 def formatValuesListToAudioTagString(valuesList):
+    if (not valuesList):
+        return ''
+        
     listStr = ';'.join(map(str, valuesList))
     return listStr
 
 def formatAudioTagStringToValuesList(audioTagStr, valuesAsInt=False):
+    if (not audioTagStr):
+        return []
+    
     valuesList = audioTagStr.split(';')
 
     if (valuesAsInt):
