@@ -82,7 +82,7 @@ class MPDLogLineCollector:
    def __init__(self, mpdLogDir, promptForLogFileYears):
       self.mpdLogDir = mpdLogDir
       self.promptForLogFileYears = promptForLogFileYears
-      self.tempLogDir = mlu.common.file.GetMPDLogCacheDirectory()
+      self.tempLogDir = mlu.common.file.getMPDLogCacheDirectory()
       self.logFileContextCurrentYear = {}
 
    def GetMPDLogLines(self):
@@ -95,7 +95,7 @@ class MPDLogLineCollector:
    
    def CopyLogFilesToTemp(self): 
       # Create the cache directory to store the log files in temporarily so we can manipulate them
-      mlu.common.file.CreateDirectory(self.tempLogDir)
+      mlu.common.file.createDirectory(self.tempLogDir)
 
       # Get all MPD log files and copy them into the temp dir
       mpdLogFiles = mlu.common.file.GetAllFilesDepth1(self.mpdLogDir)

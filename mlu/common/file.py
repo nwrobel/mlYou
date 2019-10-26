@@ -32,20 +32,41 @@ def GetTestResourceFilesDirectory():
     """
     return JoinPaths(getMLUProjectRoot(), "mlutest\\test-resources")
 
-def GetMLUCacheDirectory():
+def getMLULogDirectory():
+    """
+    Gets the absolute filepath of the directory where all script log files will reside.  
+    This dir will be shared by all code in the MLU project. Also does a check to ensure the log 
+    directory exists and creates it if it doesn't.
+    """
+    logdir = JoinPaths(getMLUProjectRoot(), "~logs")
+    if (not directoryExists(logdir)):
+        createDirectory(logdir)
+
+    return logdir
+
+def getMLUCacheDirectory():
     """
     Gets the absolute filepath of the directory where temporary and/or cache files will be written
-    to. This dir will be shared by all code in the MLU project.
+    to. This dir will be shared by all code in the MLU project. Also does a check to ensure the cache 
+    directory exists and creates it if it doesn't.
     """
-    return JoinPaths(getMLUProjectRoot(), "~mlucache")
+    cachedir = JoinPaths(getMLUProjectRoot(), "~cache")
+    if (not directoryExists(cachedir)):
+        createDirectory(cachedir)
 
-def GetMPDLogCacheDirectory():
+    return cachedir
+
+def getMPDLogCacheDirectory():
     """
     Gets the absolute filepath of the cache directory inside the project folder where MPD logs will
     be stored temporarily while being processed. This is used by the MPD playstats updater script.
+    Also does a check to ensure the cache directory exists and creates it if it doesn't.
     """
-    return JoinPaths(GetMLUCacheDirectory(), "mpdlogs")
+    mpdLogCacheDir = JoinPaths(getMLUCacheDirectory(), "mpdlogs")
+    if (not directoryExists(mpdLogCacheDir)):
+        createDirectory(mpdLogCacheDir)
 
+    return mpdLogCacheDir
 
 def GetAllFilesAndDirectoriesRecursive(rootPath):
     """
@@ -120,7 +141,7 @@ def GetAllFilesByExtension(rootPath, fileExt):
     return matchingFilepaths
 
 
-def CreateDirectory(folderPath):
+def createDirectory(folderPath):
     """
     Creates the directory specified by the given directory path.
     """
@@ -204,7 +225,7 @@ def FileExists(filePath):
     
     return False
 
-def FolderExists(folderPath):
+def directoryExists(folderPath):
     """
     Checks if the folder at the given path exists (boolean)
     """

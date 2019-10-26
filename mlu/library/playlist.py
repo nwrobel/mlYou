@@ -25,7 +25,7 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
     
     print("Attempting to load all playlists in source directory:", sourcePlaylistDir)
     
-    assert mlu.common.file.FolderExists(sourcePlaylistDir), "ERROR: The given playlist source folder is invalid or cannot be found"
+    assert mlu.common.file.directoryExists(sourcePlaylistDir), "ERROR: The given playlist source folder is invalid or cannot be found"
     
     playlistFilePathsM3U = mlu.common.file.GetAllFilesByExtension(sourcePlaylistDir, ".m3u")
     playlistFilePathsM3U8 = mlu.common.file.GetAllFilesByExtension(sourcePlaylistDir, ".m3u8")
@@ -34,9 +34,9 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
     
     print("Looking for output directory:", outputPlaylistDir)
     
-    if (not mlu.common.file.FolderExists(outputPlaylistDir)):
+    if (not mlu.common.file.directoryExists(outputPlaylistDir)):
         print("Output directory not found...attempting to create it")
-        mlu.common.file.CreateDirectory(outputPlaylistDir)
+        mlu.common.file.createDirectory(outputPlaylistDir)
         
     else:
         print("WARNING: Output directory already exists - all files currently within this directory WILL BE DELETED:\n", outputPlaylistDir)        
@@ -55,7 +55,7 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
                 print("Invalid choice: please enter Y or N (case insensitive)")
                 
         mlu.common.file.DeleteDirectory(outputPlaylistDir)
-        mlu.common.file.CreateDirectory(outputPlaylistDir)
+        mlu.common.file.createDirectory(outputPlaylistDir)
 
     oldRoot = RemoveTrailingSlash(oldRoot)
     newRoot = RemoveTrailingSlash(newRoot)

@@ -80,7 +80,7 @@ def initMLULogger(logFilename=''):
     # create a file handler which logs all messages by default by saving them to a static log file
     # (given the filename), which is used by all the other Python modules to write log statements into: 
     # this is a global/"shared" log output file instead of having them seperated by module into various log files
-    logFilepath = mlu.common.file.JoinPaths(mlu.common.file.getMLUProjectRoot(), logFilename)
+    logFilepath = mlu.common.file.JoinPaths(mlu.common.file.getMLULogDirectory(), logFilename)
     fh = logging.FileHandler(logFilepath)
     fh.setLevel(logging.DEBUG)
 
