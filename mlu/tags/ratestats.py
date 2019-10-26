@@ -24,19 +24,21 @@ class SongRatestatTagsHandler:
     '''
     def __init__(self, songFilepath):
         self.songFilepath = songFilepath
-        self.votes = [] # list of numbers (int), each representing a vote
-        self.rating = 0.0 # single float number for the avg vote value
-        self.needsRatingUpdate = False # bool as to whether or not this audio file needs its rating tag updated
+        self.votes = None # list of numbers (int), each representing a vote
+        self.rating = None # single float number for the avg vote value
+        self.needsRatingUpdate = None # bool as to whether or not this audio file needs its rating tag updated
 
         # Throw exceptions is the wrong data type is passed in
         if (not isinstance(self.songFilepath, str)):
-            raise TypeError("ERROR: _SongRatestatTags - parameter 'songFilepath' must be a string")
+            raise TypeError("ERROR: SongRatestatTagsHandler - parameter 'songFilepath' must be a string")
 
-    def readRatestatTags(self):
+        # read in the tag values to populate the fields
+        self._readRatestatTags()
+
+    def _readRatestatTags(self):
         '''
-        Reads in the current values of certain ratestat tags, updating the class instance's fields with
-        this data. By default all are read in, but you can also specify to only read/check the
-        needsRaingUpdate tag only.
+        Reads in the current values of all ratestat tags, updating the class instance's fields with
+        this data.
         '''
         audioFile = mutagen.File(self.songFilepath)
 
@@ -89,19 +91,14 @@ class SongRatestatTagsHandler:
 
     def _validateVote(self, vote):
         if (not isinstance(vote, int)):
-            raise TypeError("ERROR: _SongRatestatTags - each value in parameter 'votes' must be type integer")
+            raise TypeError("ERROR: SongRatestatTagsHandler - each value in parameter 'votes' must be type integer")
 
         if (vote < 1 or vote > 10):
-            raise VoteValueOutOfRange("ERROR: _SongRatestatTags - each value in parameter 'votes' must be an integer between (or equal to) 1 and 10")
-
-
-def _writeSongRatestatTags(songRatestatTags, clearNeedsRatingUpdateFlag=True):
-    
-    
+            raise VoteValueOutOfRange("ERROR: SongRatestatTagsHandler - each value in parameter 'votes' must be an integer between (or equal to) 1 and 10")
+   
 
 def updateSongRatestatTags(songFilepath, newVote=0):
     songRatestatTagsHandler = SongRatestatTagsHandler(songFilepath)
-    songRatestatTagsHandler.readRatestatTags()
 
     if (newVote != 0):
         songRatestatTagsHandler.addVote(newVote)
