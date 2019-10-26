@@ -1,0 +1,11 @@
+2019-10-26 15:26:52,459 - [update_ratestat_tags_from_vote_playlists.py,  <module>()] - INFO - Reading songs with vote value 1 from playlist D:\Temp\mlu-test\test-vote-playlists-input\1.m3u
+2019-10-26 15:27:16,555 - [update_ratestat_tags_from_vote_playlists.py,  <module>()] - INFO - Found 1 songs in vote value 1 playlist...updating their ratestat tags now
+2019-10-26 15:27:21,658 - [update_ratestat_tags_from_vote_playlists.py,  <module>()] - DEBUG - Adding new vote (value 1) to song /datastore/nick/Music Library/Content/Music/Label - Northern Electronics [2013 - 2017]/[NE1] Varg - Misantropen [2013]/01 Mount Analogue.flac
+
+2019-10-26 15:34:49,722 - [update_ratestat_tags_from_vote_playlists.py,  <module>()] - INFO - Reading songs with vote value 1 from playlist D:\Temp\mlu-test\test-vote-playlists-input\1.m3u8
+2019-10-26 15:34:50,482 - [update_ratestat_tags_from_vote_playlists.py,  <module>()] - INFO - Found 1 songs in vote value 1 playlist...updating their ratestat tags now
+2019-10-26 15:34:52,122 - [update_ratestat_tags_from_vote_playlists.py,  <module>()] - DEBUG - Adding new vote (value 1) to song 'D:\Temp\mlu-test\test-musicdir\Content\Music\Label - Northern Electronics [2013 - 2017]\[NE1] Varg - Misantropen [2013]\01 Mount Analogue.flac
+'
+2019-10-26 15:35:16,391 - [update_ratestat_tags_from_vote_playlists.py,  <module>()] - INFO - Reading songs with vote value 1 from playlist D:\Temp\mlu-test\test-vote-playlists-input\1.m3u8
+2019-10-26 15:40:05,099 - [update_ratestat_tags_from_vote_playlists.py,  <module>()] - INFO - Reading songs with vote value 1 from playlist D:\Temp\mlu-test\test-vote-playlists-input\1.m3u8
+2019-10-26 15:42:32,037 - [update_ratestat_tags_from_vote_playlists.py,  <module>()] - INFO - Reading songs with vote value 1 from playlist D:\Temp\mlu-test\test-vote-playlists-input\1.m3u8

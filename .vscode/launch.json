@@ -17,6 +17,14 @@
             "request": "launch",
             "program": "${file}",
             "console": "externalTerminal"
+        },
+        {
+            "name": "Ratestats vote playlist update script debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["D:\\Temp\\mlu-test\\test-vote-playlists-input", "D:\\Temp\\mlu-test\\test-vote-playlists-output"],
+            "console": "integratedTerminal"
         }
     ]
 }

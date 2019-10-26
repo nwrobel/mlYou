@@ -75,7 +75,7 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
         originalLines = getAllPlaylistLines(playlistFilePath)
 
         # Remove the '#' that is sometimes added to playlists when exported from Foobar2000
-        if (len(originalLines) > 0 and originalLines[0] == '#\n'):
+        if (len(originalLines) > 0 and originalLines[0] == '#'):
             originalLines.pop(0) 
         
         # Convert each line and add the result to the list of new playlist lines
@@ -103,5 +103,10 @@ def getAllPlaylistLines(playlistFilepath):
     with open(playlistFilepath, mode='r', encoding='utf-8-sig') as file:
         lines = file.readlines()
 
-    return lines
+    playlistLines = []
+    # Remove newline at the end of each playlist line (song filepath)
+    for line in lines:
+        playlistLines.append(line.replace('\n', ''))
+
+    return playlistLines
     

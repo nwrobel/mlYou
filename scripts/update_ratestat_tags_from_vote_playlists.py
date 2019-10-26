@@ -35,7 +35,7 @@ args = parser.parse_args()
 votePlaylists = []
 
 for currentVoteValue in range(1, 10):
-    currentVoteValuePlaylistName = currentVoteValue + '.m3u'
+    currentVoteValuePlaylistName = "{}.m3u8".format(currentVoteValue)
     currentVoteValuePlaylistPath =  mlu.common.file.JoinPaths(args.votePlaylistsInputDir, currentVoteValuePlaylistName)
     votePlaylists.append(currentVoteValuePlaylistPath)
     
@@ -44,7 +44,7 @@ for currentVoteValue in range(1, 10):
     logger.info("Found {} songs in vote value {} playlist...updating their ratestat tags now".format(len(playlistSongs), currentVoteValue))
 
     for songFilepath in playlistSongs:
-        logger.debug("Adding new vote (value {}) to song {}".format(currentVoteValue, songFilepath))
+        logger.debug("Adding new vote (value {}) to song '{}'".format(currentVoteValue, songFilepath))
         mlu.tags.ratestats.updateSongRatestatTags(songFilepath, newVote=currentVoteValue)
 
 logger.info('Music vote/rating data updated successfully!')
