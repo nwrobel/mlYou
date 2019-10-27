@@ -44,16 +44,19 @@ class SongRatestatTagsHandler:
 
         try:
             rawVotesTag = audioFile['VOTES']
+            rawVotesTag = rawVotesTag[0]
         except KeyError:
             rawVotesTag = ''
 
         try:
             rawRatingTag = audioFile['RATING']
+            rawRatingTag = rawRatingTag[0]
         except KeyError:
             rawRatingTag = '0.00'
 
         try:
             rawNeedRatingUpdateTag = audioFile['NEEDS_RATING_UPDATE']
+            rawNeedRatingUpdateTag = rawNeedRatingUpdateTag[0]
         except KeyError:
             rawNeedRatingUpdateTag = '0'
 
@@ -61,11 +64,11 @@ class SongRatestatTagsHandler:
         self.rating = float(rawRatingTag)
         self.needsRatingUpdate = (int(rawNeedRatingUpdateTag) == 1)
 
-        logger.debug("SongRatestatTagsHandler successfully READ ratestat tags for audio file: Path='{}', Votes='{}', Rating='{}', NeedsRatingUpdate='{}'".format(self.songFilepath, self.votes, self.rating, self.needsRatingUpdate))
+        logger.debug("Successfully READ ratestat tags for audio file: Path='{}', Votes='{}', Rating='{}', NeedsRatingUpdate='{}'".format(self.songFilepath, self.votes, self.rating, self.needsRatingUpdate))
 
     def writeRatestatTags(self):
         votesStr = mlu.tags.common.formatValuesListToAudioTagString(self.votes)
-        ratingStr = str(round(self.rating, 2)) # round to 2 decimal points
+        ratingStr = '{0:.2f}'.format(round(self.rating, 2)) # round to 2 decimal points and always show 2 decimal places
 
         if (self.needsRatingUpdate):
             needsRatingUpdateStr = '1'
@@ -78,7 +81,7 @@ class SongRatestatTagsHandler:
         audioFile['NEEDS_RATING_UPDATE'] = needsRatingUpdateStr
         audioFile.save()
 
-        logger.debug("SongRatestatTagsHandler successfully WROTE ratestat tags for audio file: Path='{}', Votes='{}', Rating='{}', NeedsRatingUpdate='{}'".format(self.songFilepath, votesStr, ratingStr, needsRatingUpdateStr))
+        logger.debug("Successfully WROTE ratestat tags for audio file: Path='{}', Votes='{}', Rating='{}', NeedsRatingUpdate='{}'".format(self.songFilepath, votesStr, ratingStr, needsRatingUpdateStr))
         
     def updateRating(self):
         newAvgRating = sum(self.votes) / len(self.votes)
