@@ -1,0 +1,138 @@
+Feb 05 15:49 : client: [16] opened from 107.77.248.43:43359
+Feb 05 15:49 : client: [16] closed
+Feb 05 15:49 : client: [17] opened from 107.77.248.51:43360
+Feb 05 15:50 : client: [18] opened from 107.77.248.35:43361
+Feb 05 15:50 : player: played "Aerosmith/Greatest Hits/03 Sweet Emotion.flac"
+Feb 05 15:50 : client: [18] closed
+Feb 05 15:50 : player: played "Tool/Lateralus/14 Parabola (Lustmord Remix).flac"
+Feb 05 15:51 : client: [19] opened from 107.77.248.27:43364
+Feb 05 15:51 : player: played "Tool/Lateralus/01 The Grudge.flac"
+Feb 05 15:51 : player: played "Tool/Lateralus/14 Parabola (Lustmord Remix).flac"
+Feb 05 15:52 : client: [19] closed
+Feb 05 15:52 : client: [17] closed
+Feb 05 15:52 : client: [20] opened from 107.77.248.27:43368
+Feb 05 15:52 : client: [21] opened from 107.77.248.35:43370
+Feb 05 15:52 : player: played "Tool/Lateralus/01 The Grudge.flac"
+Feb 05 15:52 : player: played "Tool/Lateralus/14 Parabola (Lustmord Remix).flac"
+Feb 05 15:56 : client: [21] closed
+Feb 05 15:56 : player: played "Tool/Lateralus/01 The Grudge.flac"
+Feb 05 15:56 : client: [22] opened from 107.77.248.19:43380
+Feb 05 15:57 : client: [22] closed
+Feb 05 15:57 : client: [20] closed
+Feb 05 15:57 : client: [23] opened from 107.77.248.19:43387
+Feb 05 15:57 : client: [23] closed
+Feb 06 05:13 : httpd_output: malformed request line from client
+Feb 06 16:18 : client: [24] opened from 107.77.248.87:52572
+Feb 06 16:18 : client: [25] opened from 107.77.248.87:52573
+Feb 06 16:18 : player: played "Nickelback/Curb/01 Little Friend.flac"
+Feb 06 16:19 : client: [24] closed
+Feb 06 16:22 : player: played "Nickelback/Curb/01 Little Friend.flac"
+Feb 06 16:26 : player: played "Nickelback/Curb/02 Pusher.flac"
+Feb 06 16:30 : player: played "Nickelback/Curb/03 Detangler.flac"
+Feb 06 16:35 : player: played "Nickelback/Curb/04 Curb.flac"
+Feb 06 16:35 : client: [26] opened from 107.77.248.103:52592
+Feb 06 16:35 : client: [26] closed
+Feb 06 16:35 : client: [27] opened from 107.77.248.79:52595
+Feb 06 16:35 : client: [25] closed
+Feb 06 16:35 : client: [27] closed
+Feb 06 16:35 : client: [28] opened from 107.77.248.79:52613
+Feb 06 16:35 : client: [28] closed
+Feb 07 07:32 : client: [29] opened from 107.77.248.135:56667
+Feb 07 07:33 : player: played "Nickelback/Curb/05 Where_.flac"
+Feb 07 07:33 : client: [30] opened from 107.77.248.135:56671
+Feb 07 07:34 : player: played "Tool/10,000 Days/01 Vicarious.flac"
+Feb 07 07:34 : client: [29] closed
+Feb 07 07:41 : player: played "Tool/10,000 Days/01 Vicarious.flac"
+Feb 07 07:48 : player: played "Tool/10,000 Days/02 Jambi.flac"
+Feb 07 07:50 : httpd_output: malformed request line from client
+Feb 07 07:54 : player: played "Tool/10,000 Days/03 Wings For Marie (Pt 1).flac"
+Feb 07 08:03 : client: [31] opened from 107.77.248.120:56753
+Feb 07 08:03 : client: [30] closed
+Feb 07 08:03 : client: [31] closed
+Feb 07 08:03 : client: [32] opened from 107.77.248.120:56754
+Feb 07 08:03 : client: [32] closed
+Feb 07 10:41 : client: [33] opened from 107.77.248.32:34779
+Feb 07 10:42 : client: [34] opened from 107.77.248.40:34782
+Feb 07 10:42 : client: [33] closed
+Feb 07 10:45 : player: played "Tool/10,000 Days/04 10.000 Days (Wings Pt 2).flac"
+Feb 07 10:51 : player: played "Tool/10,000 Days/05 The Pot.flac"
+Feb 07 10:52 : player: played "Tool/10,000 Days/06 Lipan Conjuring.flac"
+Feb 07 10:56 : player: played "Tool/10,000 Days/07 Lost Keys (Blame Hofmann).flac"
+Feb 07 10:58 : client: [35] opened from 107.77.248.48:34823
+Feb 07 10:58 : client: [34] closed
+Feb 07 10:58 : client: [35] closed
+Feb 07 10:58 : client: [36] opened from 107.77.248.32:34824
+Feb 07 10:58 : client: [36] closed
+Feb 07 11:12 : client: [37] opened from 107.77.248.32:34833
+Feb 07 11:13 : client: [38] opened from 107.77.248.32:34834
+Feb 07 11:13 : client: [38] closed
+Feb 07 11:14 : client: [37] closed
+Feb 07 11:14 : client: [39] opened from 107.77.248.32:34851
+Feb 07 11:14 : client: [39] closed
+Feb 07 11:14 : client: [40] opened from 107.77.248.40:34853
+Feb 07 11:14 : client: [40] closed
+Feb 07 11:14 : client: [41] opened from 107.77.248.32:34856
+Feb 07 11:14 : client: [41] closed
+Feb 07 11:14 : client: [42] opened from 107.77.248.40:34857
+Feb 07 11:15 : client: [42] closed
+Feb 07 11:15 : client: [43] opened from 107.77.248.32:34861
+Feb 07 11:15 : client: [43] closed
+Feb 07 11:15 : client: [44] opened from 107.77.248.48:34863
+Feb 07 11:15 : client: [44] closed
+Feb 07 11:15 : client: [45] opened from 107.77.248.40:34864
+Feb 07 11:16 : client: [45] closed
+Feb 07 11:16 : client: [46] opened from 107.77.248.48:34865
+Feb 07 11:16 : client: [46] closed
+Feb 07 11:16 : client: [47] opened from 107.77.248.32:34866
+Feb 07 11:16 : client: [47] closed
+Feb 07 11:16 : client: [48] opened from 107.77.248.32:34868
+Feb 07 11:16 : client: [48] closed
+Feb 07 11:16 : client: [49] opened from 107.77.248.32:34869
+Feb 07 11:16 : client: [49] closed
+Feb 07 11:16 : client: [50] opened from 107.77.248.24:34872
+Feb 07 11:16 : client: [50] closed
+Feb 07 11:16 : client: [51] opened from 107.77.248.48:34873
+Feb 07 11:17 : player: played "Tool/10,000 Days/08 Rosetta Stoned.flac"
+Feb 07 11:17 : client: [52] opened from 107.77.248.40:34874
+Feb 07 11:17 : client: [51] closed
+Feb 07 11:20 : player: played "A Perfect Circle/Mer De Noms/01 The Hollow.flac"
+Feb 07 11:21 : client: [52] closed
+Feb 07 11:21 : client: [53] opened from 107.77.248.40:34905
+Feb 07 11:21 : client: [54] opened from 107.77.248.24:34906
+Feb 07 11:21 : client: [53] closed
+Feb 07 11:24 : player: played "A Perfect Circle/Mer De Noms/02 Magdalena.flac"
+Feb 07 11:27 : player: played "A Perfect Circle/Mer De Noms/03 Rose.flac"
+Feb 07 11:28 : client: [54] closed
+Feb 07 11:28 : client: [55] opened from 107.77.248.32:34913
+Feb 07 11:28 : client: [56] opened from 107.77.248.56:34914
+Feb 07 11:28 : client: [55] closed
+Feb 07 11:28 : client: [56] closed
+Feb 07 15:05 : client: [57] opened from 107.77.248.72:56265
+Feb 07 15:05 : client: [58] opened from 107.77.248.96:56266
+Feb 07 15:06 : client: [57] closed
+Feb 07 15:06 : client: [59] opened from 107.77.248.88:56269
+Feb 07 15:06 : client: [59] closed
+Feb 07 15:06 : client: [60] opened from 107.77.248.72:56275
+Feb 07 15:06 : client: [60] closed
+Feb 07 15:06 : client: [61] opened from 107.77.248.72:56277
+Feb 07 15:06 : client: [61] closed
+Feb 07 15:08 : player: played "A Perfect Circle/Mer De Noms/04 Judith.flac"
+Feb 07 15:13 : player: played "A Perfect Circle/Mer De Noms/05 Orestes.flac"
+Feb 07 15:16 : client: [62] opened from 107.77.248.80:56313
+Feb 07 15:16 : client: [62] closed
+Feb 07 15:16 : client: [58] closed
+Feb 07 15:16 : client: [63] opened from 107.77.248.80:56338
+Feb 07 15:16 : client: [63] closed
+Feb 07 15:16 : client: [64] opened from 107.77.248.80:56339
+Feb 07 15:17 : player: played "A Perfect Circle/Mer De Noms/06 3 Libras.flac"
+Feb 07 15:21 : player: played "A Perfect Circle/Mer De Noms/07 Sleeping Beauty.flac"
+Feb 07 15:25 : player: played "A Perfect Circle/Mer De Noms/08 Thomas.flac"
+Feb 07 15:26 : client: [64] closed
+Feb 07 15:26 : client: [65] opened from 107.77.248.80:56347
+Feb 07 15:26 : client: [65] closed
+Feb 07 15:26 : client: [66] opened from 107.77.248.104:56348
+Feb 07 15:26 : client: [66] closed
+Feb 07 15:26 : client: [67] opened from 107.77.248.88:56349
+Feb 07 15:27 : client: [68] opened from 107.77.248.96:56352
+Feb 07 15:27 : client: [67] closed
+Feb 07 15:27 : client: [68] closed

@@ -25,12 +25,17 @@ def getMLUProjectRoot():
     projectRoot = JoinPaths(thisModulePath ,"..\\..")
     return projectRoot
 
-def GetTestResourceFilesDirectory():
+def getTestResourceFilesDirectory():
     """
     Gets the absolute filepath of the directory where test output and input data files will be saved
-    for the Unit tests defined in the mlutest package.
+    for the Unit tests defined in the mlutest package. Also does a check to ensure the log 
+    directory exists and creates it if it doesn't.
     """
-    return JoinPaths(getMLUProjectRoot(), "mlutest\\test-resources")
+    testResDir = JoinPaths(getMLUProjectRoot(), "mlutest\\resources")
+    if (not directoryExists(testResDir)):
+        createDirectory(testResDir)
+
+    return testResDir
 
 def getMLULogDirectory():
     """

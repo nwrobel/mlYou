@@ -66,7 +66,7 @@ class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
     """
     # -----------------------------Test case helper functions --------------------------------------
     def setUp(self):
-        self.testJsonFilepath = mlu.common.file.JoinPaths(mlu.common.file.GetTestResourceFilesDirectory(), "testwrite.json")
+        self.testJsonFilepath = mlu.common.file.JoinPaths(mlu.common.file.getTestResourceFilesDirectory(), "testwrite.json")
 
     def tearDown(self):
         os.remove(self.testJsonFilepath)
@@ -250,7 +250,7 @@ class TestCacheIOReadMLUObjectsFromJSONFile(unittest.TestCase):
     # ------------------------------- Test Case Helper functions -----------------------------------
 
     def setUp(self):
-        self.testJsonFilepath = mlu.common.file.JoinPaths(mlu.common.file.GetTestResourceFilesDirectory(), "testread.json")
+        self.testJsonFilepath = mlu.common.file.JoinPaths(mlu.common.file.getTestResourceFilesDirectory(), "testread.json")
 
     def tearDown(self):
         os.remove(self.testJsonFilepath)
