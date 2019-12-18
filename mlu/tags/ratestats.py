@@ -71,17 +71,15 @@ class SongRatestatTagsHandler:
         ratingStr = '{0:.2f}'.format(round(self.rating, 2)) # round to 2 decimal points and always show 2 decimal places
 
         if (self.needsRatingUpdate):
-            needsRatingUpdateStr = '1'
-        else:
-            needsRatingUpdateStr = '0'
+            raise "Ratestats error: self.needsRatingUpdate field is true before writing tags - ensure tags were updated first"
 
         audioFile = mutagen.File(self.songFilepath)
         audioFile['VOTES'] = votesStr
         audioFile['RATING'] = ratingStr
-        audioFile['NEEDS_RATING_UPDATE'] = needsRatingUpdateStr
+        audioFile['NEEDS_RATING_UPDATE'] = '0' # needs to always be 0, we don't want to write non-updated rating tag
         audioFile.save()
 
-        logger.debug("Successfully WROTE ratestat tags for audio file: Path='{}', Votes='{}', Rating='{}', NeedsRatingUpdate='{}'".format(self.songFilepath, votesStr, ratingStr, needsRatingUpdateStr))
+        logger.debug("Successfully WROTE ratestat tags for audio file: Path='{}', Votes='{}', Rating='{}', NeedsRatingUpdate='{}'".format(self.songFilepath, votesStr, ratingStr, '0'))
         
     def updateRating(self):
         newAvgRating = sum(self.votes) / len(self.votes)
@@ -91,6 +89,14 @@ class SongRatestatTagsHandler:
     def addVote(self, vote):
         self._validateVote(vote)
         self.votes.append(vote)
+
+    def getRatestatTags(self):
+        return {
+            'songFilepath': self.songFilepath,
+            'votes': self.votes,
+            'rating': self.rating,
+            'needsRatingUpdate': self.needsRatingUpdate
+        }
 
     def _validateVote(self, vote):
         if (not isinstance(vote, int)):
@@ -108,3 +114,18 @@ def updateSongRatestatTags(songFilepath, newVote=0):
     songRatestatTagsHandler.updateRating()
     
     songRatestatTagsHandler.writeRatestatTags()
+
+def getSongRatestatTags(songFilepath):
+    """
+    Retrieves the tag values of the given audio filepath for the ratestat tags.
+
+    Args:
+        songFilepath: the absolute filepath of the song/audio file
+
+    Returns:
+        dict holding tag names and values
+    """
+    songRatestatTagsHandler = SongRatestatTagsHandler(songFilepath)
+    tags = songRatestatTagsHandler.getRatestatTags()
+
+    return tags

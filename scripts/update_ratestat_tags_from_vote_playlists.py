@@ -9,6 +9,7 @@ envsetup.PreparePythonProjectEnvironment()
 
 # import external Python modules
 import argparse
+from prettytable import PrettyTable
 
 # setup logging for this script using MLU preconfigured logger
 import mlu.common.logger
@@ -20,6 +21,7 @@ import mlu.tags.ratestats
 import mlu.common.file 
 import mlu.common.time
 import mlu.library.playlist
+import mlu.tags.basic
 
 parser = argparse.ArgumentParser()
 
@@ -33,6 +35,8 @@ parser.add_argument("votePlaylistsArchiveDir",
 
 args = parser.parse_args()
 votePlaylists = []
+allPlaylistsSongs = []
+newVotesForSongs = []
 
 for currentVoteValue in range(1, 10):
     currentVoteValuePlaylistName = "{}.m3u8".format(currentVoteValue)
@@ -40,14 +44,48 @@ for currentVoteValue in range(1, 10):
     votePlaylists.append(currentVoteValuePlaylistPath)
     
     logger.info("Reading songs with vote value {} from playlist {}".format(currentVoteValue, currentVoteValuePlaylistPath))
-    playlistSongs = mlu.library.playlist.getAllPlaylistLines(currentVoteValuePlaylistPath)
+    playlistSongs = mlu.library.playlist.getAllPlaylistLines(currentVoteValuePlaylistPath)    
     logger.info("Found {} songs in vote value {} playlist...updating their ratestat tags now".format(len(playlistSongs), currentVoteValue))
+
+    allPlaylistsSongs += playlistSongs
+
 
     for songFilepath in playlistSongs:
         logger.debug("Adding new vote (value {}) to song '{}'".format(currentVoteValue, songFilepath))
         mlu.tags.ratestats.updateSongRatestatTags(songFilepath, newVote=currentVoteValue)
 
-logger.info('Music vote/rating data updated successfully!')
+        currentNewVoteValuesForSong = [curentNewVotesForSong[songFilepath] for curentNewVotesForSong in newVotesForSongs]
+        if (not currentNewVoteValuesForSong):
+            currentNewVoteValuesForSong = []
+            newVoteValuesForSong = []
+
+        newVoteValuesForSong += currentNewVoteValuesForSong
+
+        newVotesForSongs.append({
+            'songFilepath': songFilepath,
+            'newVotes': newVoteValuesForSong
+        })
+
+allUpdatedSongs = set(allPlaylistsSongs)
+logger.info('Music vote/rating data updated successfully: {} songs had ratestat tags updated'.format(allUpdatedSongs))
+
+# Print the results of all updated songs in table form and what changes occured
+tagUpdatesTable = PrettyTable()
+tagUpdatesTable.field_names = ["Song", "Artist", "New Votes", "New Rating"]
+
+for songFilepath in allUpdatedSongs:
+    basicTags = mlu.tags.basic.getSongBasicTags(songFilepath)
+    ratestatTags = mlu.tags.ratestats.getSongRatestatTags(songFilepath)
+    newVotes = [newVotesForSong[songFilepath] for newVotesForSong in newVotesForSongs]
+
+    tagUpdatesTable.add_row([
+        basicTags.title, 
+        basicTags.artist, 
+        newVotes,
+        ratestatTags['rating']
+    ])
+
+    logger.info('\\nThe following changes were made to music library:\\n}{}'.format(tagUpdatesTable))
 
 logger.info('Archiving vote playlists...')
 archiveFilename = "[{}] Post-update archived vote data playlists.gz".format(mlu.common.time.getCurrentFormattedTime())

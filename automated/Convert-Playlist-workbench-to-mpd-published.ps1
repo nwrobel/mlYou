@@ -2,7 +2,7 @@
 # Modify them to suit your automation needs.
 $args = [PSCustomObject]@{
     SourcePlaylistDir = "Z:\Music Library\Playlist Workbench"
-    OutputPlaylistDir = "Z:\Music Library\Content\!mpd-published-playlists"
+    OutputPlaylistDir = "Z:\Music Library\Content\!mpd-published-playlists\[2019-10-27] All Playlists"
     OldRoot = 'Z:\'
     NewRoot = '/datastore/nick/'
 }
