@@ -105,7 +105,7 @@ class SongRatestatTagsHandler:
         if (vote < 1 or vote > 10):
             raise VoteValueOutOfRange("ERROR: SongRatestatTagsHandler - each value in parameter 'votes' must be an integer between (or equal to) 1 and 10")
    
-
+# Make as part of the class?
 def updateSongRatestatTags(songFilepath, newVote=0):
     songRatestatTagsHandler = SongRatestatTagsHandler(songFilepath)
 
