@@ -35,59 +35,70 @@ parser.add_argument("votePlaylistsArchiveDir",
 
 args = parser.parse_args()
 votePlaylists = []
-allPlaylistsSongs = []
 
-# allSongsNewVotes (list)
-#   songNewVotes (list item, a dictionary)
-#       songFilepath variable key : new votes array for this song so far
-allSongsNewVotes = [] # list of dictionaries, each dict maps key songFilePath (the variable) to array of new votes:
+# Do a pre scan through all playlists to get a list of all the unique songs (filepaths) that will be affected
+# this will allow us to initialize our newVotes data structure to keep track of all the new votes 
+# that were added to each affected song
+allEntries = []
+logger.info("Performing initial pre-scan of songs in all vote-value playlists")
 
 for currentVoteValue in range(1, 10):
     currentVoteValuePlaylistName = "{}.m3u8".format(currentVoteValue)
     currentVoteValuePlaylistPath =  mlu.common.file.JoinPaths(args.votePlaylistsInputDir, currentVoteValuePlaylistName)
     votePlaylists.append(currentVoteValuePlaylistPath)
     
+    playlistSongs = mlu.library.playlist.getAllPlaylistLines(currentVoteValuePlaylistPath)    
+    allEntries += playlistSongs
+
+allVotedSongs = set(allEntries)
+logger.info("Pre-scan complete: found {} unique songs that were voted on".format(len(allVotedSongs)))
+
+# initialize the newVotes data structure: add a dictionary for each unique song to this list of data
+# dictionaries and set its new vote list to empty
+newVotes = []
+for songFilepath in allVotedSongs:
+    newVotes.append({
+            'songFilepath': songFilepath,
+            'newVotes': []
+        }
+    )
+
+# Start the main ratestat tag-writing process
+logger.info("Starting to update ratestat tags for each song that was voted on")
+
+for currentVoteValue in range(1, 10):
+    currentVoteValuePlaylistName = "{}.m3u8".format(currentVoteValue)
+    currentVoteValuePlaylistPath =  mlu.common.file.JoinPaths(args.votePlaylistsInputDir, currentVoteValuePlaylistName)
+    
     logger.info("Reading songs with vote value {} from playlist {}".format(currentVoteValue, currentVoteValuePlaylistPath))
-    playlistSongs = mlu.library.playlist.getAllPlaylistLines(currentVoteValuePlaylistPath)
-
-    # create empty vote array dictonaries for the songs that will be updated (all get current vote value added)
-    for songFilePath in playlistSongs:
-        songsInitialized = [songNewVotes.keys() for songNewVotes in allSongsNewVotes]
-
-        if (not (songFilepath in songsInitialized)):
-            allSongsNewVotes.append({ songFilePath: [] })
-
-
-    allPlaylistsSongs += playlistSongs
-    logger.info("Found {} songs in vote value {} playlist...updating their ratestat tags now".format(len(playlistSongs), currentVoteValue))
+    playlistSongs = mlu.library.playlist.getAllPlaylistLines(currentVoteValuePlaylistPath)    
+    logger.info("Found {} songs in vote value {} playlist: updating their ratestat tags now".format(len(playlistSongs), currentVoteValue))
 
     for songFilepath in playlistSongs:
         logger.debug("Adding new vote (value {}) to song '{}'".format(currentVoteValue, songFilepath))
         mlu.tags.ratestats.updateSongRatestatTags(songFilepath, newVote=currentVoteValue)
 
-        currentSongNewVotes = [songNewVotes[songFilepath] for songNewVotes in allSongsNewVotes] # by reference, this is the array in the dict in this list of songs new votes
-        currentSongNewVotes.append(currentVoteValue)
+        newVotesListCurrentSong = [newVotesForSong['newVotes'] for newVotesForSong in newVotes if newVotesForSong['songFilepath'] == songFilepath]
+        newVotesListCurrentSong.append(currentVoteValue)
 
-
-
-
-allUpdatedSongs = set(allPlaylistsSongs)
-logger.info('Music vote/rating data updated successfully: {} songs had ratestat tags updated'.format(allUpdatedSongs))
+logger.info('Music vote/rating tag data update completed successfully: {} songs were updated'.format(allVotedSongs))
 
 # Print the results of all updated songs in table form and what changes occured
 tagUpdatesTable = PrettyTable()
-tagUpdatesTable.field_names = ["Song", "Artist", "New Votes", "New Rating"]
+tagUpdatesTable.field_names = ["Song", "Artist", "Just Added Votes", "New Rating", "New All Votes List"]
 
-for songFilepath in allUpdatedSongs:
-    basicTags = mlu.tags.basic.getSongBasicTags(songFilepath)
-    ratestatTags = mlu.tags.ratestats.getSongRatestatTags(songFilepath)
-    newVotes = [songNewVotes[songFilepath] for songNewVotes in allSongsNewVotes]
+for newVotesForSong in newVotes:
+    basicTags = mlu.tags.basic.getSongBasicTags(newVotesForSong['songFilepath'])
+    ratestatTags = mlu.tags.ratestats.getSongRatestatTags(newVotesForSong['songFilepath'])
+
+    newVotes = [newVotesForSong[songFilepath] for newVotesForSong in newVotesForSongs]
 
     tagUpdatesTable.add_row([
         basicTags.title, 
         basicTags.artist, 
-        newVotes,
-        ratestatTags['rating']
+        newVotesForSong['newVotes'],
+        ratestatTags['rating'],
+        ratestatTags['votes']
     ])
 
     logger.info('\\nThe following changes were made to music library:\\n}{}'.format(tagUpdatesTable))
