@@ -7,7 +7,7 @@ $args = [PSCustomObject]@{
     NewRoot = '/datastore/nick/'
 }
 
-# Locate the convert-playlists.py script from here in this dir
+# Locate the convert-playlists.py script from here in this directory
 $projectDir = (Get-Item -Path $PSScriptRoot).Parent.FullName
 $scriptPath = Join-Path -Path $projectDir -ChildPath 'scripts\convert-playlist.py'
 
