@@ -6,7 +6,7 @@ import mutagen
 #   artist
 #   album
 #
-class _SongBasicTags:
+class SongBasicTags:
     """
     Class that represents the values of an audio file's "basic"/common tags.
     """
@@ -15,6 +15,63 @@ class _SongBasicTags:
         self.artist = artist
         self.album = album
         self.durationSeconds = durationSeconds
+
+
+class SingleSongBasicTagsHandler:
+    '''
+    Private class which handles the 'basic' tag values for a single audio file and allows
+    new, updated values to be set. This class also deals with tag value reading from and writing
+    to the audio file itself.
+    '''
+    def __init__(self, songFilepath):
+        self.songFilepath = songFilepath
+        self.title = None 
+        self.artist = None 
+        self.album = None
+        self.durationSeconds = None
+
+        # Throw exceptions is the wrong data type is passed in
+        if (not isinstance(self.songFilepath, str)):
+            raise TypeError("Constructor parameter 'songFilepath' must be a string")
+
+        # read in the tag values to populate the fields
+        self._readBasicTags()
+
+    def _readBasicTags(self):
+        '''
+        Reads in the current values of all basic tags, updating the class instance's fields with
+        this data.
+        '''
+        audioFile = mutagen.File(self.songFilepath)
+
+        try:
+            rawTitleTag = audioFile['TITLE']
+            rawTitleTag = rawTitleTag[0]
+        except KeyError:
+            rawTitleTag = ''
+
+        try:
+            rawArtistTag = audioFile['ARTIST']
+            rawArtistTag = rawArtistTag[0]
+        except KeyError:
+            rawArtistTag = ''
+
+        try:
+            rawAlbumTag = audioFile['ALBUM']
+            rawAlbumTag = rawAlbumTag[0]
+        except KeyError:
+            rawAlbumTag = ''
+
+        try:
+            durationProperty = audioFile.info.length
+        except:
+            logger.exception("Unable to set basic tag 'duration' ")
+
+        self.title = rawTitleTag
+        self.artist = rawArtistTag
+        self.album = rawAlbumTag
+
+        logger.debug("Successfully READ basic tags for audio file: Path='{}', Title='{}', Artist='{}', Album='{}'".format(self.songFilepath, self.title, self.artist, self.album))
 
 
 def getSongBasicTags(songFilepath):
@@ -29,7 +86,7 @@ def getSongBasicTags(songFilepath):
         SongBasicTags object holding the basic tags' values for the song
     """
     audioFile = mutagen.File(songFilepath)
-    tags = _SongBasicTags(
+    tags = SongBasicTags(
         title=audioFile['TITLE'],
         artist=audioFile['ARTIST'],
         album=audioFile['ALBUM'],

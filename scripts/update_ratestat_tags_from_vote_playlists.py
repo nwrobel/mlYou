@@ -1,5 +1,6 @@
-# TODO: configure, set up, and use logger logging statements instead of print, so messages can be 
-# easily saved into files and pruned down based on log importance level
+# ==================================================================================================
+#
+#
 
 # Do setup processing so that this script can import all the needed modules from the "mlu" package.
 # This is necessary because these scripts are not located in the root directory of the project, but
@@ -85,7 +86,7 @@ logger.info('Music vote/rating tag data update completed successfully: {} songs 
 
 # Print the results of all updated songs in table form and what changes occured
 tagUpdatesTable = PrettyTable()
-tagUpdatesTable.field_names = ["Song", "Artist", "Just Added Votes", "New Rating", "New All Votes List"]
+tagUpdatesTable.field_names = ["Song", "Artist", "Added Votes", "New Rating", "New Votes List"]
 
 for newVotesForSong in newVotes:
     basicTags = mlu.tags.basic.getSongBasicTags(newVotesForSong['songFilepath'])
@@ -97,8 +98,8 @@ for newVotesForSong in newVotes:
         basicTags.title, 
         basicTags.artist, 
         newVotesForSong['newVotes'],
-        ratestatTags['rating'],
-        ratestatTags['votes']
+        ratestatTags.rating,
+        ratestatTags.votes
     ])
 
     logger.info('\\nThe following changes were made to music library:\\n}{}'.format(tagUpdatesTable))
