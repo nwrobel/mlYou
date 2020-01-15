@@ -6,16 +6,6 @@ import mutagen
 #   artist
 #   album
 #
-class SongBasicTags:
-    """
-    Class that represents the values of an audio file's "basic"/common tags.
-    """
-    def __init__(self, title, artist, album, durationSeconds):
-        self.title = title
-        self.artist = artist
-        self.album = album
-        self.durationSeconds = durationSeconds
-
 
 class SingleSongBasicTagsHandler:
     '''
