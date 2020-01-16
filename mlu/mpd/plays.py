@@ -13,9 +13,14 @@ instances - each instance has 4 properties:
 - instancePlayDuration
 - actualPlayDuration
 
-TODO: update playback filtering to check if there are 2 or more playbacks of the same song within
-about 0-10 min. of each other - these are most likely caused by MPD disconnect/reconnecting and shouldn't be counted
+
 '''
+
+# TODO: update playback filtering to check if there are 2 or more playbacks of the same song within
+# about 0-10 min. of each other - these are most likely caused by MPD disconnect/reconnecting and shouldn't be counted
+
+# TODO: rename this module to 'playbacks'
+
 import re 
 import mlu.tags.basic
 import mlu.common.time
