@@ -62,7 +62,7 @@ class SongBasicTagsHandler(SongTagsHandler):
         self.readTags()
 
     def readTags(self):
-       '''
+        '''
         Reads in the current values of all basic tags, updating the class instance's fields with
         this data.
         '''

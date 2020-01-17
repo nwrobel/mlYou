@@ -4,14 +4,14 @@ mlu.tags.common
 Module for functionality that is needed/shared between various other mlu.tags modules.
 '''
 
-def formatValuesListToAudioTagString(valuesList):
+def formatValuesListToAudioTag(valuesList):
     if (not valuesList):
         return ''
         
     listStr = ';'.join(map(str, valuesList))
     return listStr
 
-def formatAudioTagStringToValuesList(audioTagStr, valuesAsInt=False):
+def formatAudioTagToValuesList(audioTagStr, valuesAsInt=False):
     if (not audioTagStr):
         return []
     
