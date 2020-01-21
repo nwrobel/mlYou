@@ -12,6 +12,10 @@ and setting the following tags for audio files:
 
 '''
 
+# TODO: 
+# Test to see what happens when an audio file has no tag of name set at all: Does this make a KeyError,
+# or will it be a null value?
+
 import mutagen
 
 # setup logging for the module using preconfigured MLU logger
@@ -61,24 +65,24 @@ class SongRatestatTagsHandler(SongTagsHandler):
         # Read VOTES tag
         rawVotesTag = audioFile['VOTES'][0]
         if (not rawVotesTag):
-            logger.debug("Tag value 'VOTES' is empty for song '{}': tag handler instance variable will be Null".format(self._songFilepath))
-            self._votes = None
+            logger.debug("Tag value 'VOTES' is empty for song '{}': tag handler will use value '[]'".format(self._songFilepath))
+            self._votes = []
         else:
-            self._votes = mlu.tags.common.formatAudioTagToValuesList(rawVotesTag)
+            self._votes = mlu.tags.common.formatAudioTagToValuesList(rawVotesTag, valuesAsInt=True)
         
         # Read RATING tag
         rawRatingTag = audioFile['RATING'][0]
         if (not rawRatingTag):
-            logger.debug("Tag value 'RATING' is empty for song '{}': tag handler instance variable will be Null".format(self._songFilepath))
-            self._rating = None
+            logger.debug("Tag value 'RATING' is empty for song '{}': tag handler will use value '0'".format(self._songFilepath))
+            self._rating = 0
         else:
             self._rating = float(rawRatingTag)
 
         # Read NEEDS_RATING_UPDATE tag
         rawNeedRatingUpdateTag = audioFile['NEEDS_RATING_UPDATE'][0]
         if (rawNeedRatingUpdateTag):
-            logger.debug("Tag value 'NEEDS_RATING_UPDATE' is empty for song '{}': tag handler instance variable will be Null".format(self._songFilepath))
-            self._needsRatingUpdate = None
+            logger.debug("Tag value 'NEEDS_RATING_UPDATE' is empty for song '{}': tag handler will use value 'False'".format(self._songFilepath))
+            self._needsRatingUpdate = False
         else:
             self._needsRatingUpdate = (int(rawNeedRatingUpdateTag) == 1)
 
@@ -128,35 +132,37 @@ class SongRatestatTagsHandler(SongTagsHandler):
         )
 
 
-    def setTags(self, newVote=None):
+    def updateTags(self, newVote=None):
         '''
-        Allows the tag values saved in this SongRatestatTagsHandler instance to be changed/set.
+        Allows the ratestat tags to be updated for this song. This only updates the current values
+        saved in this handler instance: the changes are not written to the file until calling writeTags().
+
         The only changes allowed to the public through this method are the addition of a vote value.
         Validation of the given vote performed and an exception will be thrown if it fails this 
         validation checking.
 
-        Calling setTags() with a newVote value will add that vote to the votes tag, update the 
+        Calling updateTags() with a newVote value will add that vote to the votes tag, update the 
         rating tag with the newly computed avg. vote value, and set the needsRatingUpdate tag to 0.
 
-        Calling setTags() alone with no vote value will do the same, except no vote will be added
+        Calling updateTags() alone with no vote value will do the same, except no vote will be added
         to the votes tag. Rating and needsRatingUpdate tag will still be updated, however.
  
         Params:
             newVote: (int) the new vote to add to the ratestat tags - omit this parameter to update
                 tags only without adding a new vote
         '''
-        if (self._votes is None):
-            self._votes = []
-
         if (newVote is not None):
-            self._validateTagValues(newVote)
-            self._votes.append(newVote)
-
+            self._updateVotes(newVote)
+            
         self._updateRating()
 
         self._tagsHaveBeenSet = True
-        logger.debug("Successfully SET tag values for SongRatestatTagsHandler instance: Path='{}', Title='{}', Artist='{}', Album='{}'".format(self._songFilepath, self._votes, self._rating, self._needsRatingUpdate))
+        logger.debug("Successfully UPDATED tag values for SongRatestatTagsHandler instance: Path='{}', Title='{}', Artist='{}', Album='{}'".format(self._songFilepath, self._votes, self._rating, self._needsRatingUpdate))
 
+
+    def _updateVotes(self, newVote):
+        self._validateTagValues(newVote)
+        self._votes.append(newVote)
 
     def _updateRating(self):
         if (self._votes):

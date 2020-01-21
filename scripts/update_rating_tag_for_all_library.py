@@ -1,9 +1,6 @@
 # TODO: add a progress bar/status messages for how many files found and how many remaining to
 # check/update
 
-# TODO: configure, set up, and use logger logging statements instead of print, so messages can be 
-# easily saved into files and pruned down based on log importance level
-
 # Do setup processing so that this script can import all the needed modules from the "mlu" package.
 # This is necessary because these scripts are not located in the root directory of the project, but
 # instead in the 'scripts' folder.
@@ -31,15 +28,19 @@ logger.info("Searching for all audio under music library root path {}".format(ar
 librarySongs = mlu.library.musiclib.getAllSongFilepathsInLibrary(args.libraryRootDir)
 logger.info("Found {} audio files in music library root path".format(len(librarySongs)))
 
-logger.info("Finding audio files that need rating tag updated")
-songsNeedRatingUpdate = []
+logger.info("Updating ratestat tags for all audio files that are flagged for rating update")
+flaggedSongsCount = 0
+
 for songFilepath in librarySongs:
-    if (mlu.tags.ratestats.songNeedsRatingTagUpdate(songFilepath)):
-        logger.info("Found file flagged for rating update: {}".format(songFilepath))
-        songsNeedRatingUpdate.append(songFilepath)
 
-logger.info("Found {} audio files that need rating tag updated...performing updates now".format(len(songsNeedRatingUpdate)))
-for songFilepath in songsNeedRatingUpdate:
-    mlu.tags.ratestats.updateSongRatestatTags(songFilepath)
+    songRatestatTagsHander = mlu.tags.ratestats.SongRatestatTagsHandler(songFilepath)
+    songRatestatTags = songRatestatTagsHander.getTags()
 
-logger.info("Rating tag update process completed successfully")
+    if (songRatestatTags.needsRatingUpdate):
+        logger.info("Updating ratestat tags for file flagged for rating update: '{}'".format(songFilepath))
+        flaggedSongsCount += 1
+
+        songRatestatTagsHander.updateTags()
+        songRatestatTagsHander.writeTags()
+
+logger.info("Rating tag update process completed successfully: {} flagged songs were updated".format(flaggedSongsCount))

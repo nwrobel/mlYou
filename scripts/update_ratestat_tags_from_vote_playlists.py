@@ -56,13 +56,11 @@ logger.info("Pre-scan complete: found {} unique songs that were voted on".format
 
 # initialize the newVotes data structure: add a dictionary for each unique song to this list of data
 # dictionaries and set its new vote list to empty
-newVotes = []
+logger.info("Initializing data structure to hold the new votes for all songs")
+
+newVotesData = {}
 for songFilepath in allVotedSongs:
-    newVotes.append({
-            'songFilepath': songFilepath,
-            'newVotes': []
-        }
-    )
+    newVotesData[songFilepath] = []
 
 # Start the main ratestat tag-writing process
 logger.info("Starting to update ratestat tags for each song that was voted on")
@@ -76,36 +74,52 @@ for currentVoteValue in range(1, 10):
     logger.info("Found {} songs in vote value {} playlist: updating their ratestat tags now".format(len(playlistSongs), currentVoteValue))
 
     for songFilepath in playlistSongs:
-        logger.debug("Adding new vote (value {}) to song '{}'".format(currentVoteValue, songFilepath))
-        mlu.tags.ratestats.updateSongRatestatTags(songFilepath, newVote=currentVoteValue)
+        logger.debug("Modifying data structure: Adding new vote (value {}) for song '{}'".format(currentVoteValue, songFilepath))
+        newVotesData[songFilepath].append(currentVoteValue)
 
-        newVotesListCurrentSong = [newVotesForSong['newVotes'] for newVotesForSong in newVotes if newVotesForSong['songFilepath'] == songFilepath]
-        newVotesListCurrentSong.append(currentVoteValue)
+logger.info("New votes data structure filled from vote playlists data successfully: ready to write tag data")
+
+for songFilepath, newVotes in newVotesData.items():
+    logger.debug("Processing new votes for audio file '{}'".format(songFilepath))
+    songRatestatTagsHandler = mlu.tags.ratestats.SongRatestatTagsHandler(songFilepath)
+
+    for voteValue in newVotes:
+        logger.debug("Adding new vote (value {}) to votes list tag for audio file".format(voteValue))
+        songRatestatTagsHandler.updateTags(newVote=voteValue)
+
+    songRatestatTagsHandler.writeTags()
+    logger.debug("New votes saved into votes tag successfully for this file!")
+
 
 logger.info('Music vote/rating tag data update completed successfully: {} songs were updated'.format(allVotedSongs))
 
-# Print the results of all updated songs in table form and what changes occured
+# Print the results of all updated songs in table form and what changes occurred
 tagUpdatesTable = PrettyTable()
-tagUpdatesTable.field_names = ["Song", "Artist", "Added Votes", "New Rating", "New Votes List"]
+tagUpdatesTable.field_names = ["Artist", "Title", "Added Votes", "New Rating", "New Votes List"]
 
-for newVotesForSong in newVotes:
-    basicTags = mlu.tags.basic.getSongBasicTags(newVotesForSong['songFilepath'])
-    ratestatTags = mlu.tags.ratestats.getSongRatestatTags(newVotesForSong['songFilepath'])
+# Sort the dictionary of new vote values before displaying, so songs will be roughly in order (by filename)
+newVotesDataSorted = sorted(newVotesData)
 
-    newVotes = [newVotesForSong[songFilepath] for newVotesForSong in newVotesForSongs]
+for songFilepath, newVotes in newVotesDataSorted.items():
+
+    songBasicTagsHandler = mlu.tags.basic.SongBasicTagsHandler(songFilepath)
+    songRatestatTagsHandler = mlu.tags.ratestats.SongRatestatTagsHandler(songFilepath)
+
+    songBasicTags = songBasicTagsHandler.getTags()
+    songRatestatTags = songRatestatTagsHandler.getTags()
 
     tagUpdatesTable.add_row([
-        basicTags.title, 
-        basicTags.artist, 
-        newVotesForSong['newVotes'],
-        ratestatTags.rating,
-        ratestatTags.votes
+        songBasicTags.artist, 
+        songBasicTags.title, 
+        newVotes,
+        songRatestatTags.rating,
+        songRatestatTags.votes
     ])
 
-    logger.info('\\nThe following changes were made to music library:\\n}{}'.format(tagUpdatesTable))
+logger.info("\nThe following changes were made to music library:\n}{}".format(tagUpdatesTable))
 
 logger.info('Archiving vote playlists...')
-archiveFilename = "[{}] Post-update archived vote data playlists.gz".format(mlu.common.time.getCurrentFormattedTime())
+archiveFilename = "[{}] Archived vote playlists (already written to ratestat tags).gz".format(mlu.common.time.getCurrentFormattedTime())
 archiveFilePath = mlu.common.file.JoinPaths(args.votePlaylistsArchiveDir, archiveFilename)
 
 mlu.common.file.compressFileToArchive(inputFilePath=votePlaylists, archiveOutFilePath=archiveFilePath)

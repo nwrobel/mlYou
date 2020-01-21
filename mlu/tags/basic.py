@@ -106,7 +106,7 @@ class SongBasicTagsHandler(SongTagsHandler):
         audio file, replacing the file's old basic tags with the current (new) values.
         '''
         if (not self._tagsHaveBeenSet):
-            raise Exception("Cannot write basic tags: tag values have not yet been set for audio file '{}': call setTags() first before writing new tag values".format(self._songFilepath))
+            raise Exception("Cannot write basic tags: tag values have not yet been set for audio file '{}': call updateTags() first before writing new tag values".format(self._songFilepath))
 
 
         audioFile = mutagen.File(self._songFilepath)
@@ -144,7 +144,7 @@ class SongBasicTagsHandler(SongTagsHandler):
         )
 
 
-    def setTags(self, title, artist, album):
+    def updateTags(self, title, artist, album):
         '''
         Allows the tag values saved in this SongBasicTagsHandler instance to be changed/set.
         Validation on the given values for each tag is performed and an exception will be thrown

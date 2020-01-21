@@ -22,7 +22,7 @@ class SongTagsHandler(ABC):
         readTags: to read the tag values from the audio file (all tags are assumed to be present)
         writeTags: to write the tag values to the audio file
         getTags: to return the tag values of this file to the outside code
-        setTags: to validate and set the tag values to the given values
+        updateTags: to validate and set (update) the tag values to the given values
         _validateTagValues: to validate the tags, throwing an exception if they are invalid (used
             by setTags)
 
@@ -57,7 +57,7 @@ class SongTagsHandler(ABC):
         pass
 
     @abstractmethod
-    def setTags(self):
+    def updateTags(self):
         pass
 
     @abstractmethod
