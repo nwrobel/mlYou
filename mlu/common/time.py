@@ -31,6 +31,17 @@ def formatTimestampForDisplay(timestamp):
     return str(formattedTime)
 
 
+def getTimestampFromFormattedTime(formattedTime):
+    '''
+    Converts the given formatted time string, formatted as YYYY-MM-DD HH-MM-SS (ex: "2012-01-27 02:29:33")
+    from this string format into an epoch timestamp represented by a int/double.
+    '''
+    dateTime = datetime.datetime.strptime(formattedTime, "%Y-%m-%d %H:%M:%S")
+    epochTimestamp = datetime.datetime.timestamp(dateTime)
+
+    return epochTimestamp
+
+
 def applyDeltaYearsToTimestamp(startTimestamp, years):
     """
     Given a starting time timestamp and a number of years, this returns a new epoch timestamp which represents

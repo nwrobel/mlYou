@@ -3,10 +3,11 @@ mlu.tags.playstats
 
 This module deals with reading and writing playback-related tag information on audio files.
 
-TODO:
-when reading playback tags, convert them to epoch timestamps and create them from a list from a semicolon seperated string
-when writing tags, convert times to formatted strings as string seperated by semicolons
+
 '''
+# TODO:
+# when reading playback tags, convert them to epoch timestamps and create them from a list from a semicolon seperated string
+# when writing tags, convert times to formatted strings as string seperated by semicolons
 
 import mutagen
 

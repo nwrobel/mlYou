@@ -58,57 +58,58 @@ class SongRatestatTagsHandler(SongTagsHandler):
         '''
         audioFile = mutagen.File(self._songFilepath)
 
-        try:
-            rawVotesTag = audioFile['VOTES']
-            rawVotesTag = rawVotesTag[0]
+        # Read VOTES tag
+        rawVotesTag = audioFile['VOTES'][0]
+        if (not rawVotesTag):
+            logger.debug("Tag value 'VOTES' is empty for song '{}': tag handler instance variable will be Null".format(self._songFilepath))
+            self._votes = None
+        else:
             self._votes = mlu.tags.common.formatAudioTagToValuesList(rawVotesTag)
-            
-        except KeyError:
-            logger.debug("No tag value found for tag name 'VOTES' for song '{}': leaving instance variable Null".format(self._songFilepath))
-
-        try:
-            rawRatingTag = audioFile['RATING']
-            rawRatingTag = rawRatingTag[0]
+        
+        # Read RATING tag
+        rawRatingTag = audioFile['RATING'][0]
+        if (not rawRatingTag):
+            logger.debug("Tag value 'RATING' is empty for song '{}': tag handler instance variable will be Null".format(self._songFilepath))
+            self._rating = None
+        else:
             self._rating = float(rawRatingTag)
 
-        except KeyError:
-            logger.debug("No tag value found for tag name 'RATING' for song '{}': leaving instance variable Null".format(self._songFilepath))
-
-        try:
-            rawNeedRatingUpdateTag = audioFile['NEEDS_RATING_UPDATE']
-            rawNeedRatingUpdateTag = rawNeedRatingUpdateTag[0]
+        # Read NEEDS_RATING_UPDATE tag
+        rawNeedRatingUpdateTag = audioFile['NEEDS_RATING_UPDATE'][0]
+        if (rawNeedRatingUpdateTag):
+            logger.debug("Tag value 'NEEDS_RATING_UPDATE' is empty for song '{}': tag handler instance variable will be Null".format(self._songFilepath))
+            self._needsRatingUpdate = None
+        else:
             self._needsRatingUpdate = (int(rawNeedRatingUpdateTag) == 1)
-
-        except KeyError:
-            logger.debug("No tag value found for tag name 'NEEDS_RATING_UPDATE' for song '{}': leaving instance variable Null".format(self._songFilepath))
 
         logger.debug("Successfully READ ratestat tags for audio file: Path='{}', Votes='{}', Rating='{}', NeedsRatingUpdate='{}'".format(self._songFilepath, self._votes, self._rating, self._needsRatingUpdate))
 
 
     def writeTags(self):
 
-        if (self._votes is None) or (self._rating is None) or (self._needsRatingUpdate is None):
-            raise Exception("Cannot write ratestat tags to audio file: one or more SongRatestatTagsHandler instance variables are null: : ensure setTags() has been called before writing tag values")
-
-        # Form the tag value string (seperated by ;) from the votes list
-        votesStr = mlu.tags.common.formatValuesListToAudioTag(self._votes)
-
-        # round rating float value to 2 decimal points and always show 2 decimal places
-        ratingStr = '{0:.2f}'.format(round(self._rating, 2)) 
-
-        # NeedsRatingUpdate flag should not be set: if it is, tags need to be updated (exception)
-        # If it's not set, good: the tag value for this flag will be 0
-        if (self._needsRatingUpdate):
-            raise Exception("Cannot write ratestat tags to audio file: 'needsRatingUpdate' instance variable is true: ensure setTags() has been called before writing tag values")
-        else:
-            needsRatingUpdateStr = '0'
+        if (not self._tagsHaveBeenSet):
+            raise Exception("Cannot write ratestat tags: tag values have not yet been set for audio file '{}': call setTags() first before writing new tag values".format(self._songFilepath))
 
         audioFile = mutagen.File(self._songFilepath)
 
-        if (self._votes):
-            audioFile['VOTES'] = votesStr
-        audioFile['RATING'] = ratingStr
-        audioFile['NEEDS_RATING_UPDATE'] = needsRatingUpdateStr
+        # Write VOTES tag
+        # Form the tag value string (seperated by ;) from the votes list
+        rawVotesTag = mlu.tags.common.formatValuesListToAudioTag(self._votes)
+        audioFile['VOTES'] = rawVotesTag
+
+        # Write the RATING tag
+        # round rating float value to 2 decimal points and always show 2 decimal places
+        rawRatingTag = '{0:.2f}'.format(round(self._rating, 2)) 
+        audioFile['RATING'] = rawRatingTag
+
+        # Write the NEEDS_RATING_UPDATE tag
+        # NeedsRatingUpdate flag should not be set: if it is, tags need to be updated (exception)
+        # If it's not set, good: the tag value for this flag will be 0
+        if (self._needsRatingUpdate):
+            raise Exception("Cannot write ratestat tags to audio file: 'needsRatingUpdate' instance variable is true despite tags having been set")
+        else:
+            rawNeedRatingUpdateTag = '0'
+        audioFile['NEEDS_RATING_UPDATE'] = rawNeedRatingUpdateTag
 
         audioFile.save()
         logger.debug("Successfully WROTE ratestat tags for audio file: Path='{}', Votes='{}', Rating='{}', NeedsRatingUpdate='{}'".format(self._songFilepath, self._votes, self._rating, self._needsRatingUpdate))
@@ -153,6 +154,9 @@ class SongRatestatTagsHandler(SongTagsHandler):
 
         self._updateRating()
 
+        self._tagsHaveBeenSet = True
+        logger.debug("Successfully SET tag values for SongRatestatTagsHandler instance: Path='{}', Title='{}', Artist='{}', Album='{}'".format(self._songFilepath, self._votes, self._rating, self._needsRatingUpdate))
+
 
     def _updateRating(self):
         if (self._votes):
@@ -160,8 +164,8 @@ class SongRatestatTagsHandler(SongTagsHandler):
         else:
             newAvgRating = 0
         
-        self.rating = newAvgRating
-        self.needsRatingUpdate = False
+        self._rating = newAvgRating
+        self._needsRatingUpdate = False
 
 
     def _validateTagValues(self, newVote):

@@ -19,7 +19,7 @@ class SongTagsHandler(ABC):
     SongTagsHandler-type classes, which handle specific sets of audio tags, to be built from.
 
     The blueprint requires that a tags handler class implement 4 public methods and 1 private method:
-        readTags: to read the tag values from the audio file
+        readTags: to read the tag values from the audio file (all tags are assumed to be present)
         writeTags: to write the tag values to the audio file
         getTags: to return the tag values of this file to the outside code
         setTags: to validate and set the tag values to the given values
@@ -29,7 +29,12 @@ class SongTagsHandler(ABC):
     All child classes must accept the param 'songFilepath' as their single constructor argument, 
     which is the path of the audio file that the tag handler represents. 
     This is done by calling the super class (this class) and passing the songFilepath param to it.
-    This class will do validation for the songFilepath given.  
+    This class will do validation for the songFilepath given.
+
+    This abstract class contains the following instance variables:
+        _songFilepath: string, filepath for this song/audio file
+        _tagsHaveBeenSet: bool, whether or not setTags() has been called for this tags handler 
+         
     '''
     def __init__(self, songFilepath):
         # validate that the given is a valid actual filepath (does not check existence)
@@ -37,6 +42,7 @@ class SongTagsHandler(ABC):
             raise TypeError("Class attribute 'songFilepath' must be a valid absolute filepath string (either existent or non-existent)")
 
         self._songFilepath = songFilepath
+        self._tagsHaveBeenSet = False
 
     @abstractmethod
     def readTags(self):
