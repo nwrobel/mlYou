@@ -26,64 +26,15 @@ import mlu.tags.basic
 import mlu.common.time
 
 
-# Returns a list of lines which contain playback information (filters out the non-info lines)
-def GetPlaybackLogFileLines(logFileLines):
-    
-    playbackLogFileLines = []
-    
-    for line in logFileLines:
-        if "player: played" in line:
-            playbackLogFileLines.append(line)
+
         
 
-def LogLineIsPlayback(logLine):
-    return ("player: played" in logLine.text)
-
-def LogLineIsMPDClosed(logLine):
-    return ( ("client: [" in logLine.text) and ("] closed" in logLine.text) )
 
 
 #------------------------------------------------------------------------------------    
-def GetSongFilepathFromMPDLogLine(logLine):
-    
-    name = re.findall('"([^"]*)"', logLine.text)[0]
-    return name
 
-#-------------------------------
-# Class representing an instance in which a single playback of an audio file occurred - contains
-# details about the playback and its time relation to the total song duration
-#
-# These instances will be filtered later based on whether or not the playback time is long enough
-# compared with the total duration of the song - to remove "false" playbacks
-#
-# Objects of this type will later be converted into SongPlaybackRecords, which contain data about
-# all the playback instances for a single audio file
-#
-class PlaybackInstance:
-    def __init__(self, songFilepath, playbackStartTime, playbackDuration):
-        self.songFilepath = songFilepath
-        self.playbackStartTime = playbackStartTime
-        self.playbackDuration = playbackDuration
-        self.songDuration = self.GetSongDuration()
 
-        # If we pass '1' as the playback duration, this special value indicates that the exact playback duration is unknown,
-        # so we just set it to the song duration
-        if (self.playbackDuration == 1):
-            self.playbackDuration = self.songDuration
 
-        # Throw exceptions if the playback duration is wrong
-        if (self.playbackDuration > self.songDuration):
-            raise("ERROR: calculated playback duration is greater than the song's total duration, playback instance: " + self.songFilepath)
-
-        if (self.playbackDuration <= 0):
-            raise("ERROR: calculated playback duration is less than 0, playback instance: " + self.songFilepath)
-
-    # Use filepath to get the audio file's common tags, one of which is the duration
-    def GetSongDuration(self):
-        durationSeconds = mlu.tags.basic.getSongBasicTags(self.songFilepath).durationSeconds
-        durationTimestamp = mlu.common.time.convertSecondsToTimestamp(durationSeconds)
-
-        return durationTimestamp
 
 
         
@@ -107,19 +58,13 @@ class PlaybackInstance:
 # passed to another module to be displayed in the UI, cached, compared with the current file tag values,
 # and then finally used to update the current tags for these song files
 #
-class PlaybackInstanceCollector:
-    def __init__(self, mpdLogLineCollector):
-        self.mpdLogLineCollector = mpdLogLineCollector
-
-    def GetPlaybackInstances(self):
-        allPlaybackInstances = self.FormPlaybackInstances()
-        validPlaybackInstances = FilterFalsePlaybacks(allPlaybackInstances)
-        return validPlaybackInstances
+class MPDPlaybackInstanceCollector:
+    def __init__(self, mpdLogLines):
+        self._mpdLogLines = mpdLogLines
 
     # Returns playback data based on all data found in the logs from MPDLogsHandler
     # Creates the data structure described in comment header block
-    def FormPlaybackInstances(self):
-        mpdLogLines = self.mpdLogLineCollector.GetMPDLogLines()
+    def collectPlaybackInstances(self):
         allPlaybackInstances = []
 
         for (index, currentLine) in enumerate(mpdLogLines):
@@ -168,103 +113,23 @@ class PlaybackInstanceCollector:
 
         return allPlaybackInstances
 
+    def LogLineIsPlayback(logLine):
+        return ("player: played" in logLine.text)
+
+    def LogLineIsMPDClosed(logLine):
+        return ( ("client: [" in logLine.text) and ("] closed" in logLine.text) )
+
+    def GetSongFilepathFromMPDLogLine(logLine):
+        name = re.findall('"([^"]*)"', logLine.text)[0]
+        return name
+
    
-#------------------------------------------------------------------------------------  
-#  from this PlaybackInstance array, use the 2 duration properties on each item in the array to 
-# compare them to each other and determine whether or not to count that instance as a "true play" or a skip
-# do this in another function - filter out the ones that aren't true plays (not played long enough, etc)
-# 
-# 
-# Rules for playback instance to be counted as "true" playback:
-# - It takes about 30 seconds, due to latency, for a song to be skipped from MPD client, so:
-# --- If song duration is at least 2 minutes, playback duration must be at least 25% of the song duration
-# --- If song duration is less than 2 minutes, playback duration must be at least 50% of the song duration
-#  
-def FilterFalsePlaybacks(playbackInstances):
-
-    songDurationThresholdSeconds = 120
-
-    truePlaybackInstances = []
-    songDurationThresholdTimestamp = mlu.common.time.convertSecondsToTimestamp(songDurationThresholdSeconds)
-
-    for playbackInstance in playbackInstances:
-        # If song duration is at least 2 min. long
-        if (playbackInstance.songDuration >= songDurationThresholdTimestamp):
-            playbackDurationThreshold = playbackInstance.songDuration * 0.25
-
-        else:
-            playbackDurationThreshold = playbackInstance.songDuration * 0.5
-
-        if (playbackInstance.playbackDuration >= playbackDurationThreshold):
-            truePlaybackInstances.append(playbackInstance)
-
-    return truePlaybackInstances
 
 
 
 
 
 
-#--------------------------------------------------------------------------------------------------
-# Pass the playback instances array to a class "SongPlaybackRecordCollector" in the mlu.mpd.playstats module, where it can be compressed down into a simpler form
-# that contains only 1 element for each unique song played (no duplicate song play instances are in the array)
-# We call this form a SongPlaybackRecord object
-#
-# 
-
-# TODO IDEA: create a module function "GroupPlaybackInstancesBySongs", which takes in PlaybackInstances array
-# and outputs an array of "songPlaybackRecord" data objects, like this class does
-class SongPlaybackRecord:
-    def __init__(self, songFilepath, playbackTimes):
-        self.songFilepath = songFilepath
-        self.playbackTimes = playbackTimes # should be a list of epoch timestamps
 
 
-class SongPlaybackRecordCollector:
-    def __init__(self, playbackInstanceCollector):
-        self.playbackInstanceCollector = playbackInstanceCollector
-        self.playbackInstances = []
-        self.songPlaybackRecords = [] # ???????????????????????????? do we need this?
-
-    def GetSongPlaybackRecords(self):
-        self.playbackInstances = self.playbackInstanceCollector.GetPlaybackInstances()
-
-        # Get a list of all the unique song filepaths by taking the songFilepath property from each object in the playbackInstances array
-        allSongFilepaths = list((playback.songFilepath for playback in self.playbackInstances))
-        uniqueSongFilepaths = set(allSongFilepaths) # cast this list to a set, elminiating duplicate song filepaths
-
-        # Go thru each song filepath in this unique list:
-        #   For each one, get all the playbackInstances this song has (must be at least 1)
-        #   Combine these instances into one SongPlaybackRecord by setting the songFilepath and combining the playbackTimes into an array
-        #   Add the new SongPlaybackRecord to the master list of these records
-        # Return this list of records, so it can be used by the top-level script
-        for uniqueSongFilepath in uniqueSongFilepaths:
-            playbacksMatchingCurrentSong = self.GetPlaybackInstancesForSongFilepath(uniqueSongFilepath)
-            songPlaybackRecord = self.MergePlaybackInstancesIntoSongPlaybackRecord(playbacksMatchingCurrentSong)
-            self.songPlaybackRecords.append(songPlaybackRecord)
-
-        return self.songPlaybackRecords
-
-
-    def GetPlaybackInstancesForSongFilepath(self, songFilepath):
-        matchingPlaybackInstances = []
-
-        for playbackInstance in self.playbackInstances:
-            if (playbackInstance.songFilepath == songFilepath):
-                matchingPlaybackInstances.append(playbackInstance)
-
-        return matchingPlaybackInstances
-
-
-    def MergePlaybackInstancesIntoSongPlaybackRecord(self, songPlaybackInstances):
-        # Get the song filepath - all of the playbackInstances should have the same song filepath, so we can just use the first playbackinstance element
-        songFilepath = songPlaybackInstances[0].songFilepath
-        songPlaybackTimes = list((playback.playbackStartTime for playback in songPlaybackInstances))
-
-        return ( SongPlaybackRecord(songFilepath=songFilepath, playbackTimes=songPlaybackTimes) )
-
-
-    def GetAllSongFilepaths(self):
-        paths = (songPlaybackRecord.songFilepath for songPlaybackRecord in self.songPlaybackRecords)
-        return paths
 

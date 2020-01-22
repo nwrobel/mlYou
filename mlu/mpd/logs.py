@@ -24,7 +24,7 @@ import mlu.common.time
 # Class representing a single log from an MPD log - 2 properties:
 #  text: what the log actually says (minus the string timestamp info)
 #  timestamp: Epoch timestamp for when this log occured, with correct year caclulated
-class _MPDLogLine:
+class MPDLogLine:
    def __init__(self, timestamp, text):
       self.text = text
       self.timestamp = timestamp

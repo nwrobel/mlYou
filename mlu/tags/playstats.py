@@ -27,7 +27,6 @@ class SongPlaystatTags:
         self.allTimesPlayed = allTimesPlayed # should be a list of epoch timestamps
 
 
-
 class SongPlaystatTagsHandler(SongTagsHandler):
     '''
     Public class which handles the 'playstat' tag values for a single audio file, allowing these tags
@@ -55,24 +54,24 @@ class SongPlaystatTagsHandler(SongTagsHandler):
         # Read PLAY_COUNT tag 
         rawPlayCountTag = audioFile['PLAY_COUNT'][0]
         if (not rawPlayCountTag):
-            logger.debug("Tag value 'PLAY_COUNT' is empty for song '{}': tag handler instance variable will be Null".format(self._songFilepath))
-            self._playCount = None
+            logger.debug("Tag value 'PLAY_COUNT' is empty for song '{}': tag handler will use value '0'".format(self._songFilepath))
+            self._playCount = 0
         else:
             self._playCount =  int(rawPlayCountTag)
 
         # Read TIME_LAST_PLAYED tag
         rawTimeLastPlayedTag = audioFile['TIME_LAST_PLAYED'][0]
         if (not rawTimeLastPlayedTag):
-            logger.debug("Tag value 'TIME_LAST_PLAYED' is empty for song '{}': tag handler instance variable will be Null".format(self._songFilepath))
-            self._timeLastPlayed = None
+            logger.debug("Tag value 'TIME_LAST_PLAYED' is empty for song '{}': tag handler will use value '0'".format(self._songFilepath))
+            self._timeLastPlayed = 0
         else:
             self._timeLastPlayed = mlu.common.time.getTimestampFromFormattedTime(rawTimeLastPlayedTag)
 
         # Read the ALL_TIMES_PLAYED tag
         rawAllTimesPlayedTag = audioFile['ALL_TIMES_PLAYED'][0]
         if (not rawAllTimesPlayedTag):
-            logger.debug("Tag value 'ALL_TIMES_PLAYED' is empty for song '{}': tag handler instance variable will be Null".format(self._songFilepath))
-            self._allTimesPlayed = None
+            logger.debug("Tag value 'ALL_TIMES_PLAYED' is empty for song '{}': tag handler will use value '[]'".format(self._songFilepath))
+            self._allTimesPlayed = []
         else:
             allTimesPlayedFormattedTimes = mlu.tags.common.formatAudioTagToValuesList(rawAllTimesPlayedTag)
             self._allTimesPlayed = [mlu.common.time.getTimestampFromFormattedTime(formattedTime) for formattedTime in allTimesPlayedFormattedTimes]
@@ -120,20 +119,45 @@ class SongPlaystatTagsHandler(SongTagsHandler):
             allTimesPlayed=self._allTimesPlayed        
         )
 
-    def updateTags(self, newPlayCount, newTimeLastPlayed, newAllTimesPlayed):
+    def updateTags(self, songPlaybackRecord):
+        '''
+        Updates the song's playstat tags, given a songPlaybackRecord object for the song.
         '''
 
-        '''
-        # check for validity of input values and then set the tags to the given values 
+        # Sanity check: ensure that the given tags and the playback record are for the same song
+        if (songPlaybackRecord.songFilepath != self._songFilepath):
+            raise Exception("Unable to updateTags() for playstat tags on audio file: the given songPlaybackRecord object's songFilepath does not match that of this tag handler (not a playback record for this song)")
+
+        # Calculate new tags based on the playbackRecord updates
+        # Add two list() objects in python by using "+"
+        newPlayCount = self._playCount + len(songPlaybackRecord.playbackTimes)
+        newAllTimesPlayed = self._allTimesPlayed + songPlaybackRecord.playbackTimes 
+        newTimeLastPlayed = max(newAllTimesPlayed)
+
+        # Validate the new tag values before setting them
         # this will throw an exception if any of these given tag values are invalid
         self._validateTagValues(newPlayCount, newTimeLastPlayed, newAllTimesPlayed)
 
+        logger.debug(("Successfully UPDATED playstat tags for audio file: Path='{}'\n" +
+          "   Previous Playstats: PlayCount='{}', TimeLastPlayed='{}', AllTimesPlayed='{}'\n" + 
+          "   SongPlaybackRecord Added: PlaybackTimes='{}'\n" + 
+          "   New Playstats: PlayCount='{}', TimeLastPlayed='{}', AllTimesPlayed='{}'").format(
+              self._songFilepath,
+              self._playCount,
+              self._timeLastPlayed,
+              self._allTimesPlayed,
+              songPlaybackRecord.playbackTimes,
+              newPlayCount,
+              newTimeLastPlayed,
+              newAllTimesPlayed
+        ))
+
+        # Set the new tag values
         self._playCount = newPlayCount
-        self._timeLastPlayed = newTimeLastPlayed
         self._allTimesPlayed = newAllTimesPlayed
+        self._timeLastPlayed = newTimeLastPlayed
 
         self._tagsHaveBeenSet = True
-        logger.debug("Successfully SET playstat tags for audio file: Path='{}', PlayCount='{}', TimeLastPlayed='{}', AllTimesPlayed='{}'".format(self._songFilepath, self._playCount, self._timeLastPlayed, self._allTimesPlayed))
 
 
     def _validateTagValues(self, playCount, timeLastPlayed, allTimesPlayed):
@@ -156,122 +180,17 @@ class SongPlaystatTagsHandler(SongTagsHandler):
 # OLD CODE
 # TODO: integrate this code into this module and/or add to a new module
 
-# class PlaystatTagReader ?
+# def FindSongsWithWrongPlaystatTags(expectedSongsPlaystatTags):
+#     incorrectTaggedSongs = []
 
-def FindSongsWithWrongPlaystatTags(expectedSongsPlaystatTags):
-    incorrectTaggedSongs = []
+#     for expectedSongPlaystatTags in expectedSongsPlaystatTags:
+#         actualSongPlaystatTags = GetSongCurrentPlaystatTags(expectedSongPlaystatTags.songFilepath)
 
-    for expectedSongPlaystatTags in expectedSongsPlaystatTags:
-        actualSongPlaystatTags = GetSongCurrentPlaystatTags(expectedSongPlaystatTags.songFilepath)
+#         playcountDifferent = (expectedSongPlaystatTags.playCount != actualSongPlaystatTags.playCount)
+#         timeLastPlayedDifferent = (expectedSongPlaystatTags.timeLastPlayed != actualSongPlaystatTags.timeLastPlayed)
+#         allTimesPlayedDifferent = (expectedSongPlaystatTags.allTimesPlayed != actualSongPlaystatTags.allTimesPlayed)
 
-        playcountDifferent = (expectedSongPlaystatTags.playCount != actualSongPlaystatTags.playCount)
-        timeLastPlayedDifferent = (expectedSongPlaystatTags.timeLastPlayed != actualSongPlaystatTags.timeLastPlayed)
-        allTimesPlayedDifferent = (expectedSongPlaystatTags.allTimesPlayed != actualSongPlaystatTags.allTimesPlayed)
+#         if (playcountDifferent or timeLastPlayedDifferent or allTimesPlayedDifferent):
+#             incorrectTaggedSongs.append(expectedSongPlaystatTags.songFilepath)
 
-        if (playcountDifferent or timeLastPlayedDifferent or allTimesPlayedDifferent):
-            incorrectTaggedSongs.append(expectedSongPlaystatTags.songFilepath)
-
-    return incorrectTaggedSongs
-
-
-def ReadCurrentPlaystatTagsFromSongs(songFilepaths):
-    songsPlaystatTags = []
-
-    for songFilepath in songFilepaths:
-        songsPlaystatTags.append( GetSongCurrentPlaystatTags(songFilepath) )
-
-    return songsPlaystatTags
-
-
-def GetSongCurrentPlaystatTags(songFilepath):
-    audioFile = mutagen.File(songFilepath)
-    songPlaystatTags = SongPlaystatTags(
-        songFilepath=songFilepath,
-        playCount=audioFile['PLAY_COUNT'],
-        timeLastPlayed=audioFile['TIME_LAST_PLAYED'],
-        allTimesPlayed=audioFile['ALL_TIMES_PLAYED'] # will this give us list or CSV ??? - may need to add function to fix this value to SongPlaystatTags class 
-    ) 
-
-    return songPlaystatTags   
-
-
-#--------------------------------------------------------------------------------
-# Class that calculates a new, updated set of SongPlaystatTags after the current ones are updated
-# with the playback data. The current playstat tags for all the songs and the playback records
-# for them are given to this class, and it returns a new set of the song's tags as a result, which
-# can then be used to write to the audio files to complete the tag updates.
-#
-class SongPlaystatTagsUpdateResolver:
-    def __init__(self, songPlaybackRecords, songsPlaystatTags):
-        self.songPlaybackRecords = songPlaybackRecords
-        self.songsPlaystatTags = songsPlaystatTags
-
-    def GetUpdatedPlaystatTags(self):
-        updatedPlaystatTagsList = []
-
-        # Go thru each SongPlaystatsTags object (each song's current tags)
-        # and find the corresponding SongPlaybackRecord for that song, so we can use it to 
-        # update its tags
-        # Then merge the playbackRecord with the playbackTags to perform the tag "update" - this returns
-        # a new tag object with the updated data, which we add to updatedPlaystatTagsList
-        for songPlaystatTags in self.songsPlaystatTags:
-            songPlaybackRecord = self.GetPlaybackRecordForSong(songPlaystatTags.songFilepath)
-            updatedPlaystatTags = self.MergePlaystatTagsWithPlaybackRecord(songPlaystatTags, songPlaybackRecord)
-            updatedPlaystatTagsList.append(updatedPlaystatTags)
-
-        return updatedPlaystatTagsList
-
-    def GetPlaybackRecordForSong(self, songFilepath):
-        for playbackRecord in self.songPlaybackRecords:
-            if (playbackRecord.songFilepath == songFilepath):
-                return playbackRecord
-        
-        raise("ERROR: Corresponding SongPlaybackRecord object not found for given songFilepath")
-
-    def MergePlaystatTagsWithPlaybackRecord(self, songPlaystatTags, songPlaybackRecord):
-        # Sanity check: ensure that the given tags and the playback record are for the same song
-        if (songPlaystatTags.songFilepath != songPlaybackRecord.songFilepath):
-            raise("ERROR: given SongPlaystatTags and SongPlaybackRecord do not refer to the same audio file - unable to merge")
-
-        # Calculate new tags based on the playbackRecord updates
-        newPlayCount = songPlaystatTags.playCount + len(songPlaybackRecord.playbackTimes)
-        newAllTimesPlayed = songPlaystatTags.allTimesPlayed + songPlaybackRecord.playbackTimes # Add two list() objects in python by using "+"
-        newTimeLastPlayed = max(newAllTimesPlayed)
-
-        # Create a new SongPlaybackTags with the updated tag data
-        updatedTags = SongPlaystatTags(
-            songFilepath=songPlaystatTags.songFilepath,
-            playCount=newPlayCount,
-            timeLastPlayed=newTimeLastPlayed,
-            allTimesPlayed=newAllTimesPlayed
-        )
-
-        return updatedTags
-
-
-
-
-
-
-
-
-
-def WritePlaystatTagsToSongs(songsPlaystatTags):
-    for songPlaystatTags in songsPlaystatTags:
-        audioFile = mutagen.File(songPlaystatTags.songFilepath)
-        audioFile['PLAY_COUNT'] = songPlaystatTags.playCount
-        audioFile['TIME_LAST_PLAYED'] = songPlaystatTags.timeLastPlayed
-        audioFile['ALL_TIMES_PLAYED'] = songPlaystatTags.allTimesPlayed # FIX - - put semicolons b/w instead of commas
-
-        audioFile.save()
-
-
-
-        
-
-
-
-
-
-
-
+#     return incorrectTaggedSongs

@@ -1,6 +1,11 @@
-# ==================================================================================================
-#
-#
+'''
+update_ratestat_tags_from_vote_playlists.py
+
+Created: ?
+Modified: 01/22/20
+
+
+'''
 
 # Do setup processing so that this script can import all the needed modules from the "mlu" package.
 # This is necessary because these scripts are not located in the root directory of the project, but
@@ -57,13 +62,12 @@ logger.info("Pre-scan complete: found {} unique songs that were voted on".format
 # initialize the newVotes data structure: add a dictionary for each unique song to this list of data
 # dictionaries and set its new vote list to empty
 logger.info("Initializing data structure to hold the new votes for all songs")
-
 newVotesData = {}
 for songFilepath in allVotedSongs:
     newVotesData[songFilepath] = []
 
 # Start the main ratestat tag-writing process
-logger.info("Starting to update ratestat tags for each song that was voted on")
+logger.info("Populating data structure with the data from each vote playlist")
 
 for currentVoteValue in range(1, 10):
     currentVoteValuePlaylistName = "{}.m3u8".format(currentVoteValue)
@@ -71,13 +75,17 @@ for currentVoteValue in range(1, 10):
     
     logger.info("Reading songs with vote value {} from playlist {}".format(currentVoteValue, currentVoteValuePlaylistPath))
     playlistSongs = mlu.library.playlist.getAllPlaylistLines(currentVoteValuePlaylistPath)    
-    logger.info("Found {} songs in vote value {} playlist: updating their ratestat tags now".format(len(playlistSongs), currentVoteValue))
+    logger.info("Found {} songs in vote value {} playlist: loading them into the data structure".format(len(playlistSongs), currentVoteValue))
 
     for songFilepath in playlistSongs:
         logger.debug("Modifying data structure: Adding new vote (value {}) for song '{}'".format(currentVoteValue, songFilepath))
         newVotesData[songFilepath].append(currentVoteValue)
 
-logger.info("New votes data structure filled from vote playlists data successfully: ready to write tag data")
+logger.info("New votes data structure filled from vote playlists data successfully")
+logger.info("Writing tag data from data structure to audio files")
+
+# Sort the dictionary of new vote values according to the song filepath
+newVotesData = sorted(newVotesData)
 
 for songFilepath, newVotes in newVotesData.items():
     logger.debug("Processing new votes for audio file '{}'".format(songFilepath))
@@ -91,17 +99,15 @@ for songFilepath, newVotes in newVotesData.items():
     logger.debug("New votes saved into votes tag successfully for this file!")
 
 
-logger.info('Music vote/rating tag data update completed successfully: {} songs were updated'.format(allVotedSongs))
+logger.info('Music vote/rating tag data update completed successfully: {} songs were updated'.format(len(allVotedSongs)))
 
 # Print the results of all updated songs in table form and what changes occurred
 tagUpdatesTable = PrettyTable()
 tagUpdatesTable.field_names = ["Artist", "Title", "Added Votes", "New Rating", "New Votes List"]
 
-# Sort the dictionary of new vote values before displaying, so songs will be roughly in order (by filename)
-newVotesDataSorted = sorted(newVotesData)
+for songFilepath, newVotes in newVotesData.items():
 
-for songFilepath, newVotes in newVotesDataSorted.items():
-
+    # Get the basic tags and the new ratestat tags for each song so we can use them in the table
     songBasicTagsHandler = mlu.tags.basic.SongBasicTagsHandler(songFilepath)
     songRatestatTagsHandler = mlu.tags.ratestats.SongRatestatTagsHandler(songFilepath)
 
@@ -116,7 +122,7 @@ for songFilepath, newVotes in newVotesDataSorted.items():
         songRatestatTags.votes
     ])
 
-logger.info("\nThe following changes were made to music library:\n}{}".format(tagUpdatesTable))
+logger.info("\nThe following changes were made to music library:\n{}".format(tagUpdatesTable))
 
 logger.info('Archiving vote playlists...')
 archiveFilename = "[{}] Archived vote playlists (already written to ratestat tags).gz".format(mlu.common.time.getCurrentFormattedTime())
