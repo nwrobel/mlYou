@@ -12,20 +12,34 @@ of MPDLogLine objects - each object has 2 properties:
 - timestamp: Epoch timestamp for when this log occured, with correct year caclulated
 '''
 
-from time import strftime
 import datetime
 import mlu.common.file
 import mlu.common.time
 
+# TODO: look into and figure out how to use syslog or other linux configurable system logger so
+# that I can set it to output the full timestamp in the MPD log files, including year, and make
+# this code simpler
 
 # -------------------------------------------------------------------------------------------------
 # BEGIN LOG DATA GET ROUTINE
 
-# Class representing a single log from an MPD log - 2 properties:
-#  text: what the log actually says (minus the string timestamp info)
-#  timestamp: Epoch timestamp for when this log occured, with correct year caclulated
+
 class MPDLogLine:
-   def __init__(self, timestamp, text):
+   '''
+   Class representing a single log line entry from an MPD log file.
+   
+   Params:
+      text: what the log actually says (log line minus the string timestamp info)
+      timestamp: Epoch timestamp for when this log line occurred/was written
+   '''
+   def __init__(self, text, timestamp):
+      # perform validation on input data
+      if (not text) or (not isinstance(text, str)):
+         raise TypeError("Class attribute 'text' must be a non-empty string")
+
+      if (not mlu.common.time.isValidTimestamp(timestamp)):
+         raise ValueError("Class attribute 'timestamp' must be a valid timestamp, value '{}' is invalid".format(timestamp))
+
       self.text = text
       self.timestamp = timestamp
 
@@ -85,7 +99,13 @@ class MPDLogLineCollector:
       self.tempLogDir = mlu.common.file.getMPDLogCacheDirectory()
       self.logFileContextCurrentYear = {}
 
-   def GetMPDLogLines(self):
+   def collectMPDLogLines(self):
+      '''
+      Collects and returns all log lines (as MPDLogLine objects) from all the MPD log files currently
+      stored in the MPD log directory. Both uncompressed and compressed (.gz) log files in this 
+      directory are opened, read, and loaded into an MPDLogLine objects list. This list is then
+      sorted by the timestamp of each line (earliest first) and returned.
+      '''
       self.CopyLogFilesToTemp()
       self.DecompressLogFiles()
       self.SetLogFilesContextCurrentYear()

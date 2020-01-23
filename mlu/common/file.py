@@ -13,6 +13,12 @@ from pathlib import Path
 import gzip
 import shutil
 
+def isValidPossibleFilepath(filepath):
+    '''
+    Checks whether or not the given string is a legal, absolute, valid possible/potential filepath.
+    This does not check for the existence of the path.  
+    '''
+    return os.path.isabs(filepath)
 
 def getMLUProjectRoot():
     """

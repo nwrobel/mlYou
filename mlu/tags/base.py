@@ -13,6 +13,8 @@ tags module to build off of.
 import os
 from abc import ABC, abstractmethod
 
+import mlu.common.file
+
 class SongTagsHandler(ABC):
     '''
     Abstract base class that is a blueprint and partial starting implementation for the 
@@ -37,8 +39,8 @@ class SongTagsHandler(ABC):
          
     '''
     def __init__(self, songFilepath):
-        # validate that the given is a valid actual filepath (does not check existence)
-        if (not os.path.isabs(songFilepath)):
+        # validate that the given is a valid possible filepath
+        if (not mlu.common.file.isValidPossibleFilepath(songFilepath)):
             raise TypeError("Class attribute 'songFilepath' must be a valid absolute filepath string (either existent or non-existent)")
 
         self._songFilepath = songFilepath

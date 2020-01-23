@@ -6,8 +6,23 @@ Module containing "common" functionality related to time and timestamp logic.
 
 import datetime
 
-def getCurrentFormattedTime():
-    return formatTimestampForDisplay(getCurrentTimestamp())
+def isValidTimestamp(timestamp):
+    '''
+    Checks whether or not the given epoch timestamp (float value, can contain fractions of second)
+    represents a valid time. A valid time for this MLU project is defined as the following:
+    - After or equal to 1900-01-01 00:00:00
+    - Less than or equal to the current date/time
+    '''
+    if (not isinstance(timestamp, int)) and (not isinstance(timestamp, float)):
+        return False
+
+    lowerThresholdDatetime = datetime.datetime(year=1900, month=1, day=1)
+    upperThresholdDatetime = datetime.datetime.now()
+    testValueDatetime = datetime.datetime.fromtimestamp(timestamp)
+
+    isValid = (lowerThresholdDatetime <= testValueDatetime <= upperThresholdDatetime)
+    return isValid
+
 
 def formatTimestampForDisplay(timestamp):
     """
@@ -91,6 +106,24 @@ def getCurrentTimestamp():
     """
     dt = datetime.datetime.now()
     return datetime.datetime.timestamp(dt)
+
+def getCurrentFormattedTime():
+    '''
+    Returns the current time, formatted to look pretty for display purposes.
+    Output format example: "2012-01-27 02:29:33". Hours will be represented on a
+    24-hour clock. 
+    
+    Since epoch timestamps are given in time relative to GMT, the formatted time 
+    returned will be adjusted according to the current timezone by adding hours, so that the correct
+    time according to the current location is returned.
+    
+    If the given epoch timestamp contains a fractional (decimal) part, it will be rounded to remove 
+    it so it can be displayed in the output format YYYY-MM-DD HH-MM-SS. 
+
+    Timestamps in this format are not meant to be used for precise calculations. Instead, use the
+    original epoch timestamp values, which may include fractional/decimal seconds. 
+    '''
+    return formatTimestampForDisplay(getCurrentTimestamp())
 
 
 

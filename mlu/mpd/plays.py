@@ -16,14 +16,12 @@ instances - each instance has 4 properties:
 
 '''
 
-# TODO: update playback filtering to check if there are 2 or more playbacks of the same song within
-# about 0-10 min. of each other - these are most likely caused by MPD disconnect/reconnecting and shouldn't be counted
 
-# TODO: rename this module to 'playbacks'
 
 import re 
 import mlu.tags.basic
 import mlu.common.time
+import mlu.mpd.logs
 
 
 
@@ -60,7 +58,21 @@ import mlu.common.time
 #
 class MPDPlaybackInstanceCollector:
     def __init__(self, mpdLogLines):
+        # Validate input data
+        if (not mpdLogLines) or (not isinstance(mpdLogLines, list)):
+            raise TypeError("Class attribute 'mpdLogLines' must be a non-empty list of MPDLogLine objects")
+
+        for mpdLogLine in mpdLogLines:
+            if (not isinstance(mpdLogLine, mlu.mpd.logs.MPDLogLine)):
+                raise TypeError("Invalid class attribute 'mpdLogLines': one or more list values are not instances of MPDLogLine class")
+
         self._mpdLogLines = mpdLogLines
+        
+        # Flag for whether or not the MPDLogLines list ended with a log line for "played" song, but
+        # there was no more log lines to tell when playback ended: this situation is called an
+        # "unknownLastLogLinePlaybackDuration" - this flag will be used to determine whether or not
+        # the last line needs to be preserved at the end when the log files are archived
+        self.unknownLastLogLinePlaybackDuration = False
 
     # Returns playback data based on all data found in the logs from MPDLogsHandler
     # Creates the data structure described in comment header block

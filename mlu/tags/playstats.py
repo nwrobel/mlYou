@@ -5,9 +5,6 @@ This module deals with reading and writing playback-related tag information on a
 
 
 '''
-# TODO:
-# when reading playback tags, convert them to epoch timestamps and create them from a list from a semicolon seperated string
-# when writing tags, convert times to formatted strings as string seperated by semicolons
 
 import mutagen
 
@@ -121,12 +118,14 @@ class SongPlaystatTagsHandler(SongTagsHandler):
 
     def updateTags(self, songPlaybackRecord):
         '''
-        Updates the song's playstat tags, given a songPlaybackRecord object for the song.
+        Updates the song's playstat tags, given a SongPlaybackRecord object for the song. An 
+        exception will be thrown if the given playbackRecord is for a different song than that
+        of this tag handler instance.
         '''
 
         # Sanity check: ensure that the given tags and the playback record are for the same song
         if (songPlaybackRecord.songFilepath != self._songFilepath):
-            raise Exception("Unable to updateTags() for playstat tags on audio file: the given songPlaybackRecord object's songFilepath does not match that of this tag handler (not a playback record for this song)")
+            raise Exception("Unable to updateTags() for playstat tags on audio file: the given songPlaybackRecord object's songFilepath does not match that of this tag handler (playback record is not for this song)")
 
         # Calculate new tags based on the playbackRecord updates
         # Add two list() objects in python by using "+"
@@ -138,7 +137,8 @@ class SongPlaystatTagsHandler(SongTagsHandler):
         # this will throw an exception if any of these given tag values are invalid
         self._validateTagValues(newPlayCount, newTimeLastPlayed, newAllTimesPlayed)
 
-        logger.debug(("Successfully UPDATED playstat tags for audio file: Path='{}'\n" +
+        logger.debug(
+            ("Successfully UPDATED playstat tags for audio file: Path='{}'\n" +
           "   Previous Playstats: PlayCount='{}', TimeLastPlayed='{}', AllTimesPlayed='{}'\n" + 
           "   SongPlaybackRecord Added: PlaybackTimes='{}'\n" + 
           "   New Playstats: PlayCount='{}', TimeLastPlayed='{}', AllTimesPlayed='{}'").format(
@@ -150,7 +150,8 @@ class SongPlaystatTagsHandler(SongTagsHandler):
               newPlayCount,
               newTimeLastPlayed,
               newAllTimesPlayed
-        ))
+            )
+        )
 
         # Set the new tag values
         self._playCount = newPlayCount
