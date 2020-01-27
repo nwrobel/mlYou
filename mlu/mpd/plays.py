@@ -1,8 +1,8 @@
 '''
-Created on May 5, 2019
+mlu.mpd.plays
 
 Author: Nick Wrobel
-First Created:  ?
+First Created:  05/05/19
 Last Modified:  01/27/20
 
 This module handles data processing of MPDLogLine objects into SongPlaybackInstance objects: it creates
@@ -40,11 +40,11 @@ class MPDPlaybackInstanceCollector:
 
         self._mpdLogLines = mpdLogLines
         
-        # Flag for whether or not the MPDLogLines list ended with a log line for "played" song, but
-        # there was no more log lines to tell when playback ended: this situation is called an
-        # "unknownLastLogLinePlaybackDuration" - this flag will be used to determine whether or not
-        # the last line needs to be preserved at the end when the log files are archived
-        self.unknownLastLogLinePlaybackDuration = False
+        # The MPDLogLines list may have a final playback instance line, but 
+        # no more log lines to tell when playback ended: this situation is called an
+        # ambiguous final playback line - this variable preserves/captures that playback line so that
+        # it can be preserved in the MPD log file once everything has been read
+        self.preservedAmbiguousFinalPlaybackLine = None
 
 
     def collectPlaybackInstances(self):
@@ -102,20 +102,23 @@ class MPDPlaybackInstanceCollector:
                         playbackDuration = playbackStopTime - playbackStartTime
 
                     # If the list is out of bounds, we are at the end of the list, and we have no way to know what the play duration is, so
-                    # Set playbackDuration to None, which represents this ambiguity - this song playback will be preserved in the log file
-                    # Also break from the loop, since all log lines have been processed
+                    # leave playbackDuration at 0, which represents this ambiguity - this song playback will be preserved in the log file,
+                    # and we will not make a PlaybackInstance for it right now (we assume that the next round of log lines will have a stop playback indicator)
+                    # Also break from the loop, since no playback stop line was found
                     except IndexError:
-                        playbackDuration = None
+                        self.preservedAmbiguousFinalPlaybackLine = currentLine
                         break
 
                 # Create the playbackInstance object from the values we found for this playback and add it to the list
-                allPlaybackInstances.append(
-                    mlu.playback.SongPlaybackInstance(
-                        songFilepath=songFilepath, 
-                        playbackStartTime=playbackStartTime, 
-                        playbackDuration=playbackDuration
-                    ) 
-                )
+                # (if the playback duration was found - if not, don't make a playback instance for the last playback)
+                if (playbackDuration != 0):
+                    allPlaybackInstances.append(
+                        mlu.playback.SongPlaybackInstance(
+                            songFilepath=songFilepath, 
+                            playbackStartTime=playbackStartTime, 
+                            playbackDuration=playbackDuration
+                        ) 
+                    )
 
         return allPlaybackInstances
 

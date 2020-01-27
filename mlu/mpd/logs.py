@@ -1,7 +1,9 @@
 '''
-Created on May 5, 2019
+mlu.mpd.logs
 
-@author: nick.admin
+Author: Nick Wrobel
+First Created:  05/05/19
+Last Modified:  01/27/20
 
 This module deals with reading, writing, moving, and copying MPD log files to support operations
 of the mlu.mpd.playstats module.
@@ -9,7 +11,7 @@ of the mlu.mpd.playstats module.
 The MPDLogsHandler class focuses on reading in all the current MPD logs and returning a single array
 of MPDLogLine objects - each object has 2 properties:
 - text: what the log actually says (minus the string timestamp info)
-- timestamp: Epoch timestamp for when this log occured, with correct year caclulated
+- timestamp: Epoch timestamp for when this log ocurred, with correct year calculated
 '''
 
 import datetime
@@ -43,204 +45,172 @@ class MPDLogLine:
       self.text = text
       self.timestamp = timestamp
 
-# Class representing the timespan information for a single logfile
-#  logfilepath: path of the log file
-#  contextCurrentYear: the year of the date of the last log line, provided by the user since the log lines have no year in the timestamps
-#  firstEntryTime: timestamp of the the oldest (first) log line in the log file
-#  lastEntryTime: timestamp of the the most recent (last) log line in the log file
-class _LogFileTimeInfo:
-   def __init__(self, logfilepath, contextCurrentYear):
-      self.logfilepath = logfilepath
-      self.contextCurrentYear = contextCurrentYear
+
+
+class MPDLogFileHandler:
+   '''
+   Deals with handling the MPD log files, including copying them to the cache/temp dir to be read,
+   extracting compressed log files, archiving processed log files, and resetting the main 'mpd.log' 
+   file once all operations are complete.
+   '''
+
+   def __init__(self, mpdLogDir):
+      self._mpdLogDir = mpdLogDir
+
+      # Get the temp mpd logs directory location (inside the MLU project cache folder)
+      # This directory will created for us if it doesn't exist
+      self._tempLogDir = self._getMPDLogTempCacheDirectory()
+
+   def prepareLogFilesForDataCollection(self):
+      '''
+      Prepares the MPD log files for reading in/data collection by copying them to the temp dir
+      and extracting any of them that are archived. The filepath of the prepared MPD log files
+      (temp dir) is returned: this is to be the 'working dir' from where the log files are read in.
+      '''
+      self._copyLogFilesToTempDir()
+      self._resetActiveLogFile()
+      self._decompressLogFiles()
+
+      return self._tempLogDir
+
+
+   def finalizeLogFilesAfterDataCollection(self):
+      pass
+
+   def _copyLogFilesToTempDir(self): 
+      '''
+      Copies the MPD log files from the MPD log directory to the MPD temp log file dir. Two copies
+      of the original MPD logs will be made: one in the temp directory, and the other in a subfolder
+      named 'original' in the temp directory. This is so that original MPD logs can archived at the
+      end of the process, and in case something goes wrong and a reset is needed.
       
-      logfileEntryTimeRange = self.GetEntryTimeRange()
-      self.firstEntryTime = logfileEntryTimeRange[0]
-      self.lastEntryTime = logfileEntryTimeRange[1]
+      This throws an exception if the temp log file dir is not empty beforehand.
+      '''
+      # First check if there are already any MPD logs in the temp dir - if so, throw an exception:
+      # this means something wasn't cleaned up right and the log files from a previous run may 
+      # not have been handled correctly
+      logFilesInTempDir = mlu.common.file.GetAllFilesDepth1(self._tempLogDir)
+      if (logFilesInTempDir):
+         raise Exception("Unable to copy new MPD log files to the log file temp dir: files already exist there (invalid state).`nPlease check temp dir '{}'".format(self._tempLogDir))
 
-   def GetEntryTimeRange(self):
-      with open(self.logfilepath, mode='r') as file:
-         loglines = file.readlines()
-         
-      firstEntry = loglines[0]
-      lastEntry = loglines[-1] # get last item in list
+      # Get all the files from the MPD log dir (only depth 1, does not get subfolder files)
+      # Copy them to the MPD log temp dir
+      mpdLogFiles = mlu.common.file.GetAllFilesDepth1(self._mpdLogDir)
+      mlu.common.file.CopyFilesToDirectory(srcFiles=mpdLogFiles, destDir=self._tempLogDir)
 
-      # Last entry time must have the same year as currentcontextyear (it's the year of the date of last log entry)
-      lastEntryTime = _getCorrectTimestampFromMPDLogLine(lastEntry, self.contextCurrentYear)
+      # Also create a 2nd copy of the MPD logs in a subfolder 'original' in the temp logs directory
+      originalLogsDir = mlu.common.file.JoinPaths(self._tempLogDir, 'original-bak')
+      mlu.common.file.CopyFilesToDirectory(srcFiles=mpdLogFiles, destDir=originalLogsDir)
 
-      # Find the oldest possible entry time for this log file based on the most recent entry time above,
-      # assuming that all the logfiles span no more than 1 year (this is a requirement for this script to work)
-      # Simply subtract 1 year from the log file's lastEntryTime
-      minEntryTime = mlu.common.time.applyDeltaYearsToTimestamp(startTimestamp=lastEntryTime, years=-1)
+   
+   # TODO: delete mpd.log and all other files in top level dir of MPD logs dir
+   def _resetActiveLogFile(self):
+      pass
 
-      # Find the first entry time:
-      #  - add current year to the first entry month+day to make full date
-      #  - check if this first entry is more recent than the date of the last entry
-      #  ---- if so, decrement the current year and add this to first entry month+day
-      #  - check to ensure the calculated full date of first entry is not older than minEntryTime
-      #  ---- if so, throw exception
-      firstEntryTime = _getCorrectTimestampFromMPDLogLine(firstEntry, self.contextCurrentYear)
-      # If the calculated first entry time is wrong, 
-      if ( firstEntryTime > lastEntryTime ):
-         # Try again with using the previous year
-         firstEntryTime = _getCorrectTimestampFromMPDLogLine(firstEntry, (self.contextCurrentYear - 1))
+  
+   def _decompressLogFiles(self):
+      '''
+      Decompress/extract any log files in the MPD logs temp dir that are compressed. These compressed
+      log files are extracted and turned into normal log files, and the compressed versions of them
+      are deleted.
+      '''
+      # Get a list of which files are compressed (have .gz extension)
+      logFiles = mlu.common.file.GetAllFilesDepth1(self._tempLogDir)
+      compressedLogFiles = []
 
-      # Sanity check to ensure the first entry time is not older than the min age for an entry
-      # If so, throw exception
-      if ( firstEntryTime < minEntryTime ):
-         raise Exception("ERROR: cannot determine the full timestamp of the first log entry for logfile " + self.logfilepath)
-      
-      return (firstEntryTime, lastEntryTime)
-      
+      for logFile in logFiles:
+         if (mlu.common.file.GetFileExtension(logFile) == "gz"):
+            compressedLogFiles.append(logFile)
+
+      # Decompress each gz file, output each uncompressed log file to the temp dir, and delete
+      # each original compressed .gz file
+      for compressedLogFile in compressedLogFiles:
+         baseFilename = mlu.common.file.GetFileBaseName(compressedLogFile)
+         extractedFilepath = mlu.common.file.JoinPaths(self._tempLogDir, baseFilename)
+
+         mlu.common.file.DecompressSingleGZFile(compressedLogFile, extractedFilepath)
+         mlu.common.file.DeleteFile(compressedLogFile)
+
+   def _getMPDLogTempCacheDirectory(self):
+      """
+      Gets the absolute filepath of the cache directory inside the project folder where MPD logs will
+      be stored temporarily while being processed. This is used by the MPD playstats updater script.
+      Also does a check to ensure the cache directory exists and creates it if it doesn't.
+      """
+      rootCacheDir = mlu.common.file.getMLUCacheDirectory()
+      mpdLogCacheDir = mlu.common.file.JoinPaths(rootCacheDir, "mpd-logs")
+
+      if (not mlu.common.file.directoryExists(mpdLogCacheDir)):
+         mlu.common.file.createDirectory(mpdLogCacheDir)
+
+      return mpdLogCacheDir
+
+
 
 class MPDLogLineCollector:
-   def __init__(self, mpdLogDir, promptForLogFileYears):
-      self.mpdLogDir = mpdLogDir
-      self.promptForLogFileYears = promptForLogFileYears
-      self.tempLogDir = mlu.common.file.getMPDLogCacheDirectory()
-      self.logFileContextCurrentYear = {}
+   def __init__(self, mpdLogDir):
+
+      logFileHandler = MPDLogFileHandler(mpdLogDir=mpdLogDir)
+      preparedLogsDir = logFileHandler.prepareLogFilesForDataCollection()
+   
+      self._logDir = preparedLogsDir
+
 
    def collectMPDLogLines(self):
       '''
       Collects and returns all log lines (as MPDLogLine objects) from all the MPD log files currently
-      stored in the MPD log directory. Both uncompressed and compressed (.gz) log files in this 
-      directory are opened, read, and loaded into an MPDLogLine objects list. This list is then
-      sorted by the timestamp of each line (earliest first) and returned.
-      '''
-      self.CopyLogFilesToTemp()
-      self.DecompressLogFiles()
-      self.SetLogFilesContextCurrentYear()
+      stored in the MPD prepared log (temp) directory. 
       
-      allLogLines = self.ProcessAllLogFileLines()
-      return allLogLines
-   
-   def CopyLogFilesToTemp(self): 
-      # Create the cache directory to store the log files in temporarily so we can manipulate them
-      mlu.common.file.createDirectory(self.tempLogDir)
+      Each log file in the prepared logs directory is opened, read, and loaded into an MPDLogLine objects list. 
+      This list is then sorted by the timestamp of each line (earliest first) and returned.
+      '''
 
-      # Get all MPD log files and copy them into the temp dir
-      mpdLogFiles = mlu.common.file.GetAllFilesDepth1(self.mpdLogDir)
-      mlu.common.file.CopyFilesToDirectory(srcFiles=mpdLogFiles, destDir=self.tempLogDir)
-
-
-   # Decompresses any compressed, archived log files that are given  
-   def DecompressLogFiles(self):
-      mpdLogFiles = mlu.common.file.GetAllFilesDepth1(self.tempLogDir)
-      gzippedLogFiles = []
-
-      for logFile in mpdLogFiles:
-         if (mlu.common.file.GetFileExtension(logFile) == "gz"):
-            gzippedLogFiles.append(logFile)
-
-      # Decompress each gz file, output each uncompressed log file to the temp dir, and delete
-      # each original compressed .gz file
-      for gzippedLogFilePath in gzippedLogFiles:
-         gzippedBaseFilename = mlu.common.file.GetFileBaseName(gzippedLogFilePath)
-         extractedFilepath = mlu.common.file.JoinPaths(self.tempLogDir, gzippedBaseFilename)
-         mlu.common.file.DecompressSingleGZFile(gzippedLogFilePath, extractedFilepath)
-         mlu.common.file.DeleteFile(gzippedLogFilePath)
-
-   # SetLogFilesContextCurrentYear - get user to enter in the year that each log file has entries
-   # up until - this year will be the 'current' year for that log file when timestamps are updated
-   # this can be skipped based on param passed to the loghandler
-   # Make an dict: logfilepath -> contextCurrentYear
-   def SetLogFilesContextCurrentYear(self):
-      mpdLogFiles = mlu.common.file.GetAllFilesDepth1(self.tempLogDir)
-      currentCalendarYear = mlu.common.time.getCurrentYear()
-
-      if (self.promptForLogFileYears):
-         print("Please enter the logfile's context current year for each log file (the year when each log file was last written to...year of the date of the last log line in each log file)")
-         print("MPD logs - enter context current year for each:\n")
-
-         # Prompt the user to enter in the context current year for each logfile
-         # Perform validation on the year entered: should not be more than the actual current year
-         # or less than 1960
-         for logfilepath in mpdLogFiles:
-            logfilename = mlu.common.file.GetFilename(logfilepath)
-            currentEntryComplete = False
-
-            # Loop until the user enters a valid date to validate input year
-            while (not currentEntryComplete):
-               logContextCurrentYear = int( input(logfilename + ': ') )
-
-            if ((logContextCurrentYear > currentCalendarYear) or (logContextCurrentYear < 1960)):
-               print("ERROR: Invalid date: enter a correct date")
-            else:
-               self.logFileContextCurrentYear[logfilepath] = logContextCurrentYear
-               currentEntryComplete = True
-
-      # If promptForLogFileYears is false, we just set the context current year for all logfiles to 
-      # the actual calendar current year      
-      else:
-         for logfilepath in mpdLogFiles:
-            self.logFileContextCurrentYear[logfilepath] = currentCalendarYear
-
-   # ProcessAllLogFileLines
-   # - Use the dict created earlier - for each logfile:
-   #     Read in all lines into raw array
-   #     For each log line:
-   #           Get correct, full timestamp w/ corrected year (getTimestampFromMPDLogLine)
-   #           Get the text-only part of the log line (remove text-based timestamp and other unneeded info)
-   #           Make a LogLine object with the timestamp and text properties
-   #           Add this object to the "master" processed LogLine array for all log lines
-   # - Sort the object array based on the timestamp property, least recent to most recent
-   # - Return the array from this function back to caller to use
-   def ProcessAllLogFileLines(self):
-      mpdLogFiles = mlu.common.file.GetAllFilesDepth1(self.tempLogDir)
+      logFiles = mlu.common.file.GetAllFilesDepth1(self._logDir)
       allMPDLogLines = []
 
-      for logfilepath in mpdLogFiles:
-         logTimeInfo = _LogFileTimeInfo(logfilepath=logfilepath, contextCurrentYear=self.logFileContextCurrentYear[logfilepath])         
-
+      for logfilepath in logFiles:
          with open(logfilepath, mode='r') as file:
             rawLogfileLines = file.readlines()
 
          for logLine in rawLogfileLines:
-            lineTimestamp = _getCorrectTimestampFromMPDLogLine(line=logLine, logfileTimeInfo=logTimeInfo)
-            lineText = _getTextFromMPDLogLine(logLine)
-            allMPDLogLines.append( _MPDLogLine(timestamp=lineTimestamp, text=lineText) )
+            lineTimestamp = self._getTimestampFromRawLogLine(logLine)
+            lineText = self._getTextFromRawLogLine(logLine)
 
-      # Sort the loglines array - this sorts the array object in place (does not copy/return a new, sorted array)
+            allMPDLogLines.append(MPDLogLine(timestamp=lineTimestamp, text=lineText))
+
+      # Sort the loglines array - this sorts the array object in place 
+      # (does not copy or return a new array, modifies the existing one)
       allMPDLogLines.sort(key=lambda line: line.timestamp)
 
       return allMPDLogLines
-            
-# -------------------------------------------------------------------------------------------------
-# MODULE HELPER FUNCTIONS
-#
+      
+   # TODO: UPDATE THIS FUNCTION TO GET THE TIMESTAMP THAT INCLUDES THE YEAR
+   def _getTimestampFromRawLogLine(self, line):
+      '''
+      '''
+      lineParts = line.split(" ")
+      lineTime = lineParts[0] + " " + lineParts[1] + " " + " " + lineParts[2]
 
-def _getCorrectTimestampFromMPDLogLine(line, logfileTimeInfo):
-   timestamp = _getTimestampFromMPDLogLine(line=line, year=logfileTimeInfo.contextCurrentYear) 
-
-   # If the timestamp formed by using the log's current context year is incorrect (outside the bounds of the first and last entry times),
-   # form a new timestamp using the previous year
-   if ((timestamp > logfileTimeInfo.lastEntryTime) or (timestamp < logfileTimeInfo.firstEntryTime)):
-      timestamp = _getTimestampFromMPDLogLine( line=line, year=(logfileTimeInfo.contextCurrentYear - 1) ) 
-
-   # Sanity check: ensure that this new timestamp also is not outside the bounds
-   # If it is, raise exception
-   if ((timestamp > logfileTimeInfo.lastEntryTime) or (timestamp < logfileTimeInfo.firstEntryTime)):
-      raise Exception("ERROR: cannot determine the full timestamp for a log entry line for logfile " + logfileTimeInfo.logfilepath)
-
-   return timestamp
-
-def _getTimestampFromMPDLogLine(line, year):
-    lineParts = line.split(" ")
-    lineTime = lineParts[0] + " " + lineParts[1] + " " +  year + " " + lineParts[2]
-
-    # Tell the datetime library how to parse this time string from the MPD log line into a timestamp value
-    lineFormattedTime = datetime.datetime.strptime(lineTime, "%b %d %Y %H:%M")
-    epochTimestamp = lineFormattedTime.timestamp()
-    return epochTimestamp
+      # Tell the datetime library how to parse this time string from the MPD log line into a timestamp value
+      lineFormattedTime = datetime.datetime.strptime(lineTime, "%b %d %Y %H:%M")
+      epochTimestamp = lineFormattedTime.timestamp()
+      return epochTimestamp
 
 
-def _getTextFromMPDLogLine(line):
-   lineParts = line.split(":")
-   lineText = lineParts[1]
+   def _getTextFromRawLogLine(self, line):
+      lineParts = line.split(":")
+      lineText = lineParts[1]
 
-   # Remove the leading space taken after splitting the string
-   lineText = lineText[1:]
-   # Remove the newline char at the end
-   lineText = lineText.rstrip("\n")
+      # Remove the leading space taken after splitting the string
+      lineText = lineText[1:]
+      # Remove the newline char at the end
+      lineText = lineText.rstrip("\n")
 
-   return lineText
+      return lineText
+
+
+
+
+
+
 

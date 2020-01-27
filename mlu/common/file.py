@@ -67,18 +67,6 @@ def getMLUCacheDirectory():
 
     return cachedir
 
-def getMPDLogCacheDirectory():
-    """
-    Gets the absolute filepath of the cache directory inside the project folder where MPD logs will
-    be stored temporarily while being processed. This is used by the MPD playstats updater script.
-    Also does a check to ensure the cache directory exists and creates it if it doesn't.
-    """
-    mpdLogCacheDir = JoinPaths(getMLUCacheDirectory(), "mpdlogs")
-    if (not directoryExists(mpdLogCacheDir)):
-        createDirectory(mpdLogCacheDir)
-
-    return mpdLogCacheDir
-
 def GetAllFilesAndDirectoriesRecursive(rootPath):
     """
     Gets the filepaths of all files AND folders within the given root directory, recursively.
