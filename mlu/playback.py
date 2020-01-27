@@ -1,8 +1,9 @@
 '''
 mlu.playbacks
 
-First Created: 01/16/20
-Last Modified: 01/22/20
+Author: Nick Wrobel
+First Created:  01/16/20
+Last Modified:  01/22/20
 
 Module that deals with handling song playback instances and determining the playback tag values
 (playstat tags) that should be written to the played songs accordingly. 
@@ -50,7 +51,7 @@ class SongPlaybackInstance:
         if (not isinstance(playbackDuration, int)) and (not isinstance(playbackDuration, float)):
             raise TypeError("Class attribute 'playbackDuration' must be an epoch timestamp (int or float) value")
 
-        if (self.playbackDuration <= 0):
+        if (playbackDuration <= 0):
             raise ValueError("Class attribute 'playbackDuration' must be an epoch timestamp (cannot be less than or equal to 0)")
 
         self.songFilepath = songFilepath

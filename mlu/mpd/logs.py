@@ -30,7 +30,7 @@ class MPDLogLine:
    
    Params:
       text: what the log actually says (log line minus the string timestamp info)
-      timestamp: Epoch timestamp for when this log line occurred/was written
+      timestamp: time for when this log line occurred/was written, as an epoch timestamp (float or int)
    '''
    def __init__(self, text, timestamp):
       # perform validation on input data
