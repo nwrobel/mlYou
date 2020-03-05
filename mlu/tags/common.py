@@ -9,7 +9,7 @@ def formatValuesListToAudioTag(valuesList):
         return ''
         
     listStr = ';'.join(map(str, valuesList))
-    return listStr
+    return str(listStr)
 
 def formatAudioTagToValuesList(audioTagStr, valuesAsInt=False):
     if (not audioTagStr):

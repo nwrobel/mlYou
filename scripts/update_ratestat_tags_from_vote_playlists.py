@@ -85,7 +85,7 @@ logger.info("New votes data structure filled from vote playlists data successful
 logger.info("Writing tag data from data structure to audio files")
 
 # Sort the dictionary of new vote values according to the song filepath
-newVotesData = sorted(newVotesData)
+# newVotesData = sorted(newVotesData)
 
 for songFilepath, newVotes in newVotesData.items():
     logger.debug("Processing new votes for audio file '{}'".format(songFilepath))

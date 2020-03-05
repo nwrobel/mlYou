@@ -104,7 +104,7 @@ def getAllPlaylistLines(playlistFilepath):
     Returns a list of all the lines contained within a playlist, given the path of the playlist.
     Each line should be a filepath pointing to an audio file/song entry on that playlist.
     '''
-    with open(playlistFilepath, mode='r', encoding='utf-8-sig') as file:
+    with open(playlistFilepath, mode='r', encoding='utf-8') as file:
         lines = file.readlines()
 
     playlistLines = []
