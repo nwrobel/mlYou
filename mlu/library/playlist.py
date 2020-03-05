@@ -83,6 +83,10 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
         for originalLine in originalLines:
             convertedLine = originalLine.replace(oldRoot, newRoot)
             convertedLine = FixPathSlashDirectionToMatchRootPath(newRoot, convertedLine)
+
+            # Add the newline character back to the end
+            convertedLine = convertedLine + "\n"
+
             newPlaylistLines.append(convertedLine)
                
         # Write out the converted lines to a new playlist file in the output dir
