@@ -24,6 +24,8 @@ class AudioFileTagIOHandler:
             self.audioFileType = 'flac'
         elif (audioFileExt == '.mp3'):
             self.audioFileType = 'mp3'
+        elif (audioFileExt == '.m4a'):
+            self.audioFileType = 'm4a'
         else:
             raise Exception("Cannot open file '{}': Audio file format is not supported".format(self.audioFilepath))
 
@@ -35,6 +37,9 @@ class AudioFileTagIOHandler:
         elif (self.audioFileType == 'mp3'):
             tagValue = self._getAudioTagValueFromMp3File(tagName)
 
+        elif (self.audioFileType == 'm4a'):
+            tagValue = self._getAudioTagValueFromM4AFile(tagName)
+
         return tagValue
 
 
@@ -44,6 +49,9 @@ class AudioFileTagIOHandler:
 
         elif (self.audioFileType == 'mp3'):
             self._setAudioTagValueForMp3File(tagName, newValue)
+
+        elif (self.audioFileType == 'm4a'):
+            self._setAudioTagValueForM4AFile(tagName, newValue)
 
 
     def _getAudioTagValueFromFLACFile(self, tagName):
@@ -109,3 +117,11 @@ class AudioFileTagIOHandler:
 
             mutagenInterface.add(TXXX(3, desc=tagName, text=newValueStr))
             mutagenInterface.save(self.audioFilepath, v2_version=3)
+
+
+    def _getAudioTagValueFromM4AFile(self, tagName):
+        pass
+
+
+    def _setAudioTagValueForM4AFile(self, tagName, newValue):
+        pass
