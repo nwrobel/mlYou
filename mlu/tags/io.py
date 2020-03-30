@@ -8,8 +8,15 @@ type.
 import mutagen
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import ID3, TXXX
+from mutagen.mp4 import MP4
 
 import mlu.common.file
+
+MP4_STANDARD_TAGS = { 
+    'TITLE': b'\xa9nam',
+    'ARTIST': b'xa9ART'
+}
+    
 
 class AudioFileTagIOHandler:
     def __init__(self, audioFilepath):
@@ -120,8 +127,16 @@ class AudioFileTagIOHandler:
 
 
     def _getAudioTagValueFromM4AFile(self, tagName):
-        pass
+        '''
+        '''
+        mutagenInterface = MP4(self.audioFilepath)
+        value = mutagenInterface.tags[tagName]
+        return value
 
 
     def _setAudioTagValueForM4AFile(self, tagName, newValue):
-        pass
+        '''
+        '''
+        mutagenInterface = MP4(self.audioFilepath)
+        mutagenInterface.tags[tagName] = newValue
+        mutagenInterface.tags.save()

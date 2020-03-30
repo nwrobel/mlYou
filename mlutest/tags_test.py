@@ -11,7 +11,8 @@ import mlu.tags.io
 class TestTagsIOModule(unittest.TestCase):
     def setUp(self):
         self.testAudioFilepathFLAC = "D:\\Temp\mlu-test\\test-music-lib\\Content\Music\\(hed) Planet Earth\\The Best Of (Hed) Planet Earth\\1.01. (hed) Planet Earth - Suck It Up.flac"
-        self.testAudioFilepathMp3 = "D:\\Temp\mlu-test\\test-music-lib\\Content\Music\\Derek Trucks And Co\\The Derek Trucks Band\\1997 - The Derek Trucks Band (320 kbps)\\01 - Sarod.mp3"
+        self.testAudioFilepathMp3 = "D:\\Temp\mlu-test\\test-music-lib\\Content\\Music\\Derek Trucks And Co\\The Derek Trucks Band\\1997 - The Derek Trucks Band (320 kbps)\\01 - Sarod.mp3"
+        self.testAudioFilepathAAC = "D:\\Temp\\mlu-test\\test-music-lib\\Content\\Music\\Ambient Occlusion\\Dense - Percussive Candies [ambient_chillout_psychedelic].m4a"
         self.testAudioFileALAC = "D:\\Temp\\mlu-test\\test-music-lib\\Content\\Music\\Buckethead [ALAC]\\Studio albums\\[1992]Bucketheadland\\CD1\\01. Buckethead - Intro- Park Theme.m4a"
         self.notExistFile = 'D:\\hello.mp3'
 
@@ -43,7 +44,6 @@ class TestTagsIOModule(unittest.TestCase):
         self.assertEqual(actualValue, '')
 
         # Test tag writing
-        handler = mlu.tags.io.AudioFileTagIOHandler(self.testAudioFilepathFLAC)
         testValue = 'asdf'
         handler.setAudioTagValue('tag_name', testValue)
         
@@ -55,3 +55,32 @@ class TestTagsIOModule(unittest.TestCase):
         tag2Start = handler.getAudioTagValue('copyright')
         tag3Start = handler.getAudioTagValue('play_count')
         tag4Start = handler.getAudioTagValue('undefined_tag')
+
+    def testAudioFileTagIOHandlerAAC(self):
+        # Test tag reading: defined tag
+        handler = mlu.tags.io.AudioFileTagIOHandler(self.testAudioFilepathAAC)
+        actualValue = handler.getAudioTagValue('title')
+        expectedValue = 'Dense - Percussive Candies [ambient/chillout/psychedelic]'
+        self.assertEqual(actualValue, expectedValue)
+
+        # Test tag reading: undefined tag
+        actualValue = handler.getAudioTagValue('undefined_tag')
+        self.assertEqual(actualValue, '')
+
+        # Test reading: custom (nonstandard) tag
+        actualValue = handler.getAudioTagValue('date_added')
+        expectedValue = '2018-12-20 20:52:48'
+        self.assertEqual(actualValue, expectedValue)
+
+        # Test tag writing: an existing tag
+        testValue = 'title asdf'
+        handler.setAudioTagValue('title', testValue)
+        actualValue = handler.getAudioTagValue('tag_name')
+        self.assertEqual(actualValue, testValue)
+
+        # Test tag writing: a new tag
+        testValue = 'tag val asdf'
+        handler.setAudioTagValue('tag_name', testValue)
+        actualValue = handler.getAudioTagValue('tag_name')
+        self.assertEqual(actualValue, testValue)
+
