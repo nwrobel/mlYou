@@ -13,8 +13,21 @@ from mutagen.mp4 import MP4
 import mlu.common.file
 
 MP4_STANDARD_TAGS = { 
-    'TITLE': b'\xa9nam',
-    'ARTIST': b'xa9ART'
+    'TITLE': '\xa9nam',
+    'ARTIST': '\xa9ART',
+    'ALBUM ARTIST': 'aART',
+    'ALBUM': '\xa9alb',
+    'COMPOSER': '\xa9wrt',
+    'YEAR': '\xa9day',
+    'COMMENT': '\xa9cmt',
+    'GENRE': '\xa9gen',
+    'LYRICS': '\xa9lyr',
+    'ENCODED_BY': '\xa9too',
+    'COPYRIGHT': 'cprt',
+    'TRACKNUMBER': 'trkn',
+    'TOTALTRACKS': 'trkn',
+    'DISCNUMBER': 'disk',
+    'TOTALDISCS': 'disk'
 }
     
 
@@ -129,9 +142,22 @@ class AudioFileTagIOHandler:
     def _getAudioTagValueFromM4AFile(self, tagName):
         '''
         '''
+        tagName = tagName.upper()
+        tagValue = ''
         mutagenInterface = MP4(self.audioFilepath)
-        value = mutagenInterface.tags[tagName]
-        return value
+
+        if (tagName in MP4_STANDARD_TAGS):
+            mp4TagName = MP4_STANDARD_TAGS[tagName]
+            tagValue = mutagenInterface.tags[mp4TagName][0]
+        else:
+            mp4TagName = '----:com.apple.iTunes:{}'.format(tagName)
+
+            try:
+                tagValue = mutagenInterface[mp4TagName][0].decode('utf-8')
+            except KeyError:
+                print('Tag not set')
+
+        return tagValue
 
 
     def _setAudioTagValueForM4AFile(self, tagName, newValue):
