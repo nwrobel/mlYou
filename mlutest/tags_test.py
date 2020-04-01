@@ -57,20 +57,24 @@ class TestTagsIOModule(unittest.TestCase):
         tag4Start = handler.getAudioTagValue('undefined_tag')
 
     def testAudioFileTagIOHandlerAAC(self):
-        # Test tag reading: defined tag
+        # Test tag reading: defined standard tag
         handler = mlu.tags.io.AudioFileTagIOHandler(self.testAudioFilepathAAC)
         actualValue = handler.getAudioTagValue('title')
         expectedValue = 'Dense - Percussive Candies [ambient/chillout/psychedelic]'
         self.assertEqual(actualValue, expectedValue)
 
-        # Test tag reading: undefined tag
-        actualValue = handler.getAudioTagValue('undefined_tag')
-        self.assertEqual(actualValue, '')
-
-        # Test reading: custom (nonstandard) tag
+        # Test reading: defined custom (nonstandard) tag
         actualValue = handler.getAudioTagValue('date_added')
         expectedValue = '2018-12-20 20:52:48'
         self.assertEqual(actualValue, expectedValue)
+
+        # Test tag reading: undefined standard tag
+        actualValue = handler.getAudioTagValue('copyright')
+        self.assertEqual(actualValue, '')
+
+        # Test tag reading: undefined custom tag
+        actualValue = handler.getAudioTagValue('undefined_tag')
+        self.assertEqual(actualValue, '')
 
         # Test tag writing: an existing tag
         testValue = 'title asdf'

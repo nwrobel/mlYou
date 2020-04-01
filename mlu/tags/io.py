@@ -146,16 +146,28 @@ class AudioFileTagIOHandler:
         tagValue = ''
         mutagenInterface = MP4(self.audioFilepath)
 
-        if (tagName in MP4_STANDARD_TAGS):
-            mp4TagName = MP4_STANDARD_TAGS[tagName]
-            tagValue = mutagenInterface.tags[mp4TagName][0]
-        else:
-            mp4TagName = '----:com.apple.iTunes:{}'.format(tagName)
+        try:
+            if (tagName in MP4_STANDARD_TAGS):
+                mp4TagName = MP4_STANDARD_TAGS[tagName]
 
-            try:
+                # Get the tag value from the tuple list value for these tags
+                # They are stored as lists of tuples for track and disc numbers:
+                # (TRACKNUMBER, TOTALTRACKS) and (DISCNUMBER, TOTALDISKS)
+                if (tagName == 'TRACKNUMBER' or tagName == 'DISCNUMBER'):
+                    tagValue = mutagenInterface.tags[mp4TagName][0][0]
+
+                elif (tagName == 'TOTALTRACKS' or tagName == 'TOTALDISCS'):
+                    tagValue = mutagenInterface.tags[mp4TagName][0][1]
+
+                else:
+                    tagValue = mutagenInterface.tags[mp4TagName][0]
+                    
+            else:
+                mp4TagName = '----:com.apple.iTunes:{}'.format(tagName)
                 tagValue = mutagenInterface[mp4TagName][0].decode('utf-8')
-            except KeyError:
-                print('Tag not set')
+
+        except KeyError:
+            print('Tag not set')
 
         return tagValue
 
