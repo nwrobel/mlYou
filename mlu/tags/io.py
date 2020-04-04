@@ -169,12 +169,47 @@ class AudioFileTagIOHandler:
         except KeyError:
             print('Tag not set')
 
-        return tagValue
+        return str(tagValue)
 
 
     def _setAudioTagValueForM4AFile(self, tagName, newValue):
         '''
+        Sets the given tag to the specified value for an M4A/AAC audio file.
+
+        Params:
+            tagName: name of the audio file tag to set the value for
+            newValue
         '''
+        tagName = tagName.upper()
+        newValueStr = str(newValue)
+
         mutagenInterface = MP4(self.audioFilepath)
-        mutagenInterface.tags[tagName] = newValue
-        mutagenInterface.tags.save()
+
+        if (tagName in MP4_STANDARD_TAGS):
+            mp4TagName = MP4_STANDARD_TAGS[tagName]
+
+        else:
+            mp4TagName = '----:com.apple.iTunes:{}'.format(tagName)
+
+        # These tags are stored as lists of tuples for track and disc numbers:
+        # (TRACKNUMBER, TOTALTRACKS) and (DISCNUMBER, TOTALDISKS)
+        if (tagName == 'TRACKNUMBER'):
+            totalTracksValue = self._getAudioTagValueFromM4AFile('TOTALTRACKS')
+            mutagenInterface.tags[mp4TagName][0] = (int(newValueStr), int(totalTracksValue))
+
+        elif (tagName == 'TOTALTRACKS'):
+            trackNumValue = self._getAudioTagValueFromM4AFile('TRACKNUMBER')
+            mutagenInterface.tags[mp4TagName][0] = (int(trackNumValue), int(newValueStr))
+
+        elif (tagName == 'DISCNUMBER'):
+            totalDiscsValue = self._getAudioTagValueFromM4AFile('TOTALDISCS')
+            mutagenInterface.tags[mp4TagName][0] = (int(newValueStr), int(totalDiscsValue))
+
+        elif (tagName == 'TOTALDISCS'):
+            discNumValue = self._getAudioTagValueFromM4AFile('DISCNUMBER')
+            mutagenInterface.tags[mp4TagName][0] = (int(discNumValue), int(newValueStr))
+
+        else:
+            mutagenInterface.tags[mp4TagName] = (newValueStr.encode('utf-8'))
+        
+        mutagenInterface.save()
