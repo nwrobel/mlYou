@@ -7,15 +7,45 @@ import envsetup
 envsetup.PreparePythonProjectEnvironment()
 
 import mlu.tags.io
+import mlutest.common
+
+class TestAudioFile:
+    def __init__(self, filepath, tagValues):
+        self.filepath = filepath
+        self.tagValues = tagValues
+
+class TestData:
+    def __init__(self, testAudioFileDir):
+        
+
+    class FLAC:
+        filepath = 'test.flac'
+        tagValue = {}
+    class MP3:
+        filepath = 'test.mp3'
+        tagValue = {}
+    class M4A:
+        filepath = 'test.m4a'
+        tagValue = {}    
 
 class TestTagsIOModule(unittest.TestCase):
     def setUp(self):
-        self.testAudioFilepathFLAC = "D:\\Temp\mlu-test\\test-music-lib\\Content\Music\\(hed) Planet Earth\\The Best Of (Hed) Planet Earth\\1.01. (hed) Planet Earth - Suck It Up.flac"
+        self.testAudioFilepathFLAC = "D:\\Temp\mlu-test\\"
         self.testAudioFilepathMp3 = "D:\\Temp\mlu-test\\test-music-lib\\Content\\Music\\Derek Trucks And Co\\The Derek Trucks Band\\1997 - The Derek Trucks Band (320 kbps)\\01 - Sarod.mp3"
         self.testAudioFilepathAAC = "D:\\Temp\\mlu-test\\test-music-lib\\Content\\Music\\Ambient Occlusion\\Dense - Percussive Candies [ambient_chillout_psychedelic].m4a"
         self.testAudioFileALAC = "D:\\Temp\\mlu-test\\test-music-lib\\Content\\Music\\Buckethead [ALAC]\\Studio albums\\[1992]Bucketheadland\\CD1\\01. Buckethead - Intro- Park Theme.m4a"
         self.notExistFile = 'D:\\hello.mp3'
         
+        testResDir = mlu.common.file.getTestResourceFilesDirectory()
+        testSrcAudioFilesDir = mlu.common.file.JoinPaths(testResDir, 'test-audio-filetypes')
+        cacheDir = mlu.common.file.getMLUCacheDirectory()
+
+        testSrcAudioFiles = [, , ]
+        testSrcAudioFilepaths = [mlu.common.file.JoinPaths(testSrcAudioFilesDir, audioFile) for audioFile in testSrcAudioFiles]
+
+        mlu.common.file.CopyFilesToDirectory(srcFiles=testSrcAudioFilepaths, destDir=cacheDir)
+
+        self.testData = TestData
 
     def testAudioFileTagIOHandlerConstructor(self):
         # Test nonexisting file given

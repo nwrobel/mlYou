@@ -1,6 +1,6 @@
 {
     "files.autoSave": "afterDelay",
-    "editor.autoIndent": "none",
+    "editor.autoIndent": "keep",
     "editor.rulers": [100],
 
     "workbench.colorCustomizations": {

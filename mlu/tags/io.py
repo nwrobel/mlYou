@@ -1,8 +1,9 @@
 '''
 mlu.tags.io
 
-Module for functionality related to reading and writing data to tags for any generic audio file 
+Module for functionality related to reading and writing data to tags for any supported audio file 
 type.
+
 '''
 
 import mutagen
@@ -30,8 +31,14 @@ MP4_STANDARD_TAGS = {
     'TOTALDISCS': 'disk'
 }
     
-
 class AudioFileTagIOHandler:
+    '''
+    Class that handles the reading and writing of tag data values for a single audio file. This
+    file can be any of the supported audio file types.
+
+    Constructor params:
+        audioFilepath: absolute filepath of the audio file
+    '''
     def __init__(self, audioFilepath):
         # validate that the given is a valid possible filepath
         if (not mlu.common.file.isValidPossibleFilepath(audioFilepath)):
@@ -51,6 +58,13 @@ class AudioFileTagIOHandler:
 
 
     def getAudioTagValue(self, tagName):
+        '''
+        Gets the string value of the given tag for the audio file. This will return an empty string
+        if the tag is empty or undefined.
+
+        Params:
+            tagName: name of the audio file tag
+        '''
         if (self.audioFileType == 'flac'):
             tagValue = self._getAudioTagValueFromFLACFile(tagName)
 
@@ -64,6 +78,13 @@ class AudioFileTagIOHandler:
 
 
     def setAudioTagValue(self, tagName, newValue):
+        '''
+        Sets the given tag to the specified value for the audio file.
+
+        Params:
+            tagName: name of the audio file tag to set the value for
+            newValue: value to set for the given tag
+        '''
         if (self.audioFileType == 'flac'):
             self._setAudioTagValueForFLACFile(tagName, newValue)
 
@@ -75,6 +96,12 @@ class AudioFileTagIOHandler:
 
 
     def _getAudioTagValueFromFLACFile(self, tagName):
+        '''
+        Gets the string value of the given tag for a FLAC audio file.
+
+        Params:
+            tagName: name of the audio file tag
+        '''
         tagName = tagName.upper()
         mutagenInterface = mutagen.File(self.audioFilepath)
         try:
@@ -86,6 +113,13 @@ class AudioFileTagIOHandler:
 
 
     def _setAudioTagValueForFLACFile(self, tagName, newValue):
+        '''
+        Sets the given tag to the specified value for a FLAC audio file.
+
+        Params:
+            tagName: name of the audio file tag to set the value for
+            newValue: value to set for the given tag
+        '''
         tagName = tagName.upper()
         mutagenInterface = mutagen.File(self.audioFilepath)
 
@@ -94,7 +128,12 @@ class AudioFileTagIOHandler:
 
 
     def _getAudioTagValueFromMp3File(self, tagName):
+        '''
+        Gets the string value of the given tag for an MP3 audio file.
 
+        Params:
+            tagName: name of the audio file tag
+        '''
         tagName = tagName.upper()
         tagValue = ''
 
@@ -121,7 +160,13 @@ class AudioFileTagIOHandler:
 
 
     def _setAudioTagValueForMp3File(self, tagName, newValue):
+        '''
+        Sets the given tag to the specified value for an MP3 audio file.
 
+        Params:
+            tagName: name of the audio file tag to set the value for
+            newValue: value to set for the given tag
+        '''
         tagName = tagName.upper()
         newValueStr = str(newValue)
 
@@ -141,6 +186,10 @@ class AudioFileTagIOHandler:
 
     def _getAudioTagValueFromM4AFile(self, tagName):
         '''
+        Gets the string value of the given tag for an M4A/AAC audio file.
+
+        Params:
+            tagName: name of the audio file tag
         '''
         tagName = tagName.upper()
         tagValue = ''
@@ -178,7 +227,7 @@ class AudioFileTagIOHandler:
 
         Params:
             tagName: name of the audio file tag to set the value for
-            newValue
+            newValue: value to set for the given tag
         '''
         tagName = tagName.upper()
         newValueStr = str(newValue)
