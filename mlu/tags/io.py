@@ -16,7 +16,7 @@ import mlu.common.file
 MP4_STANDARD_TAGS = { 
     'TITLE': '\xa9nam',
     'ARTIST': '\xa9ART',
-    'ALBUM ARTIST': 'aART',
+    'ALBUMARTIST': 'aART',
     'ALBUM': '\xa9alb',
     'COMPOSER': '\xa9wrt',
     'YEAR': '\xa9day',
@@ -40,8 +40,8 @@ class AudioFileTagIOHandler:
         audioFilepath: absolute filepath of the audio file
     '''
     def __init__(self, audioFilepath):
-        # validate that the given is a valid possible filepath
-        if (not mlu.common.file.isValidPossibleFilepath(audioFilepath)):
+        # validate that the filepath exists
+        if (not mlu.common.file.FileExists(audioFilepath)):
             raise ValueError("Class attribute 'audioFilepath' must be a valid absolute filepath string to an existing file")
 
         self.audioFilepath = audioFilepath

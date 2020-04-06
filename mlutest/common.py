@@ -60,12 +60,12 @@ def getRandomFilepath():
     return randomFilepath
 
  
-def getRandomString(length, allowDigits=False, allowUppercase=False, allowSpecial=False, allowSpace=False):
+def getRandomString(length=0, allowDigits=False, allowUppercase=False, allowSpecial=False, allowSpace=False):
     """
-    Returns a pseudo-random string of the given length. By default, the string will be composed of 
+    Returns a pseudo-random string. By default, the string will be composed of 
     only lowercase letters (no digits). You can also specify that digits, uppercase letters, and 
     a select few special characters should be included as possible characters in the output random
-    string. 
+    string, and the length of the string can be specified.
 
     Params
     - length: number of charaters the output string should have
@@ -74,6 +74,10 @@ def getRandomString(length, allowDigits=False, allowUppercase=False, allowSpecia
         !@#$%^&()[],~+-=_
     - allowSpace: whether or not spaces are allowed
     """
+    # If no length is specifed, use a random length in range 1-1000
+    if (length == 0):
+        length = getRandomNumber(min=1, max=1000)
+
     # Build list of allowable charaters in the random string
     allowedChars = ascii_lowercase
 
