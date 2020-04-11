@@ -13,6 +13,11 @@ from mutagen.mp4 import MP4
 
 import mlu.common.file
 
+FLAC_STANDARD_TAGS = {
+    'TOTALTRACKS': 'tracktotal',
+    'TOTALDISCS': 'disctotal'
+}
+
 MP4_STANDARD_TAGS = { 
     'TITLE': '\xa9nam',
     'ARTIST': '\xa9ART',
@@ -104,8 +109,17 @@ class AudioFileTagIOHandler:
         '''
         tagName = tagName.upper()
         mutagenInterface = mutagen.File(self.audioFilepath)
+
+        if (tagName in FLAC_STANDARD_TAGS):
+            tagName = FLAC_STANDARD_TAGS[tagName]
+
         try:
-            tagValue = mutagenInterface[tagName][0]
+            if (len(mutagenInterface[tagName]) == 1):
+                tagValue = mutagenInterface[tagName][0]
+            elif (len(mutagenInterface[tagName]) > 1):
+                tagValue = ';'.join(mutagenInterface[tagName])
+            else:
+                tagValue = ''
         except KeyError:
             tagValue = ''
 
@@ -122,6 +136,9 @@ class AudioFileTagIOHandler:
         '''
         tagName = tagName.upper()
         mutagenInterface = mutagen.File(self.audioFilepath)
+
+        if (tagName in FLAC_STANDARD_TAGS):
+            tagName = FLAC_STANDARD_TAGS[tagName]
 
         mutagenInterface[tagName] = newValue
         mutagenInterface.save()
