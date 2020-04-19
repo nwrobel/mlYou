@@ -152,26 +152,36 @@ class AudioFileTagIOHandler:
             tagName: name of the audio file tag
         '''
         tagName = tagName.upper()
-        tagValue = ''
-
         standardId3Tags = [tag.upper() for tag in EasyID3.valid_keys.keys()]
-        if (tagName in standardId3Tags):
 
+        if (tagName in standardId3Tags):
             mutagenInterface = EasyID3(self.audioFilepath)
 
             try:
-                tagValue = mutagenInterface[tagName][0]
+                if (len(mutagenInterface[tagName]) == 1):
+                    tagValue = mutagenInterface[tagName][0]
+                elif (len(mutagenInterface[tagName]) > 1):
+                    tagValue = ';'.join(mutagenInterface[tagName])
+                else:
+                    tagValue = ''
+
             except KeyError:
-                print('Tag not set')
+                tagValue = ''
 
         else:
             mutagenInterface = mutagen.File(self.audioFilepath)
             id3TagName = "TXXX:{}".format(tagName)
 
             try:
-                tagValue = mutagenInterface[id3TagName].text[0]
+                if (len(mutagenInterface[id3TagName].text) == 1):
+                    tagValue = mutagenInterface[id3TagName].text[0]
+                elif (len(mutagenInterface[id3TagName].text) > 1):
+                    tagValue = ';'.join(mutagenInterface[id3TagName].text)
+                else:
+                    tagValue = ''
+
             except KeyError:
-                print('Tag not set')
+                tagValue = ''
 
         return tagValue
 
@@ -227,15 +237,28 @@ class AudioFileTagIOHandler:
 
                 else:
                     tagValue = mutagenInterface.tags[mp4TagName][0]
+
+                    if (len(mutagenInterface.tags[mp4TagName]) == 1):
+                        tagValue = mutagenInterface.tags[mp4TagName][0]
+                    elif (len(mutagenInterface.tags[mp4TagName]) > 1):
+                        tagValue = ';'.join(mutagenInterface.tags[mp4TagName])
+                    else:
+                        tagValue = ''
                     
             else:
                 mp4TagName = '----:com.apple.iTunes:{}'.format(tagName)
-                tagValue = mutagenInterface[mp4TagName][0].decode('utf-8')
+
+                if (len(mutagenInterface.tags[mp4TagName]) == 1):
+                    tagValue = mutagenInterface.tags[mp4TagName][0].decode('utf-8')
+                elif (len(mutagenInterface.tags[mp4TagName]) > 1):
+                    tagValue = ';'.join(mutagenInterface.tags[mp4TagName].decode('utf-8'))
+                else:
+                    tagValue = ''
 
         except KeyError:
-            print('Tag not set')
+            tagValue = ''
 
-        return str(tagValue)
+        return tagValue
 
 
     def _setAudioTagValueForM4AFile(self, tagName, newValue):
