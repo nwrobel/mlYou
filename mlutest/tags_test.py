@@ -7,6 +7,7 @@ import envsetup
 envsetup.PreparePythonProjectEnvironment()
 
 import mlu.tags.io
+import mlu.common.file
 import mlutest.common
 
 class TestAudioFile:
@@ -86,6 +87,8 @@ class TestData:
 
         self.notSupportedAudioFile = "{}.ogg".format(mlutest.common.getRandomFilepath())
         self.notExistFile = mlutest.common.getRandomFilepath()
+
+        self.jdict = mlu.common.file.getDictFromJsonFile("D:\\Temp\\mlu-test\\test-audio-filetypes\\tags.json")
 
 class TestTagsIOModule(unittest.TestCase):
     def setUp(self):

@@ -268,4 +268,13 @@ def clearFileContents(filePath):
     emptyFile = open(filePath, 'wb')
     emptyFile.save()
 
+def getDictFromJsonFile(filePath):
+    '''
+    Reads the data of the given JSON file. Returns a dictionary of key value pairs representing the
+    data (as returned by json.loads()). 
+    '''
+    with open(filePath, 'r') as inputfile:
+        dataDict = json.load(inputfile)
+    return dataDict
+
 
