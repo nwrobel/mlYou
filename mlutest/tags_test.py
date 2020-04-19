@@ -22,73 +22,38 @@ class TestAudioFile:
 class TestData:
     '''
     Class representing the test data that will be used for a single test run of the tags.io module.
-    This data consists of the test audio filepaths and the important 'actual' tag values for each
-    file.
+    This data consists of the test audio filepaths and the 'actual' tag values for each of these
+    files.
+
+    These audio files are predefined, static files which have had their tags set through some 
+    external methods (not set using MLU), and the tags.json file defines these tags for the files.
     '''
     def __init__(self, testAudioFileDir):
+
+        testAudioFilesTagDataFilepath = mlu.common.file.JoinPaths(testAudioFileDir, 'tags.json')
+        testAudioFilesTagData = mlu.common.file.getDictFromJsonFile(testAudioFilesTagDataFilepath)
+
+        tagValuesFlac = [tagData['tagValues'] for tagData in testAudioFilesTagData if tagData['file'] == 'test.flac'][0]
+        tagValuesMp3 = [tagData['tagValues'] for tagData in testAudioFilesTagData if tagData['file'] == 'test.mp3'][0]
+        tagValuesM4A = [tagData['tagValues'] for tagData in testAudioFilesTagData if tagData['file'] == 'test.m4a'][0]
+
         self.testAudioFileFLAC = TestAudioFile(
             filepath=mlu.common.file.JoinPaths(testAudioFileDir, 'test.flac'),
-            tagValues={
-                'TITLE': 'Suck It Up',
-                'ARTIST': '(hed) Planet Earth',
-                'ALBUMARTIST': '(hed) Planet Earth',
-                'ALBUM': 'The Best Of (Hed) Planet Earth',
-                'DATE': '2006',
-                'GENRE': 'Hip Hop;Rock;Reggae;Alternative Rock;Nu Metal',
-                'TRACKNUMBER': '01',
-                'TOTALTRACKS': '15',
-                'DISCNUMBER': '1',
-                'TOTALDISCS': '1',
-                'DATE_ADDED': '2018-02-01 21:11:19',
-                'BPM': '91',
-                'RATING': '5'
-            }
+            tagValues=tagValuesFlac
         )
 
         self.testAudioFileMP3 = TestAudioFile(
             filepath=mlu.common.file.JoinPaths(testAudioFileDir, 'test.mp3'),
-            tagValues={
-                'TITLE': 'Sarod',
-                'ARTIST': 'The Derek Trucks Band',
-                'ALBUMARTIST': 'The Derek Trucks Band',
-                'ALBUM': 'The Derek Trucks Band',
-                'DATE': '1997',
-                'GENRE': 'Rock;Jazz',
-                'TRACKNUMBER': '1',
-                'TOTALTRACKS': '12',
-                'DISCNUMBER': '1',
-                'TOTALDISCS': '2',
-                'DATE_ADDED': '2019-02-21 16:06:02',
-                'BPM': '120',
-                'RATING': '7.1',
-                'VOTES': '6;8'
-            }
+            tagValues=tagValuesMp3
         )
 
         self.testAudioFileM4A = TestAudioFile(
             filepath=mlu.common.file.JoinPaths(testAudioFileDir, 'test.m4a'),
-            tagValues={
-                'TITLE': 'title ddg',
-                'ARTIST': 'Ambient Occlusion',
-                'ALBUMARTIST': 'Ambient Occlu',
-                'ALBUM': 'Youtube stuff',
-                'DATE': '2017',
-                'GENRE': 'Psychill',
-                'TRACKNUMBER': '3',
-                'TOTALTRACKS': '20',
-                'DISCNUMBER': '1',
-                'TOTALDISCS': '2',
-                'DATE_ADDED': '2018-12-20 20:52:48',
-                'BPM': '195',
-                'RATING': '8.5',
-                'VOTES': '8;9;10'
-            }
+            tagValues=tagValuesM4A
         )   
 
         self.notSupportedAudioFile = "{}.ogg".format(mlutest.common.getRandomFilepath())
         self.notExistFile = mlutest.common.getRandomFilepath()
-
-        self.jdict = mlu.common.file.getDictFromJsonFile("D:\\Temp\\mlu-test\\test-audio-filetypes\\tags.json")
 
 class TestTagsIOModule(unittest.TestCase):
     def setUp(self):
@@ -98,13 +63,17 @@ class TestTagsIOModule(unittest.TestCase):
         while preserving the original test data files.
         '''
         testResDir = mlu.common.file.getTestResourceFilesDirectory()
-        testSrcAudioFilesDir = mlu.common.file.JoinPaths(testResDir, 'test-audio-filetypes')
+        testAudioFilesResDir = mlu.common.file.JoinPaths(testResDir, 'test-audio-filetypes')
         cacheDir = mlu.common.file.getMLUCacheDirectory()
 
-        testSrcAudioFiles = mlu.common.file.GetAllFilesDepth1(rootPath=testSrcAudioFilesDir)
-        mlu.common.file.CopyFilesToDirectory(srcFiles=testSrcAudioFiles, destDir=cacheDir)
+        testDataFiles = mlu.common.file.GetAllFilesDepth1(rootPath=testAudioFilesResDir)
+        mlu.common.file.CopyFilesToDirectory(srcFiles=testDataFiles, destDir=cacheDir)
 
         self.testData = TestData(testAudioFileDir=cacheDir)
+
+    def tearDown(self):
+        cacheDir = mlu.common.file.getMLUCacheDirectory()
+        mlu.common.file.DeleteDirectory(cacheDir)
 
     def testAudioFileTagIOHandlerConstructor(self):
         '''
@@ -129,135 +98,72 @@ class TestTagsIOModule(unittest.TestCase):
         # Test non-supported filetype given
         self.assertRaises(ValueError, mlu.tags.io.AudioFileTagIOHandler, self.testData.notSupportedAudioFile)
 
+    def testAudioFileTagIOHandlerReadWrite(self, audioFileTagIOHandler, expectedTagValues):
+        '''
+        Tests tag reading/writing for any given test AudioFileTagIOHandler instance. Used as a 
+        helper function.
+
+        The test will check that the given expected tag values match those that are read using the
+        handler. Then it will check to ensure that reading undefined tags results in an empty value
+        being returned.
+
+        To test writing, the test will write new values for all of the expected (existing) tag values,
+        using the handler, then read them back to ensure the new value is set. It will also check
+        to ensure that writing a new, undefined tag is successful.
+
+        Params:
+            audioFileTagIOHandler: the handler instance to test (is defined with a test audio file type)
+            expectedTagValues: dict of the expected tag names and values that this handler should 
+                be expected to read
+        '''
+        # Test tag reading: defined, existing tags
+        for tagName in expectedTagValues:
+            expectedTagValue = expectedTagValues[tagName]
+            actualTagValue = audioFileTagIOHandler.getAudioTagValue(tagName)
+
+            self.assertEqual(actualTagValue, expectedTagValue)
+
+        # Test tag reading: undefined tags
+        for x in range(100):
+            testUndefinedTagName = mlutest.common.getRandomString(length=30, allowSpace=True)
+            actualTagValue = audioFileTagIOHandler.getAudioTagValue(testUndefinedTagName)
+            self.assertEqual(actualTagValue, '')
+
+        # Test tag writing: defined, existing tags
+        for tagName in expectedTagValues:
+            testTagValue = mlutest.common.getRandomString(allowDigits=True, allowSpecial=True, allowSpace=True, allowUppercase=True)
+            audioFileTagIOHandler.setAudioTagValue(tagName, testTagValue)
+            actualTagValue = audioFileTagIOHandler.getAudioTagValue(tagName)
+
+            self.assertEqual(actualTagValue, testTagValue)
+        
+        # Test tag writing: new tags
+        for x in range(100):
+            testUndefinedTagName = mlutest.common.getRandomString(length=30, allowSpace=True)
+            testTagValue = mlutest.common.getRandomString(allowDigits=True, allowSpecial=True, allowSpace=True, allowUppercase=True)
+
+            audioFileTagIOHandler.setAudioTagValue(testUndefinedTagName, testTagValue)
+            actualTagValue = audioFileTagIOHandler.getAudioTagValue(testUndefinedTagName)
+
+            self.assertEqual(actualTagValue, testTagValue)
 
     def testAudioFileTagIOHandlerFLAC(self):
         '''
         Tests tag reading/writing for a test FLAC file.
         '''
         handler = mlu.tags.io.AudioFileTagIOHandler(self.testData.testAudioFileFLAC.filepath)
-
-        # Test tag reading: defined tags
-        for tagName in self.testData.testAudioFileFLAC.tagValues:
-            expectedTagValue = self.testData.testAudioFileFLAC.tagValues[tagName]
-            actualTagValue = handler.getAudioTagValue(tagName)
-
-            self.assertEqual(actualTagValue, expectedTagValue)
-
-        # Test tag reading: undefined tags
-        for x in range(100):
-            testUndefinedTagName = mlutest.common.getRandomString(length=30, allowSpace=True)
-            actualTagValue = handler.getAudioTagValue(testUndefinedTagName)
-            self.assertEqual(actualTagValue, '')
-
-        # Test tag writing: existing tags
-        for tagName in self.testData.testAudioFileFLAC.tagValues:
-            testTagValue = mlutest.common.getRandomString(allowDigits=True, allowSpecial=True, allowSpace=True, allowUppercase=True)
-            handler.setAudioTagValue(tagName, testTagValue)
-            actualTagValue = handler.getAudioTagValue(tagName)
-
-            self.assertEqual(actualTagValue, testTagValue)
-        
-        # Test tag writing: new tags
-        for x in range(100):
-            testUndefinedTagName = mlutest.common.getRandomString(length=30, allowSpace=True)
-            testTagValue = mlutest.common.getRandomString(allowDigits=True, allowSpecial=True, allowSpace=True, allowUppercase=True)
-
-            handler.setAudioTagValue(testUndefinedTagName, testTagValue)
-            actualTagValue = handler.getAudioTagValue(testUndefinedTagName)
-
-            self.assertEqual(actualTagValue, testTagValue)
+        self.testAudioFileTagIOHandlerReadWrite(handler, self.testData.testAudioFileFLAC.tagValues)
 
     def testAudioFileTagIOHandlerMp3(self):
         '''
         Tests tag reading/writing for a test MP3 file.
         '''
         handler = mlu.tags.io.AudioFileTagIOHandler(self.testData.testAudioFileMP3.filepath)
-
-        # Test tag reading: defined tags
-        for tagName in self.testData.testAudioFileMP3.tagValues:
-            expectedTagValue = self.testData.testAudioFileMP3.tagValues[tagName]
-            actualTagValue = handler.getAudioTagValue(tagName)
-
-            self.assertEqual(actualTagValue, expectedTagValue)
-
-        # Test tag reading: undefined tags
-        for x in range(100):
-            testUndefinedTagName = mlutest.common.getRandomString(length=30, allowSpace=True)
-            actualTagValue = handler.getAudioTagValue(testUndefinedTagName)
-            self.assertEqual(actualTagValue, '')
-
-        # Test tag writing: existing tags
-        for tagName in self.testData.testAudioFileMP3.tagValues:
-            testTagValue = mlutest.common.getRandomString(allowDigits=True, allowSpecial=True, allowSpace=True, allowUppercase=True)
-            handler.setAudioTagValue(tagName, testTagValue)
-            actualTagValue = handler.getAudioTagValue(tagName)
-
-            self.assertEqual(actualTagValue, testTagValue)
-        
-        # Test tag writing: new tags
-        for x in range(100):
-            testUndefinedTagName = mlutest.common.getRandomString(length=30, allowSpace=True)
-            testTagValue = mlutest.common.getRandomString(allowDigits=True, allowSpecial=True, allowSpace=True, allowUppercase=True)
-
-            handler.setAudioTagValue(testUndefinedTagName, testTagValue)
-            actualTagValue = handler.getAudioTagValue(testUndefinedTagName)
-
-            self.assertEqual(actualTagValue, testTagValue)
+        self.testAudioFileTagIOHandlerReadWrite(handler, self.testData.testAudioFileMP3.tagValues)
 
     def testAudioFileTagIOHandlerAAC(self):
         '''
         Tests tag reading/writing for a test M4A file.
         '''
-        # Test tag reading: defined standard tag
-        handler = mlu.tags.io.AudioFileTagIOHandler(self.testAudioFilepathAAC)
-        actualValue = handler.getAudioTagValue('title')
-        expectedValue = 'Dense - Percussive Candies [ambient/chillout/psychedelic]'
-        # self.assertEqual(actualValue, expectedValue)
-
-        # Test reading: defined custom (nonstandard) tag
-        actualValue = handler.getAudioTagValue('date_added')
-        expectedValue = '2018-12-20 20:52:48'
-        self.assertEqual(actualValue, expectedValue)
-
-        # Test tag reading: undefined standard tag
-        actualValue = handler.getAudioTagValue('copyright')
-        self.assertEqual(actualValue, '')
-
-        # Test tag reading: undefined custom tag
-        actualValue = handler.getAudioTagValue('undefined_tag')
-        self.assertEqual(actualValue, '')
-
-        # Test tag writing: an existing tag
-        testValue = 'title ddg'
-        handler.setAudioTagValue('title', testValue)
-        actualValue = handler.getAudioTagValue('title')
-        self.assertEqual(actualValue, testValue)
-
-        # Test tag writing: track/disc numbers, total tracks/discs
-        testValueTrackNum = '3'
-        testValueTotalTracks = '20'
-        testValueDiscNum = '1'
-        testValueTotalDiscs = '2'
-        handler.setAudioTagValue('TRACKNUMBER', testValueTrackNum)
-        handler.setAudioTagValue('TOTALTRACKS', testValueTotalTracks)
-        handler.setAudioTagValue('DISCNUMBER', testValueDiscNum)
-        handler.setAudioTagValue('TOTALDISCS', testValueTotalDiscs)
-
-        actualValue = handler.getAudioTagValue('TRACKNUMBER')
-        self.assertEqual(actualValue, testValueTrackNum)
-
-        actualValue = handler.getAudioTagValue('TOTALTRACKS')
-        self.assertEqual(actualValue, testValueTotalTracks)
-
-        actualValue = handler.getAudioTagValue('DISCNUMBER')
-        self.assertEqual(actualValue, testValueDiscNum)
-
-        actualValue = handler.getAudioTagValue('TOTALDISCS')
-        self.assertEqual(actualValue, testValueTotalDiscs)
-
-        # Test tag writing: a new tag
-        testValue = 'tag val asdf'
-        handler.setAudioTagValue('tag_name', testValue)
-        actualValue = handler.getAudioTagValue('tag_name')
-        self.assertEqual(actualValue, testValue)
-
+        handler = mlu.tags.io.AudioFileTagIOHandler(self.testData.testAudioFileM4A.filepath)
+        self.testAudioFileTagIOHandlerReadWrite(handler, self.testData.testAudioFileM4A.tagValues)

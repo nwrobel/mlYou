@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import gzip
 import shutil
+import json
 
 def isValidPossibleFilepath(filepath):
     '''
