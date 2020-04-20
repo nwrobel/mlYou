@@ -154,7 +154,26 @@ class AudioFileTagIOHandler:
         tagName = tagName.upper()
         standardId3Tags = [tag.upper() for tag in EasyID3.valid_keys.keys()]
 
-        if (tagName in standardId3Tags):
+        # TRACKNUMBER and DISCNUMBER return the data about the number as well as the total tracks
+        # or discs - e.g. TRACKNUMBER may be '1/12', or track 1 of 12 total
+        specialTags = ['TRACKNUMBER', 'TOTALTRACKS', 'DISCNUMBER', 'TOTALDISCS']
+
+        if (tagName in specialTags):
+            mutagenInterface = EasyID3(self.audioFilepath)
+
+            trackNumOverTotal = mutagenInterface['TRACKNUMBER'][0]
+            discNumOverTotal = mutagenInterface['DISCNUMBER'][0]
+
+            specialTagValues = {
+                'TRACKNUMBER': trackNumOverTotal.split('/')[0],
+                'TOTALTRACKS': trackNumOverTotal.split('/')[1],
+                'DISCNUMBER': discNumOverTotal.split('/')[0],
+                'TOTALDISCS': discNumOverTotal.split('/')[1]
+            } 
+
+            tagValue = specialTagValues[tagName]
+
+        elif (tagName in standardId3Tags):
             mutagenInterface = EasyID3(self.audioFilepath)
 
             try:
@@ -165,6 +184,7 @@ class AudioFileTagIOHandler:
                 else:
                     tagValue = ''
 
+                
             except KeyError:
                 tagValue = ''
 

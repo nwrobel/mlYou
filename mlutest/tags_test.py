@@ -131,7 +131,11 @@ class TestTagsIOModule(unittest.TestCase):
 
         # Test tag writing: defined, existing tags
         for tagName in expectedTagValues:
-            testTagValue = mlutest.common.getRandomString(allowDigits=True, allowSpecial=True, allowSpace=True, allowUppercase=True)
+            if (tagName == 'DATE'):
+                testTagValue = '1944'
+            else:    
+                testTagValue = mlutest.common.getRandomString(allowDigits=True, allowSpecial=True, allowSpace=True, allowUppercase=True)
+                
             audioFileTagIOHandler.setAudioTagValue(tagName, testTagValue)
             actualTagValue = audioFileTagIOHandler.getAudioTagValue(tagName)
 
