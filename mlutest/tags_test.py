@@ -132,7 +132,7 @@ class TestTagsIOModule(unittest.TestCase):
         # Test tag writing: defined, existing tags
         for tagName in expectedTagValues:
             if (tagName == 'DATE'):
-                testTagValue = '1944'
+                testTagValue = '2000-01-01'
             else:    
                 testTagValue = mlutest.common.getRandomString(allowDigits=True, allowSpecial=True, allowSpace=True, allowUppercase=True)
                 

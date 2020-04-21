@@ -154,7 +154,7 @@ class AudioFileTagIOHandler:
         tagName = tagName.upper()
         standardId3Tags = [tag.upper() for tag in EasyID3.valid_keys.keys()]
 
-        # TRACKNUMBER and DISCNUMBER return the data about the number as well as the total tracks
+        # TRACKNUMBER and DISCNUMBER have the data about the number as well as the total tracks
         # or discs - e.g. TRACKNUMBER may be '1/12', or track 1 of 12 total
         specialTags = ['TRACKNUMBER', 'TOTALTRACKS', 'DISCNUMBER', 'TOTALDISCS']
 
@@ -217,8 +217,39 @@ class AudioFileTagIOHandler:
         tagName = tagName.upper()
         newValueStr = str(newValue)
 
+        # TODO: if the 'DATE' tag is passed in, Mp3 requires that it be a valid date string
+        # perform data validation if the date tag is going to be set
+
         standardId3Tags = [tag.upper() for tag in EasyID3.valid_keys.keys()]
-        if (tagName in standardId3Tags):
+
+        # TRACKNUMBER and DISCNUMBER have the data about the number as well as the total tracks
+        # or discs - e.g. TRACKNUMBER may be '1/12', or track 1 of 12 total
+        specialTags = ['TRACKNUMBER', 'TOTALTRACKS', 'DISCNUMBER', 'TOTALDISCS']
+
+        # TODO: perform data validation on the given track/disc number/total value - it must be a 
+        # number
+        if (tagName in specialTags):
+            mutagenInterface = EasyID3(self.audioFilepath)
+
+            if (tagName == 'TRACKNUMBER'):
+                totalTracksValue = self._getAudioTagValueFromMp3File('TOTALTRACKS')
+                mutagenInterface['TRACKNUMBER'] = "{}/{}".format(newValueStr, totalTracksValue)
+
+            elif (tagName == 'TOTALTRACKS'):
+                trackNumValue = self._getAudioTagValueFromMp3File('TRACKNUMBER')
+                mutagenInterface['TRACKNUMBER'] = "{}/{}".format(trackNumValue, newValueStr)
+
+            elif (tagName == 'DISCNUMBER'):
+                totalDiscsValue = self._getAudioTagValueFromMp3File('TOTALDISCS')
+                mutagenInterface['DISCNUMBER'] = "{}/{}".format(newValueStr, totalDiscsValue)
+
+            elif (tagName == 'TOTALDISCS'):
+                discNumValue = self._getAudioTagValueFromMp3File('DISCNUMBER')
+                mutagenInterface['DISCNUMBER'] = "{}/{}".format(discNumValue, newValueStr)
+
+            mutagenInterface.save()
+
+        elif (tagName in standardId3Tags):
 
             mutagenInterface = EasyID3(self.audioFilepath)
             mutagenInterface[tagName] = newValueStr
