@@ -11,6 +11,8 @@ import mlu.tags.io_new
 class TestTagsIOModuleNew(unittest.TestCase):
     def setUp(self):
         self.testAudioFileFLAC = "D:\\Temp\\mlu-test\\test-audio-filetypes\\test.flac"
+        self.testAudioFileMp3 = "D:\\Temp\\mlu-test\\test-audio-filetypes\\test.mp3"
+        self.testAudioFileM4A = "D:\\Temp\\mlu-test\\test-audio-filetypes\\test.m4a"
 
  
     def testAudioFileTagIOHandlerFLAC(self):
@@ -18,6 +20,15 @@ class TestTagsIOModuleNew(unittest.TestCase):
         Tests tag reading/writing for a test FLAC file.
         '''
         handler = mlu.tags.io_new.AudioFileTagIOHandler(self.testAudioFileFLAC)
+        tags = handler.getTags()
+
+        self.assertIsNotNone(tags)
+
+    def testAudioFileTagIOHandlerMp3(self):
+        '''
+        Tests tag reading/writing for a test FLAC file.
+        '''
+        handler = mlu.tags.io_new.AudioFileTagIOHandler(self.testAudioFileMp3)
         tags = handler.getTags()
 
         self.assertIsNotNone(tags)

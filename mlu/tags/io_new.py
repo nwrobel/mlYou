@@ -122,26 +122,26 @@ class AudioFileTagIOHandler:
 
         mutagenInterface = mutagen.File(self.audioFilepath)
 
-        title = self._getTagValueFromMutagenInterface(mutagenInterface, 'title')
-        artist = self._getTagValueFromMutagenInterface(mutagenInterface, 'artist')
-        album = self._getTagValueFromMutagenInterface(mutagenInterface, 'album')
-        albumArtist = self._getTagValueFromMutagenInterface(mutagenInterface, 'albumartist')
-        date = self._getTagValueFromMutagenInterface(mutagenInterface, 'date')
-        genre = self._getTagValueFromMutagenInterface(mutagenInterface, 'genre')
-        trackNumber = self._getTagValueFromMutagenInterface(mutagenInterface, 'tracknumber')
-        totalTracks = self._getTagValueFromMutagenInterface(mutagenInterface, 'tracktotal')
-        discNumber = self._getTagValueFromMutagenInterface(mutagenInterface, 'discnumber')
-        totalDiscs = self._getTagValueFromMutagenInterface(mutagenInterface, 'disctotal')
-        lyrics = self._getTagValueFromMutagenInterface(mutagenInterface, 'lyrics')
-        bpm = self._getTagValueFromMutagenInterface(mutagenInterface, 'bpm')
-        isCompilation = self._getTagValueFromMutagenInterface(mutagenInterface, 'is_compilation')
-        dateAdded = self._getTagValueFromMutagenInterface(mutagenInterface, 'date_added')
-        dateFileCreated = self._getTagValueFromMutagenInterface(mutagenInterface, 'date_file_created') 
-        dateAllPlays = self._getTagValueFromMutagenInterface(mutagenInterface, 'date_all_plays')
-        dateLastPlayed = self._getTagValueFromMutagenInterface(mutagenInterface, 'date_last_played') 
-        playCount = self._getTagValueFromMutagenInterface(mutagenInterface, 'play_count')
-        votes = self._getTagValueFromMutagenInterface(mutagenInterface, 'votes')
-        rating = self._getTagValueFromMutagenInterface(mutagenInterface, 'rating')
+        title = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'title')
+        artist = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'artist')
+        album = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'album')
+        albumArtist = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'albumartist')
+        date = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'date')
+        genre = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'genre')
+        trackNumber = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'tracknumber')
+        totalTracks = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'tracktotal')
+        discNumber = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'discnumber')
+        totalDiscs = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'disctotal')
+        lyrics = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'lyrics')
+        bpm = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'bpm')
+        isCompilation = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'is_compilation')
+        dateAdded = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'date_added')
+        dateFileCreated = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'date_file_created') 
+        dateAllPlays = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'date_all_plays')
+        dateLastPlayed = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'date_last_played') 
+        playCount = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'play_count')
+        votes = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'votes')
+        rating = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'rating')
 
         audioFileTags = AudioFileTags(
             title=title,
@@ -173,7 +173,72 @@ class AudioFileTagIOHandler:
         Returns an AudioFileTags object for the tag values for the Mp3 audio file
         '''
 
-        pass
+        # Use the EasyId3 interface for getting the standard Mp3 tags
+        mutagenInterface = EasyID3(self.audioFilepath)
+
+        title = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'title')
+        artist = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'artist')
+        album = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'album')
+        albumArtist = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'albumartist')
+        date = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'date')
+        genre = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'genre')
+        bpm = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'bpm')
+
+        # Extra work needed to unpack track/disc number/total tags
+        trackNumberOverTotal = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'tracknumber')
+        discNumberOverTotal = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'discnumber')
+
+        if ('/' in trackNumberOverTotal):
+            trackNumber = trackNumberOverTotal.split('/')[0]
+            totalTracks = trackNumberOverTotal.split('/')[1]
+        else:
+            trackNumber = trackNumberOverTotal
+            totalTracks = None
+
+        if ('/' in discNumberOverTotal):
+            discNumber = discNumberOverTotal.split('/')[0]
+            totalDiscs = discNumberOverTotal.split('/')[1]
+        else:
+            discNumber = discNumberOverTotal
+            totalDiscs = None
+        
+        # Use the normal file interface for getting the nonstandard Mp3 tags
+        mutagenInterface = mutagen.File(self.audioFilepath)
+
+        lyrics = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:lyrics')
+        isCompilation = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:is_compilation')
+        dateAdded = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:date_added')
+        dateFileCreated = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:date_file_created') 
+        dateAllPlays = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:date_all_plays')
+        dateLastPlayed = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:date_last_played') 
+        playCount = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:play_count')
+        votes = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:votes')
+        rating = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:RATING')
+
+        audioFileTags = AudioFileTags(
+            title=title,
+            artist=artist,
+            album=album,
+            albumArtist=albumArtist,
+            date=date, 
+            genre=genre, 
+            trackNumber=trackNumber,
+            totalTracks=totalTracks, 
+            discNumber=discNumber, 
+            totalDiscs=totalDiscs, 
+            lyrics=lyrics, 
+            bpm=bpm, 
+            isCompilation=isCompilation, 
+            dateAdded=dateAdded, 
+            dateFileCreated=dateFileCreated, 
+            dateAllPlays=dateAllPlays, 
+            dateLastPlayed=dateLastPlayed, 
+            playCount=playCount, 
+            votes=votes, 
+            rating=rating
+        )
+
+        return audioFileTags
 
     def _getTagsForM4AFile(self):
         '''
@@ -182,7 +247,7 @@ class AudioFileTagIOHandler:
 
         pass
 
-    def _getTagValueFromMutagenInterface(self, mutagenInterface, mutagenKey):
+    def _getTagValueFromMutagenInterfaceFLAC(self, mutagenInterface, mutagenKey):
         try:
             mutagenValue = mutagenInterface[mutagenKey]
 
@@ -197,3 +262,22 @@ class AudioFileTagIOHandler:
             tagValue = None
 
         return tagValue  
+
+    def _getTagValueFromMutagenInterfaceMp3(self, mutagenInterface, mutagenKey):
+        try:
+            if ('TXXX:' in mutagenKey):
+                mutagenValue = mutagenInterface[mutagenKey].text
+            else:    
+                mutagenValue = mutagenInterface[mutagenKey]
+
+            if (len(mutagenValue) == 1):
+                tagValue = mutagenValue[0]
+            elif (len(mutagenValue) > 1):
+                tagValue = mutagenValue
+            else:
+                tagValue = None
+
+        except KeyError:
+            tagValue = None
+
+        return tagValue 
