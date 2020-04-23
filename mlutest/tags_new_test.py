@@ -26,9 +26,18 @@ class TestTagsIOModuleNew(unittest.TestCase):
 
     def testAudioFileTagIOHandlerMp3(self):
         '''
-        Tests tag reading/writing for a test FLAC file.
+        Tests tag reading/writing for a test Mp3 file.
         '''
         handler = mlu.tags.io_new.AudioFileTagIOHandler(self.testAudioFileMp3)
+        tags = handler.getTags()
+
+        self.assertIsNotNone(tags)
+
+    def testAudioFileTagIOHandlerM4A(self):
+        '''
+        Tests tag reading/writing for a test M4A file.
+        '''
+        handler = mlu.tags.io_new.AudioFileTagIOHandler(self.testAudioFileM4A)
         tags = handler.getTags()
 
         self.assertIsNotNone(tags)
