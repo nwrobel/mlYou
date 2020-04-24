@@ -1,9 +1,5 @@
 '''
 mlu.tags.io
-
-Module for functionality related to reading and writing data to tags for any supported audio file 
-type.
-
 '''
 
 import mutagen
@@ -12,30 +8,60 @@ from mutagen.id3 import ID3, TXXX
 from mutagen.mp4 import MP4
 
 import mlu.common.file
+import mlu.tags.validation
 
-FLAC_STANDARD_TAGS = {
-    'TOTALTRACKS': 'tracktotal',
-    'TOTALDISCS': 'disctotal'
-}
+class AudioFileTags:
+    '''
+    Data structure holding the values for a single audio file of all the tags supported by MLU.
+    '''
 
-MP4_STANDARD_TAGS = { 
-    'TITLE': '\xa9nam',
-    'ARTIST': '\xa9ART',
-    'ALBUMARTIST': 'aART',
-    'ALBUM': '\xa9alb',
-    'COMPOSER': '\xa9wrt',
-    'YEAR': '\xa9day',
-    'COMMENT': '\xa9cmt',
-    'GENRE': '\xa9gen',
-    'LYRICS': '\xa9lyr',
-    'ENCODED_BY': '\xa9too',
-    'COPYRIGHT': 'cprt',
-    'TRACKNUMBER': 'trkn',
-    'TOTALTRACKS': 'trkn',
-    'DISCNUMBER': 'disk',
-    'TOTALDISCS': 'disk'
-}
-    
+    def __init__(
+        self, 
+        title,
+        artist,
+        album,
+        albumArtist,
+        date, 
+        genre, 
+        trackNumber,
+        totalTracks, 
+        discNumber, 
+        totalDiscs, 
+        lyrics, 
+        bpm, 
+        isCompilation, 
+        dateAdded, 
+        dateFileCreated, 
+        dateAllPlays, 
+        dateLastPlayed, 
+        playCount, 
+        votes, 
+        rating
+    ):
+        self.title = title
+        self.artist = artist
+        self.album = album
+        self.albumArtist = albumArtist
+        self.date = date
+        self.genre = genre
+        self.trackNumber = trackNumber
+        self.totalTracks = totalTracks
+        self.discNumber = discNumber
+        self.totalDiscs = totalDiscs
+        self.lyrics = lyrics
+        self.bpm = bpm
+        self.isCompilation = isCompilation
+        self.dateAdded = dateAdded
+        self.dateFileCreated = dateFileCreated
+        self.dateAllPlays = dateAllPlays
+        self.playCount = playCount
+        self.votes = votes
+        self.rating = rating
+
+    def validate(self):
+        mlu.tags.validation.validateAudioFileTags(self)
+
+
 class AudioFileTagIOHandler:
     '''
     Class that handles the reading and writing of tag data values for a single audio file. This
@@ -44,312 +70,415 @@ class AudioFileTagIOHandler:
     Constructor params:
         audioFilepath: absolute filepath of the audio file
     '''
+
     def __init__(self, audioFilepath):
         # validate that the filepath exists
         if (not mlu.common.file.FileExists(audioFilepath)):
             raise ValueError("Class attribute 'audioFilepath' must be a valid absolute filepath string to an existing file")
 
         self.audioFilepath = audioFilepath
-        audioFileExt = mlu.common.file.GetFileExtension(self.audioFilepath)
 
-        if (audioFileExt == '.flac'):
-            self.audioFileType = 'flac'
-        elif (audioFileExt == '.mp3'):
-            self.audioFileType = 'mp3'
-        elif (audioFileExt == '.m4a'):
-            self.audioFileType = 'm4a'
-        else:
+        # Strip the dot from the file extension to get the audio file type, used by this class
+        self._audioFileType = mlu.common.file.GetFileExtension(self.audioFilepath).replace('.', '')
+
+        # Check that the given audio file type is supported
+        SUPPORTED_AUDIO_TYPES = ['flac', 'mp3', 'm4a']
+        if (self._audioFileType not in SUPPORTED_AUDIO_TYPES):
             raise Exception("Cannot open file '{}': Audio file format is not supported".format(self.audioFilepath))
 
+        self._tags = None
 
-    def getAudioTagValue(self, tagName):
+    def getTags(self):
         '''
-        Gets the string value of the given tag for the audio file. This will return an empty string
-        if the tag is empty or undefined.
+        Returns an AudioFileTags object representing all the values for all the tags on this audio
+        file that we care about (only those tags supported by MLU).
 
-        Params:
-            tagName: name of the audio file tag
+        This method performs a read operation of the audio file to fetch the latest tags each time.
         '''
-        if (self.audioFileType == 'flac'):
-            tagValue = self._getAudioTagValueFromFLACFile(tagName)
 
-        elif (self.audioFileType == 'mp3'):
-            tagValue = self._getAudioTagValueFromMp3File(tagName)
+        if (self._audioFileType == 'flac'):
+            audioFileTags = self._getTagsForFLACFile()
 
-        elif (self.audioFileType == 'm4a'):
-            tagValue = self._getAudioTagValueFromM4AFile(tagName)
+        elif (self._audioFileType == 'mp3'):
+            audioFileTags = self._getTagsForMp3File()
 
-        return tagValue
+        elif (self._audioFileType == 'm4a'):
+            audioFileTags = self._getTagsForM4AFile()
 
+        # TODO: perform validation here
 
-    def setAudioTagValue(self, tagName, newValue):
+        return audioFileTags
+
+    def setTags(self, audioFileTags):
         '''
-        Sets the given tag to the specified value for the audio file.
-
-        Params:
-            tagName: name of the audio file tag to set the value for
-            newValue: value to set for the given tag
+        Sets the tags on this audio file to those represented by the given AudioFileTags object.
+        This method performs a write operation on the audio file to write the given tag values each
+        time. 
+        
+        Validation is performed on each tag value and an AudioFileTagsValidationError will be thrown
+        if any tag values are invalid.
         '''
-        if (self.audioFileType == 'flac'):
-            self._setAudioTagValueForFLACFile(tagName, newValue)
 
-        elif (self.audioFileType == 'mp3'):
-            self._setAudioTagValueForMp3File(tagName, newValue)
+        # TODO: perform validation here
 
-        elif (self.audioFileType == 'm4a'):
-            self._setAudioTagValueForM4AFile(tagName, newValue)
+        if (self._audioFileType == 'flac'):
+            self._setTagsForFLACFile(audioFileTags)
 
+        elif (self._audioFileType == 'mp3'):
+            self._setTagsForMp3File(audioFileTags)
 
-    def _getAudioTagValueFromFLACFile(self, tagName):
+        elif (self._audioFileType == 'm4a'):
+            self._setTagsForM4AFile(audioFileTags)
+
+    def _getTagsForFLACFile(self):
         '''
-        Gets the string value of the given tag for a FLAC audio file.
-
-        Params:
-            tagName: name of the audio file tag
+        Returns an AudioFileTags object for the tag values for the FLAC audio file
         '''
-        tagName = tagName.upper()
+
         mutagenInterface = mutagen.File(self.audioFilepath)
 
-        if (tagName in FLAC_STANDARD_TAGS):
-            tagName = FLAC_STANDARD_TAGS[tagName]
+        title = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'title')
+        artist = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'artist')
+        album = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'album')
+        albumArtist = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'albumartist')
+        date = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'date')
+        genre = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'genre')
+        trackNumber = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'tracknumber')
+        totalTracks = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'tracktotal')
+        discNumber = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'discnumber')
+        totalDiscs = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'disctotal')
+        lyrics = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'lyrics')
+        bpm = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'bpm')
+        isCompilation = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'is_compilation')
+        dateAdded = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'date_added')
+        dateFileCreated = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'date_file_created') 
+        dateAllPlays = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'date_all_plays')
+        dateLastPlayed = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'date_last_played') 
+        playCount = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'play_count')
+        votes = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'votes')
+        rating = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'rating')
 
+        audioFileTags = AudioFileTags(
+            title=title,
+            artist=artist,
+            album=album,
+            albumArtist=albumArtist,
+            date=date, 
+            genre=genre, 
+            trackNumber=trackNumber,
+            totalTracks=totalTracks, 
+            discNumber=discNumber, 
+            totalDiscs=totalDiscs, 
+            lyrics=lyrics, 
+            bpm=bpm, 
+            isCompilation=isCompilation, 
+            dateAdded=dateAdded, 
+            dateFileCreated=dateFileCreated, 
+            dateAllPlays=dateAllPlays, 
+            dateLastPlayed=dateLastPlayed, 
+            playCount=playCount, 
+            votes=votes, 
+            rating=rating
+        )
+
+        return audioFileTags
+     
+    def _getTagsForMp3File(self):
+        '''
+        Returns an AudioFileTags object for the tag values for the Mp3 audio file
+        '''
+
+        # Use the EasyId3 interface for getting the standard Mp3 tags
+        mutagenInterface = EasyID3(self.audioFilepath)
+
+        title = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'title')
+        artist = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'artist')
+        album = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'album')
+        albumArtist = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'albumartist')
+        date = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'date')
+        genre = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'genre')
+        bpm = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'bpm')
+
+        # Extra work needed to unpack track/disc number/total tags
+        trackNumberOverTotal = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'tracknumber')
+        discNumberOverTotal = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'discnumber')
+
+        if ('/' in trackNumberOverTotal):
+            trackNumber = trackNumberOverTotal.split('/')[0]
+            totalTracks = trackNumberOverTotal.split('/')[1]
+        else:
+            trackNumber = trackNumberOverTotal
+            totalTracks = None
+
+        if ('/' in discNumberOverTotal):
+            discNumber = discNumberOverTotal.split('/')[0]
+            totalDiscs = discNumberOverTotal.split('/')[1]
+        else:
+            discNumber = discNumberOverTotal
+            totalDiscs = None
+        
+        # Use the normal file interface for getting the nonstandard Mp3 tags
+        mutagenInterface = mutagen.File(self.audioFilepath)
+
+        lyrics = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:LYRICS')
+        isCompilation = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:IS_COMPILATION')
+        dateAdded = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:DATE_ADDED')
+        dateFileCreated = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:DATE_FILE_CREATED') 
+        dateAllPlays = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:DATE_ALL_PLAYS')
+        dateLastPlayed = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:DATE_LAST_PLAYED') 
+        playCount = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:PLAY_COUNT')
+        votes = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:VOTES')
+        rating = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:RATING')
+
+        audioFileTags = AudioFileTags(
+            title=title,
+            artist=artist,
+            album=album,
+            albumArtist=albumArtist,
+            date=date, 
+            genre=genre, 
+            trackNumber=trackNumber,
+            totalTracks=totalTracks, 
+            discNumber=discNumber, 
+            totalDiscs=totalDiscs, 
+            lyrics=lyrics, 
+            bpm=bpm, 
+            isCompilation=isCompilation, 
+            dateAdded=dateAdded, 
+            dateFileCreated=dateFileCreated, 
+            dateAllPlays=dateAllPlays, 
+            dateLastPlayed=dateLastPlayed, 
+            playCount=playCount, 
+            votes=votes, 
+            rating=rating
+        )
+
+        return audioFileTags
+
+    def _getTagsForM4AFile(self):
+        '''
+        Returns an AudioFileTags object for the tag values for the M4A audio file
+        '''
+
+        mutagenInterface = MP4(self.audioFilepath)
+
+        # Standard M4A tags
+        title = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '\xa9nam')
+        artist = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '\xa9ART')
+        album = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '\xa9alb')
+        albumArtist = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, 'aART')
+        date = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '\xa9day')
+        genre = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '\xa9gen')
+        lyrics = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '\xa9lyr')
+
+        # Extra work needed to unpack the track and disc number/total, which are tuple data
+        trackNumberTotal = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, 'trkn')
+        discNumberTotal = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, 'disk')
+
+        trackNumber = trackNumberTotal[0]
+        totalTracks = trackNumberTotal[1]
+        discNumber = discNumberTotal[0]
+        totalDiscs = discNumberTotal[1]
+
+        # Nonstandard (custom) M4A tags
+        bpm = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:BPM')
+        isCompilation = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:IS_COMPILATION')
+        dateAdded = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:DATE_ADDED')
+        dateFileCreated = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:DATE_FILE_CREATED') 
+        dateAllPlays = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:DATE_ALL_PLAYS')
+        dateLastPlayed = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:DATE_LAST_PLAYED') 
+        playCount = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:PLAY_COUNT')
+        votes = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:VOTES')
+        rating = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:RATING')
+
+        audioFileTags = AudioFileTags(
+            title=title,
+            artist=artist,
+            album=album,
+            albumArtist=albumArtist,
+            date=date, 
+            genre=genre, 
+            trackNumber=trackNumber,
+            totalTracks=totalTracks, 
+            discNumber=discNumber, 
+            totalDiscs=totalDiscs, 
+            lyrics=lyrics, 
+            bpm=bpm, 
+            isCompilation=isCompilation, 
+            dateAdded=dateAdded, 
+            dateFileCreated=dateFileCreated, 
+            dateAllPlays=dateAllPlays, 
+            dateLastPlayed=dateLastPlayed, 
+            playCount=playCount, 
+            votes=votes, 
+            rating=rating
+        )
+
+        return audioFileTags
+
+    def _getTagValueFromMutagenInterfaceFLAC(self, mutagenInterface, mutagenKey):
         try:
-            if (len(mutagenInterface[tagName]) == 1):
-                tagValue = mutagenInterface[tagName][0]
-            elif (len(mutagenInterface[tagName]) > 1):
-                tagValue = ';'.join(mutagenInterface[tagName])
+            mutagenValue = mutagenInterface[mutagenKey]
+
+            if (len(mutagenValue) == 1):
+                tagValue = mutagenValue[0]
+            elif (len(mutagenValue) > 1):
+                tagValue = mutagenValue
             else:
-                tagValue = ''
+                tagValue = None
+
         except KeyError:
-            tagValue = ''
+            tagValue = None
+
+        return tagValue  
+
+    def _getTagValueFromMutagenInterfaceMp3(self, mutagenInterface, mutagenKey):
+        try:
+            if ('TXXX:' in mutagenKey):
+                mutagenValue = mutagenInterface[mutagenKey].text
+            else:    
+                mutagenValue = mutagenInterface[mutagenKey]
+
+            if (len(mutagenValue) == 1):
+                tagValue = mutagenValue[0]
+            elif (len(mutagenValue) > 1):
+                tagValue = mutagenValue
+            else:
+                tagValue = None
+
+        except KeyError:
+            tagValue = None
+
+        return tagValue 
+
+    def _getTagValueFromMutagenInterfaceM4A(self, mutagenInterface, mutagenKey):
+
+        try:    
+            mutagenValue = mutagenInterface.tags[mutagenKey]
+
+            if (len(mutagenValue) == 1):
+                tagValue = mutagenValue[0]
+            elif (len(mutagenValue) > 1):
+                tagValue = mutagenValue
+            else:
+                tagValue = None
+
+        except KeyError:
+            tagValue = None
+
+        if (tagValue and '----:com.apple.iTunes:' in mutagenKey):
+            tagValue = tagValue.decode('utf-8')
 
         return tagValue
 
-
-    def _setAudioTagValueForFLACFile(self, tagName, newValue):
+    def _setTagsForFLACFile(self, audioFileTags):
         '''
-        Sets the given tag to the specified value for a FLAC audio file.
-
-        Params:
-            tagName: name of the audio file tag to set the value for
-            newValue: value to set for the given tag
+        Sets the FLAC file's tags to that of the AudioFileTags object given.
         '''
-        tagName = tagName.upper()
+
         mutagenInterface = mutagen.File(self.audioFilepath)
 
-        if (tagName in FLAC_STANDARD_TAGS):
-            tagName = FLAC_STANDARD_TAGS[tagName]
+        mutagenInterface['title'] = audioFileTags.title
+        mutagenInterface['artist'] = audioFileTags.artist
+        mutagenInterface['album'] = audioFileTags.album
+        mutagenInterface['albumartist'] = audioFileTags.albumArtist
+        mutagenInterface['date'] = audioFileTags.date
+        mutagenInterface['genre'] = audioFileTags.genre
+        mutagenInterface['tracknumber'] = audioFileTags.trackNumber
+        mutagenInterface['tracktotal'] = audioFileTags.totalTracks
+        mutagenInterface['discnumber'] = audioFileTags.discNumber
+        mutagenInterface['disctotal'] = audioFileTags.totalDiscs
+        mutagenInterface['lyrics'] = audioFileTags.lyrics
+        mutagenInterface['bpm'] = audioFileTags.bpm
+        mutagenInterface['is_compilation'] = audioFileTags.isCompilation
+        mutagenInterface['date_added'] = audioFileTags.dateAdded
+        mutagenInterface['date_file_created'] = audioFileTags.dateFileCreated
+        mutagenInterface['date_all_plays'] = audioFileTags.dateAllPlays
+        mutagenInterface['date_last_played'] = audioFileTags.dateLastPlayed
+        mutagenInterface['play_count'] = audioFileTags.playCount
+        mutagenInterface['votes'] = audioFileTags.votes
+        mutagenInterface['rating'] = audioFileTags.rating
 
-        mutagenInterface[tagName] = newValue
         mutagenInterface.save()
 
-
-    def _getAudioTagValueFromMp3File(self, tagName):
+    def _setTagsForMp3File(self, audioFileTags):
         '''
-        Gets the string value of the given tag for an MP3 audio file.
-
-        Params:
-            tagName: name of the audio file tag
+        Sets the Mp3 file's tags to that of the AudioFileTags object given.
         '''
-        tagName = tagName.upper()
-        standardId3Tags = [tag.upper() for tag in EasyID3.valid_keys.keys()]
 
-        # TRACKNUMBER and DISCNUMBER have the data about the number as well as the total tracks
-        # or discs - e.g. TRACKNUMBER may be '1/12', or track 1 of 12 total
-        specialTags = ['TRACKNUMBER', 'TOTALTRACKS', 'DISCNUMBER', 'TOTALDISCS']
 
-        if (tagName in specialTags):
-            mutagenInterface = EasyID3(self.audioFilepath)
+        # Use the EasyId3 interface for setting the standard Mp3 tags
+        mutagenInterface = EasyID3(self.audioFilepath)
 
-            trackNumOverTotal = mutagenInterface['TRACKNUMBER'][0]
-            discNumOverTotal = mutagenInterface['DISCNUMBER'][0]
+        mutagenInterface['title'] = audioFileTags.title
+        mutagenInterface['artist'] = audioFileTags.artist
+        mutagenInterface['album'] = audioFileTags.album
+        mutagenInterface['albumartist'] = audioFileTags.albumArtist
+        mutagenInterface['date'] = audioFileTags.date
+        mutagenInterface['genre'] = audioFileTags.genre
+        mutagenInterface['bpm'] = audioFileTags.bpm
 
-            specialTagValues = {
-                'TRACKNUMBER': trackNumOverTotal.split('/')[0],
-                'TOTALTRACKS': trackNumOverTotal.split('/')[1],
-                'DISCNUMBER': discNumOverTotal.split('/')[0],
-                'TOTALDISCS': discNumOverTotal.split('/')[1]
-            } 
-
-            tagValue = specialTagValues[tagName]
-
-        elif (tagName in standardId3Tags):
-            mutagenInterface = EasyID3(self.audioFilepath)
-
-            try:
-                if (len(mutagenInterface[tagName]) == 1):
-                    tagValue = mutagenInterface[tagName][0]
-                elif (len(mutagenInterface[tagName]) > 1):
-                    tagValue = ';'.join(mutagenInterface[tagName])
-                else:
-                    tagValue = ''
-
-                
-            except KeyError:
-                tagValue = ''
-
+        # Extra work required to set the track/disc number/total tag values
+        if (audioFileTags.trackNumber):
+            trackNumberOverTotal = "{}/{}".format(audioFileTags.trackNumber, audioFileTags.totalTracks)
         else:
-            mutagenInterface = mutagen.File(self.audioFilepath)
-            id3TagName = "TXXX:{}".format(tagName)
+            trackNumberOverTotal = ''
 
-            try:
-                if (len(mutagenInterface[id3TagName].text) == 1):
-                    tagValue = mutagenInterface[id3TagName].text[0]
-                elif (len(mutagenInterface[id3TagName].text) > 1):
-                    tagValue = ';'.join(mutagenInterface[id3TagName].text)
-                else:
-                    tagValue = ''
-
-            except KeyError:
-                tagValue = ''
-
-        return tagValue
-
-
-    def _setAudioTagValueForMp3File(self, tagName, newValue):
-        '''
-        Sets the given tag to the specified value for an MP3 audio file.
-
-        Params:
-            tagName: name of the audio file tag to set the value for
-            newValue: value to set for the given tag
-        '''
-        tagName = tagName.upper()
-        newValueStr = str(newValue)
-
-        # TODO: if the 'DATE' tag is passed in, Mp3 requires that it be a valid date string
-        # perform data validation if the date tag is going to be set
-
-        standardId3Tags = [tag.upper() for tag in EasyID3.valid_keys.keys()]
-
-        # TRACKNUMBER and DISCNUMBER have the data about the number as well as the total tracks
-        # or discs - e.g. TRACKNUMBER may be '1/12', or track 1 of 12 total
-        specialTags = ['TRACKNUMBER', 'TOTALTRACKS', 'DISCNUMBER', 'TOTALDISCS']
-
-        # TODO: perform data validation on the given track/disc number/total value - it must be a 
-        # number
-        if (tagName in specialTags):
-            mutagenInterface = EasyID3(self.audioFilepath)
-
-            if (tagName == 'TRACKNUMBER'):
-                totalTracksValue = self._getAudioTagValueFromMp3File('TOTALTRACKS')
-                mutagenInterface['TRACKNUMBER'] = "{}/{}".format(newValueStr, totalTracksValue)
-
-            elif (tagName == 'TOTALTRACKS'):
-                trackNumValue = self._getAudioTagValueFromMp3File('TRACKNUMBER')
-                mutagenInterface['TRACKNUMBER'] = "{}/{}".format(trackNumValue, newValueStr)
-
-            elif (tagName == 'DISCNUMBER'):
-                totalDiscsValue = self._getAudioTagValueFromMp3File('TOTALDISCS')
-                mutagenInterface['DISCNUMBER'] = "{}/{}".format(newValueStr, totalDiscsValue)
-
-            elif (tagName == 'TOTALDISCS'):
-                discNumValue = self._getAudioTagValueFromMp3File('DISCNUMBER')
-                mutagenInterface['DISCNUMBER'] = "{}/{}".format(discNumValue, newValueStr)
-
-            mutagenInterface.save()
-
-        elif (tagName in standardId3Tags):
-
-            mutagenInterface = EasyID3(self.audioFilepath)
-            mutagenInterface[tagName] = newValueStr
-            mutagenInterface.save()
-
+        if (audioFileTags.discNumber):
+            discNumberOverTotal = "{}/{}".format(audioFileTags.discNumber, audioFileTags.totalDiscs)
         else:
-            mutagenInterface = ID3(self.audioFilepath, v2_version=3)
+            discNumberOverTotal = ''
 
-            mutagenInterface.add(TXXX(3, desc=tagName, text=newValueStr))
-            mutagenInterface.save(self.audioFilepath, v2_version=3)
+        mutagenInterface['tracknumber'] = trackNumberOverTotal
+        mutagenInterface['discnumber'] = discNumberOverTotal
 
-
-    def _getAudioTagValueFromM4AFile(self, tagName):
-        '''
-        Gets the string value of the given tag for an M4A/AAC audio file.
-
-        Params:
-            tagName: name of the audio file tag
-        '''
-        tagName = tagName.upper()
-        tagValue = ''
-        mutagenInterface = MP4(self.audioFilepath)
-
-        try:
-            if (tagName in MP4_STANDARD_TAGS):
-                mp4TagName = MP4_STANDARD_TAGS[tagName]
-
-                # Get the tag value from the tuple list value for these tags
-                # They are stored as lists of tuples for track and disc numbers:
-                # (TRACKNUMBER, TOTALTRACKS) and (DISCNUMBER, TOTALDISKS)
-                if (tagName == 'TRACKNUMBER' or tagName == 'DISCNUMBER'):
-                    tagValue = mutagenInterface.tags[mp4TagName][0][0]
-
-                elif (tagName == 'TOTALTRACKS' or tagName == 'TOTALDISCS'):
-                    tagValue = mutagenInterface.tags[mp4TagName][0][1]
-
-                else:
-                    tagValue = mutagenInterface.tags[mp4TagName][0]
-
-                    if (len(mutagenInterface.tags[mp4TagName]) == 1):
-                        tagValue = mutagenInterface.tags[mp4TagName][0]
-                    elif (len(mutagenInterface.tags[mp4TagName]) > 1):
-                        tagValue = ';'.join(mutagenInterface.tags[mp4TagName])
-                    else:
-                        tagValue = ''
-                    
-            else:
-                mp4TagName = '----:com.apple.iTunes:{}'.format(tagName)
-
-                if (len(mutagenInterface.tags[mp4TagName]) == 1):
-                    tagValue = mutagenInterface.tags[mp4TagName][0].decode('utf-8')
-                elif (len(mutagenInterface.tags[mp4TagName]) > 1):
-                    tagValue = ';'.join(mutagenInterface.tags[mp4TagName].decode('utf-8'))
-                else:
-                    tagValue = ''
-
-        except KeyError:
-            tagValue = ''
-
-        return tagValue
-
-
-    def _setAudioTagValueForM4AFile(self, tagName, newValue):
-        '''
-        Sets the given tag to the specified value for an M4A/AAC audio file.
-
-        Params:
-            tagName: name of the audio file tag to set the value for
-            newValue: value to set for the given tag
-        '''
-        tagName = tagName.upper()
-        newValueStr = str(newValue)
-
-        mutagenInterface = MP4(self.audioFilepath)
-
-        if (tagName in MP4_STANDARD_TAGS):
-            mp4TagName = MP4_STANDARD_TAGS[tagName]
-
-        else:
-            mp4TagName = '----:com.apple.iTunes:{}'.format(tagName)
-
-        # These tags are stored as lists of tuples for track and disc numbers:
-        # (TRACKNUMBER, TOTALTRACKS) and (DISCNUMBER, TOTALDISKS)
-        if (tagName == 'TRACKNUMBER'):
-            totalTracksValue = self._getAudioTagValueFromM4AFile('TOTALTRACKS')
-            mutagenInterface.tags[mp4TagName][0] = (int(newValueStr), int(totalTracksValue))
-
-        elif (tagName == 'TOTALTRACKS'):
-            trackNumValue = self._getAudioTagValueFromM4AFile('TRACKNUMBER')
-            mutagenInterface.tags[mp4TagName][0] = (int(trackNumValue), int(newValueStr))
-
-        elif (tagName == 'DISCNUMBER'):
-            totalDiscsValue = self._getAudioTagValueFromM4AFile('TOTALDISCS')
-            mutagenInterface.tags[mp4TagName][0] = (int(newValueStr), int(totalDiscsValue))
-
-        elif (tagName == 'TOTALDISCS'):
-            discNumValue = self._getAudioTagValueFromM4AFile('DISCNUMBER')
-            mutagenInterface.tags[mp4TagName][0] = (int(discNumValue), int(newValueStr))
-
-        else:
-            mutagenInterface.tags[mp4TagName] = (newValueStr.encode('utf-8'))
+        mutagenInterface.save()
         
+        # Use the ID3 interface for setting the nonstandard Mp3 tags
+        mutagenInterface = ID3(self.audioFilepath, v2_version=3)
+
+        mutagenInterface.add(TXXX(3, desc='TXXX:LYRICS', text=audioFileTags.lyrics))
+        mutagenInterface.add(TXXX(3, desc='TXXX:IS_COMPILATION', text=audioFileTags.isCompilation))
+        mutagenInterface.add(TXXX(3, desc='TXXX:DATE_ADDED', text=audioFileTags.dateAdded))
+        mutagenInterface.add(TXXX(3, desc='TXXX:DATE_FILE_CREATED', text=audioFileTags.dateFileCreated))
+        mutagenInterface.add(TXXX(3, desc='TXXX:DATE_ALL_PLAYS', text=audioFileTags.dateAllPlays))
+        mutagenInterface.add(TXXX(3, desc='TXXX:DATE_LAST_PLAYED', text=audioFileTags.dateLastPlayed))
+        mutagenInterface.add(TXXX(3, desc='TXXX:PLAY_COUNT', text=audioFileTags.playCount))
+        mutagenInterface.add(TXXX(3, desc='TXXX:VOTES', text=audioFileTags.votes))
+        mutagenInterface.add(TXXX(3, desc='TXXX:RATING', text=audioFileTags.rating))
+
+        mutagenInterface.save(self.audioFilepath, v2_version=3)
+
+
+    def _setTagsForM4AFile(self, audioFileTags):
+        '''
+        Sets the M4A file's tags to that of the AudioFileTags object given.
+        '''
+
+        mutagenInterface = MP4(self.audioFilepath)
+
+        # Standard M4A tags
+        mutagenInterface['\xa9nam'] = (audioFileTags.title).encode('utf-8')
+        mutagenInterface['\xa9ART'] = (audioFileTags.artist).encode('utf-8')
+        mutagenInterface['\xa9alb'] = (audioFileTags.album).encode('utf-8')
+        mutagenInterface['aART'] = (audioFileTags.albumArtist).encode('utf-8')
+        mutagenInterface['\xa9day'] = (audioFileTags.date).encode('utf-8')
+        mutagenInterface['\xa9gen'] = (audioFileTags.genre).encode('utf-8')
+        mutagenInterface['\xa9lyr'] = (audioFileTags.lyrics).encode('utf-8')
+
+        # Extra work needed to save the track and disc number/total, which are tuple data
+        mutagenInterface['trkn'] = (audioFileTags.trackNumber, audioFileTags.totalTracks)
+        mutagenInterface['disk'] = (audioFileTags.discNumber, audioFileTags.totalDiscs)
+
+        # Nonstandard (custom) M4A tags
+        mutagenInterface['----:com.apple.iTunes:BPM'] = (audioFileTags.bpm).encode('utf-8')
+        mutagenInterface['----:com.apple.iTunes:IS_COMPILATION'] = (audioFileTags.isCompilation).encode('utf-8')
+        mutagenInterface['----:com.apple.iTunes:DATE_ADDED'] = (audioFileTags.dateAdded).encode('utf-8')
+        mutagenInterface['----:com.apple.iTunes:DATE_FILE_CREATED'] = (audioFileTags.dateFileCreated).encode('utf-8')
+        mutagenInterface['----:com.apple.iTunes:DATE_ALL_PLAYS'] = (audioFileTags.dateAllPlays).encode('utf-8')
+        mutagenInterface['----:com.apple.iTunes:DATE_LAST_PLAYED'] = (audioFileTags.dateLastPlayed).encode('utf-8')
+        mutagenInterface['----:com.apple.iTunes:PLAY_COUNT'] = (audioFileTags.playCount).encode('utf-8')
+        mutagenInterface['----:com.apple.iTunes:VOTES'] = (audioFileTags.votes).encode('utf-8')
+        mutagenInterface['----:com.apple.iTunes:RATING'] = (audioFileTags.rating).encode('utf-8')
+
         mutagenInterface.save()
