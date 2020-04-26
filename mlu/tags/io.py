@@ -29,7 +29,6 @@ class AudioFileTags:
         totalDiscs, 
         lyrics, 
         bpm, 
-        isCompilation, 
         dateAdded, 
         dateFileCreated, 
         dateAllPlays, 
@@ -50,7 +49,6 @@ class AudioFileTags:
         self.totalDiscs = totalDiscs
         self.lyrics = lyrics
         self.bpm = bpm
-        self.isCompilation = isCompilation
         self.dateAdded = dateAdded
         self.dateFileCreated = dateFileCreated
         self.dateAllPlays = dateAllPlays
@@ -149,7 +147,6 @@ class AudioFileTagIOHandler:
         totalDiscs = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'disctotal')
         lyrics = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'lyrics')
         bpm = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'bpm')
-        isCompilation = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'is_compilation')
         dateAdded = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'date_added')
         dateFileCreated = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'date_file_created') 
         dateAllPlays = self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'date_all_plays')
@@ -171,7 +168,6 @@ class AudioFileTagIOHandler:
             totalDiscs=totalDiscs, 
             lyrics=lyrics, 
             bpm=bpm, 
-            isCompilation=isCompilation, 
             dateAdded=dateAdded, 
             dateFileCreated=dateFileCreated, 
             dateAllPlays=dateAllPlays, 
@@ -221,7 +217,6 @@ class AudioFileTagIOHandler:
         mutagenInterface = mutagen.File(self.audioFilepath)
 
         lyrics = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:LYRICS')
-        isCompilation = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:IS_COMPILATION')
         dateAdded = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:DATE_ADDED')
         dateFileCreated = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:DATE_FILE_CREATED') 
         dateAllPlays = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:DATE_ALL_PLAYS')
@@ -243,7 +238,6 @@ class AudioFileTagIOHandler:
             totalDiscs=totalDiscs, 
             lyrics=lyrics, 
             bpm=bpm, 
-            isCompilation=isCompilation, 
             dateAdded=dateAdded, 
             dateFileCreated=dateFileCreated, 
             dateAllPlays=dateAllPlays, 
@@ -282,7 +276,6 @@ class AudioFileTagIOHandler:
 
         # Nonstandard (custom) M4A tags
         bpm = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:BPM')
-        isCompilation = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:IS_COMPILATION')
         dateAdded = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:DATE_ADDED')
         dateFileCreated = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:DATE_FILE_CREATED') 
         dateAllPlays = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:DATE_ALL_PLAYS')
@@ -304,7 +297,6 @@ class AudioFileTagIOHandler:
             totalDiscs=totalDiscs, 
             lyrics=lyrics, 
             bpm=bpm, 
-            isCompilation=isCompilation, 
             dateAdded=dateAdded, 
             dateFileCreated=dateFileCreated, 
             dateAllPlays=dateAllPlays, 
@@ -390,7 +382,6 @@ class AudioFileTagIOHandler:
         mutagenInterface['disctotal'] = audioFileTags.totalDiscs
         mutagenInterface['lyrics'] = audioFileTags.lyrics
         mutagenInterface['bpm'] = audioFileTags.bpm
-        mutagenInterface['is_compilation'] = audioFileTags.isCompilation
         mutagenInterface['date_added'] = audioFileTags.dateAdded
         mutagenInterface['date_file_created'] = audioFileTags.dateFileCreated
         mutagenInterface['date_all_plays'] = audioFileTags.dateAllPlays
@@ -438,7 +429,6 @@ class AudioFileTagIOHandler:
         mutagenInterface = ID3(self.audioFilepath, v2_version=3)
 
         mutagenInterface.add(TXXX(3, desc='TXXX:LYRICS', text=audioFileTags.lyrics))
-        mutagenInterface.add(TXXX(3, desc='TXXX:IS_COMPILATION', text=audioFileTags.isCompilation))
         mutagenInterface.add(TXXX(3, desc='TXXX:DATE_ADDED', text=audioFileTags.dateAdded))
         mutagenInterface.add(TXXX(3, desc='TXXX:DATE_FILE_CREATED', text=audioFileTags.dateFileCreated))
         mutagenInterface.add(TXXX(3, desc='TXXX:DATE_ALL_PLAYS', text=audioFileTags.dateAllPlays))
@@ -472,7 +462,6 @@ class AudioFileTagIOHandler:
 
         # Nonstandard (custom) M4A tags
         mutagenInterface['----:com.apple.iTunes:BPM'] = (audioFileTags.bpm).encode('utf-8')
-        mutagenInterface['----:com.apple.iTunes:IS_COMPILATION'] = (audioFileTags.isCompilation).encode('utf-8')
         mutagenInterface['----:com.apple.iTunes:DATE_ADDED'] = (audioFileTags.dateAdded).encode('utf-8')
         mutagenInterface['----:com.apple.iTunes:DATE_FILE_CREATED'] = (audioFileTags.dateFileCreated).encode('utf-8')
         mutagenInterface['----:com.apple.iTunes:DATE_ALL_PLAYS'] = (audioFileTags.dateAllPlays).encode('utf-8')

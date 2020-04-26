@@ -6,6 +6,7 @@ import unittest
 import envsetup
 envsetup.PreparePythonProjectEnvironment()
 
+import mlutest.common
 import mlu.tags.io
 
 class TestAudioFile:
@@ -31,9 +32,9 @@ class TestData:
         testAudioFilesTagDataFilepath = mlu.common.file.JoinPaths(testAudioFileDir, 'tags.json')
         testAudioFilesTagData = mlu.common.file.getDictFromJsonFile(testAudioFilesTagDataFilepath)
 
-        flacTestFilesData = [tagData['testfiles'] for tagData in testAudioFilesTagData if tagData['filetype'] == 'flac']
-        mp3TestFilesData = [tagData['testfiles'] for tagData in testAudioFilesTagData if tagData['filetype'] == 'mp3']
-        m4aTestFilesData = [tagData['testfiles'] for tagData in testAudioFilesTagData if tagData['filetype'] == 'm4a']
+        flacTestFilesData = [tagData['testfiles'] for tagData in testAudioFilesTagData if tagData['filetype'] == 'flac'][0]
+        mp3TestFilesData = [tagData['testfiles'] for tagData in testAudioFilesTagData if tagData['filetype'] == 'mp3'][0]
+        m4aTestFilesData = [tagData['testfiles'] for tagData in testAudioFilesTagData if tagData['filetype'] == 'm4a'][0]
 
         self.testAudioFilesFLAC = []
         self.testAudioFilesMp3 = []
@@ -66,7 +67,7 @@ class TestData:
 
 
 
-class TestTagsIOModuleNew(unittest.TestCase):
+class TestTagsIOModule(unittest.TestCase):
     def setUp(self):
         '''
         Sets up the test data for the tests of the tags.io module. The test audio files are copied
@@ -95,15 +96,15 @@ class TestTagsIOModuleNew(unittest.TestCase):
         self.assertRaises(ValueError, mlu.tags.io.AudioFileTagIOHandler, self.testData.notExistFile)
 
         # Test FLAC file given
-        handler = mlu.tags.io.AudioFileTagIOHandler(self.testData.testAudioFilesFLAC.filepath)
+        handler = mlu.tags.io.AudioFileTagIOHandler(self.testData.testAudioFilesFLAC[0].filepath)
         self.assertEqual(handler._audioFileType, 'flac')
 
         # Test MP3 file given
-        handler = mlu.tags.io.AudioFileTagIOHandler(self.testData.testAudioFileMP3.filepath)
+        handler = mlu.tags.io.AudioFileTagIOHandler(self.testData.testAudioFilesMP3[0].filepath)
         self.assertEqual(handler._audioFileType, 'mp3')
 
         # Test M4A file given
-        handler = mlu.tags.io.AudioFileTagIOHandler(self.testData.testAudioFileM4A.filepath)
+        handler = mlu.tags.io.AudioFileTagIOHandler(self.testData.testAudioFilesM4A[0].filepath)
         self.assertEqual(handler._audioFileType, 'm4a')
 
         # Test non-supported filetype given
