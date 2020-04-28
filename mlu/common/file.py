@@ -37,7 +37,7 @@ def getTestResourceFilesDirectory():
     Gets the absolute filepath of the directory where test output and input data files will be saved
     for the Unit tests defined in the mlutest package.
     """
-    testResDir = "D:\\Temp\\mlu-test"
+    testResDir = "Z:\\Development\\Test Data\\mlYou"
     if (not directoryExists(testResDir)):
         createDirectory(testResDir)
 

@@ -4,6 +4,8 @@ mlu.tags.validation
 This module contains logic responsible for the validation of a single audio file's tag values. All 
 audio file tags supported by MLU are validated here.
 
+IN DEVELOPMENT, may or may not be used in the future
+
 '''
 
 import mlu.common.time
@@ -23,10 +25,10 @@ def validateAudioFileTags(audioFileTags):
         audioFileTags: the AudioFileTags object to validate
     '''
 
-    _validateDateTagValue(audioFileTags.date)
+    validateDateTagValue(audioFileTags.date)
 
 
-def _validateDateTagValue(value):
+def validateDateTagValue(value):
     MIN_YEAR = 1900
     currentYear = mlu.common.time.getCurrentYear()
 

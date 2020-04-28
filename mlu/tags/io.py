@@ -52,6 +52,7 @@ class AudioFileTags:
         self.dateAdded = dateAdded
         self.dateFileCreated = dateFileCreated
         self.dateAllPlays = dateAllPlays
+        self.dateLastPlayed = dateLastPlayed
         self.playCount = playCount
         self.votes = votes
         self.rating = rating
@@ -269,10 +270,10 @@ class AudioFileTagIOHandler:
         trackNumberTotal = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, 'trkn')
         discNumberTotal = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, 'disk')
 
-        trackNumber = trackNumberTotal[0]
-        totalTracks = trackNumberTotal[1]
-        discNumber = discNumberTotal[0]
-        totalDiscs = discNumberTotal[1]
+        trackNumber = str(trackNumberTotal[0])
+        totalTracks = str(trackNumberTotal[1])
+        discNumber = str(discNumberTotal[0])
+        totalDiscs = str(discNumberTotal[1])
 
         # Nonstandard (custom) M4A tags
         bpm = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:BPM')
@@ -315,7 +316,7 @@ class AudioFileTagIOHandler:
             if (len(mutagenValue) == 1):
                 tagValue = mutagenValue[0]
             elif (len(mutagenValue) > 1):
-                tagValue = mutagenValue
+                tagValue = ';'.join(mutagenValue)
             else:
                 tagValue = None
 
@@ -334,7 +335,7 @@ class AudioFileTagIOHandler:
             if (len(mutagenValue) == 1):
                 tagValue = mutagenValue[0]
             elif (len(mutagenValue) > 1):
-                tagValue = mutagenValue
+                tagValue = ';'.join(mutagenValue)
             else:
                 tagValue = None
 
@@ -348,18 +349,25 @@ class AudioFileTagIOHandler:
         try:    
             mutagenValue = mutagenInterface.tags[mutagenKey]
 
-            if (len(mutagenValue) == 1):
-                tagValue = mutagenValue[0]
-            elif (len(mutagenValue) > 1):
-                tagValue = mutagenValue
+            if ('----:com.apple.iTunes:' in mutagenKey):
+                if (len(mutagenValue) == 1):
+                    tagValue = mutagenValue[0].decode('utf-8')
+                elif (len(mutagenValue) > 1):
+                    tagValueList = [value.decode('utf-8') for value in mutagenValue]
+                    tagValue = ';'.join(tagValueList)
+                else:
+                    tagValue = None
+
             else:
-                tagValue = None
+                if (len(mutagenValue) == 1):
+                    tagValue = mutagenValue[0]
+                elif (len(mutagenValue) > 1):
+                    tagValue = ';'.join(mutagenValue)
+                else:
+                    tagValue = None
 
         except KeyError:
             tagValue = None
-
-        if (tagValue and '----:com.apple.iTunes:' in mutagenKey):
-            tagValue = tagValue.decode('utf-8')
 
         return tagValue
 

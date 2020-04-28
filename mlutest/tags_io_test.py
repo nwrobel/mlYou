@@ -100,7 +100,7 @@ class TestTagsIOModule(unittest.TestCase):
         self.assertEqual(handler._audioFileType, 'flac')
 
         # Test MP3 file given
-        handler = mlu.tags.io.AudioFileTagIOHandler(self.testData.testAudioFilesMP3[0].filepath)
+        handler = mlu.tags.io.AudioFileTagIOHandler(self.testData.testAudioFilesMp3[0].filepath)
         self.assertEqual(handler._audioFileType, 'mp3')
 
         # Test M4A file given
@@ -110,30 +110,58 @@ class TestTagsIOModule(unittest.TestCase):
         # Test non-supported filetype given
         self.assertRaises(Exception, mlu.tags.io.AudioFileTagIOHandler, self.testData.notSupportedAudioFile)
 
- 
     def testAudioFileTagIOHandlerFLAC(self):
         '''
         Tests tag reading/writing for a test FLAC file.
         '''
-        handler = mlu.tags.io.AudioFileTagIOHandler(self.testAudioFileFLAC)
-        tags = handler.getTags()
-
-        self.assertIsNotNone(tags)
-
+        for testAudioFile in self.testData.testAudioFilesFLAC:
+            handler = mlu.tags.io.AudioFileTagIOHandler(testAudioFile.filepath)
+            
+            self.checkAudioFileTagIOHandlerRead(handler, testAudioFile.tagValues)
+            
     def testAudioFileTagIOHandlerMp3(self):
         '''
         Tests tag reading/writing for a test Mp3 file.
         '''
-        handler = mlu.tags.io.AudioFileTagIOHandler(self.testAudioFileMp3)
-        tags = handler.getTags()
-
-        self.assertIsNotNone(tags)
+        for testAudioFile in self.testData.testAudioFilesMp3:
+            handler = mlu.tags.io.AudioFileTagIOHandler(testAudioFile.filepath)
+            
+            self.checkAudioFileTagIOHandlerRead(handler, testAudioFile.tagValues)
 
     def testAudioFileTagIOHandlerM4A(self):
         '''
         Tests tag reading/writing for a test M4A file.
         '''
-        handler = mlu.tags.io.AudioFileTagIOHandler(self.testAudioFileM4A)
-        tags = handler.getTags()
+        for testAudioFile in self.testData.testAudioFilesM4A:
+            handler = mlu.tags.io.AudioFileTagIOHandler(testAudioFile.filepath)
+            
+            self.checkAudioFileTagIOHandlerRead(handler, testAudioFile.tagValues)
 
-        self.assertIsNotNone(tags)
+    def checkAudioFileTagIOHandlerRead(self, audioFileTagIOHandler, expectedTagValues):
+        '''
+        Tests tag reading for any given test AudioFileTagIOHandler instance. Used as a 
+        helper function.
+
+        The test will check that the given expected tag values match those that are read using the
+        handler.
+
+        Params:
+            audioFileTagIOHandler: the handler instance to test (is defined with a test audio file type)
+            expectedTagValues: dict of the expected tag names and values that this handler should 
+                be expected to read out
+        '''
+        tags = audioFileTagIOHandler.getTags()
+        actualTagValues = tags.__dict__        
+
+        # Check that the expected and actual tags data dictionaries are the same length
+        self.assertEqual(len(expectedTagValues), len(actualTagValues))
+
+        # Check that all the expected tags are in the returned tags
+        for tagName in expectedTagValues:
+            self.assertIn(tagName, actualTagValues)
+
+        # Check that the expected and actual tags values match
+        for tagName in expectedTagValues:
+            expectedTagValue = expectedTagValues[tagName]
+            actualTagValue = actualTagValues[tagName]
+            self.assertEqual(expectedTagValue, actualTagValue)
