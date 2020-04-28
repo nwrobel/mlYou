@@ -436,16 +436,16 @@ class AudioFileTagIOHandler:
         # Use the ID3 interface for setting the nonstandard Mp3 tags
         mutagenInterface = ID3(self.audioFilepath, v2_version=3)
 
-        mutagenInterface.add(TXXX(3, desc='TXXX:LYRICS', text=audioFileTags.lyrics))
-        mutagenInterface.add(TXXX(3, desc='TXXX:DATE_ADDED', text=audioFileTags.dateAdded))
-        mutagenInterface.add(TXXX(3, desc='TXXX:DATE_FILE_CREATED', text=audioFileTags.dateFileCreated))
-        mutagenInterface.add(TXXX(3, desc='TXXX:DATE_ALL_PLAYS', text=audioFileTags.dateAllPlays))
-        mutagenInterface.add(TXXX(3, desc='TXXX:DATE_LAST_PLAYED', text=audioFileTags.dateLastPlayed))
-        mutagenInterface.add(TXXX(3, desc='TXXX:PLAY_COUNT', text=audioFileTags.playCount))
-        mutagenInterface.add(TXXX(3, desc='TXXX:VOTES', text=audioFileTags.votes))
-        mutagenInterface.add(TXXX(3, desc='TXXX:RATING', text=audioFileTags.rating))
+        mutagenInterface['TXXX:LYRICS'] = TXXX(3, desc='LYRICS', text=audioFileTags.lyrics)
+        mutagenInterface['TXXX:DATE_ADDED'] = TXXX(3, desc='DATE_ADDED', text=audioFileTags.dateAdded)
+        mutagenInterface['TXXX:DATE_FILE_CREATED'] = TXXX(3, desc='DATE_FILE_CREATED', text=audioFileTags.dateFileCreated)
+        mutagenInterface['TXXX:DATE_ALL_PLAYS'] = TXXX(3, desc='DATE_ALL_PLAYS', text=audioFileTags.dateAllPlays)
+        mutagenInterface['TXXX:DATE_LAST_PLAYED'] = TXXX(3, desc='DATE_LAST_PLAYED', text=audioFileTags.dateLastPlayed)
+        mutagenInterface['TXXX:PLAY_COUNT'] = TXXX(3, desc='PLAY_COUNT', text=audioFileTags.playCount)
+        mutagenInterface['TXXX:VOTES'] = TXXX(3, desc='VOTES', text=audioFileTags.votes)
+        mutagenInterface['TXXX:RATING'] = TXXX(3, desc='RATING', text=audioFileTags.rating)
 
-        mutagenInterface.save(self.audioFilepath, v2_version=3)
+        mutagenInterface.save(v2_version=3)
 
 
     def _setTagsForM4AFile(self, audioFileTags):
@@ -456,17 +456,17 @@ class AudioFileTagIOHandler:
         mutagenInterface = MP4(self.audioFilepath)
 
         # Standard M4A tags
-        mutagenInterface['\xa9nam'] = (audioFileTags.title).encode('utf-8')
-        mutagenInterface['\xa9ART'] = (audioFileTags.artist).encode('utf-8')
-        mutagenInterface['\xa9alb'] = (audioFileTags.album).encode('utf-8')
-        mutagenInterface['aART'] = (audioFileTags.albumArtist).encode('utf-8')
-        mutagenInterface['\xa9day'] = (audioFileTags.date).encode('utf-8')
-        mutagenInterface['\xa9gen'] = (audioFileTags.genre).encode('utf-8')
-        mutagenInterface['\xa9lyr'] = (audioFileTags.lyrics).encode('utf-8')
+        mutagenInterface['\xa9nam'] = audioFileTags.title
+        mutagenInterface['\xa9ART'] = audioFileTags.artist
+        mutagenInterface['\xa9alb'] = audioFileTags.album
+        mutagenInterface['aART'] = audioFileTags.albumArtist
+        mutagenInterface['\xa9day'] = audioFileTags.date
+        mutagenInterface['\xa9gen'] = audioFileTags.genre
+        mutagenInterface['\xa9lyr'] = audioFileTags.lyrics
 
         # Extra work needed to save the track and disc number/total, which are tuple data
-        mutagenInterface['trkn'] = (audioFileTags.trackNumber, audioFileTags.totalTracks)
-        mutagenInterface['disk'] = (audioFileTags.discNumber, audioFileTags.totalDiscs)
+        mutagenInterface['trkn'][0] = (int(audioFileTags.trackNumber), int(audioFileTags.totalTracks))
+        mutagenInterface['disk'][0] = (int(audioFileTags.discNumber), int(audioFileTags.totalDiscs))
 
         # Nonstandard (custom) M4A tags
         mutagenInterface['----:com.apple.iTunes:BPM'] = (audioFileTags.bpm).encode('utf-8')

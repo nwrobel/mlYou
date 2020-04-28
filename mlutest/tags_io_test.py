@@ -68,12 +68,15 @@ class TestData:
 
 
 class TestTagsIOModule(unittest.TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
         '''
         Sets up the test data for the tests of the tags.io module. The test audio files are copied
         from the test resource dir to the mlu cache dir, where they will be manipulated by the tests
         while preserving the original test data files.
         '''
+        super(TestTagsIOModule, self).setUpClass
+
         testResDir = mlu.common.file.getTestResourceFilesDirectory()
         testAudioFilesResDir = mlu.common.file.JoinPaths(testResDir, 'test-audio-filetypes')
         cacheDir = mlu.common.file.getMLUCacheDirectory()
@@ -83,7 +86,10 @@ class TestTagsIOModule(unittest.TestCase):
 
         self.testData = TestData(testAudioFileDir=cacheDir)
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(self):
+        super(TestTagsIOModule, self).tearDownClass
+        
         cacheDir = mlu.common.file.getMLUCacheDirectory()
         mlu.common.file.DeleteDirectory(cacheDir)
 
@@ -117,7 +123,8 @@ class TestTagsIOModule(unittest.TestCase):
         for testAudioFile in self.testData.testAudioFilesFLAC:
             handler = mlu.tags.io.AudioFileTagIOHandler(testAudioFile.filepath)
             
-            self.checkAudioFileTagIOHandlerRead(handler, testAudioFile.tagValues)
+            self._checkAudioFileTagIOHandlerRead(handler, testAudioFile.tagValues)
+            self._checkAudioFileTagIOHandlerWrite(handler)
             
     def testAudioFileTagIOHandlerMp3(self):
         '''
@@ -126,7 +133,8 @@ class TestTagsIOModule(unittest.TestCase):
         for testAudioFile in self.testData.testAudioFilesMp3:
             handler = mlu.tags.io.AudioFileTagIOHandler(testAudioFile.filepath)
             
-            self.checkAudioFileTagIOHandlerRead(handler, testAudioFile.tagValues)
+            self._checkAudioFileTagIOHandlerRead(handler, testAudioFile.tagValues)
+            self._checkAudioFileTagIOHandlerWrite(handler)
 
     def testAudioFileTagIOHandlerM4A(self):
         '''
@@ -135,9 +143,10 @@ class TestTagsIOModule(unittest.TestCase):
         for testAudioFile in self.testData.testAudioFilesM4A:
             handler = mlu.tags.io.AudioFileTagIOHandler(testAudioFile.filepath)
             
-            self.checkAudioFileTagIOHandlerRead(handler, testAudioFile.tagValues)
+            self._checkAudioFileTagIOHandlerRead(handler, testAudioFile.tagValues)
+            self._checkAudioFileTagIOHandlerWrite(handler)
 
-    def checkAudioFileTagIOHandlerRead(self, audioFileTagIOHandler, expectedTagValues):
+    def _checkAudioFileTagIOHandlerRead(self, audioFileTagIOHandler, expectedTagValues):
         '''
         Tests tag reading for any given test AudioFileTagIOHandler instance. Used as a 
         helper function.
@@ -165,3 +174,42 @@ class TestTagsIOModule(unittest.TestCase):
             expectedTagValue = expectedTagValues[tagName]
             actualTagValue = actualTagValues[tagName]
             self.assertEqual(expectedTagValue, actualTagValue)
+
+    def _checkAudioFileTagIOHandlerWrite(self, audioFileTagIOHandler):
+        '''
+        Tests tag writing for any given test AudioFileTagIOHandler instance. Used as a 
+        helper function.
+
+        The test will check that new tag values can be written via the handler.
+
+        Params:
+            audioFileTagIOHandler: the handler instance to test (is defined with a test audio file type)
+        '''
+        tags = audioFileTagIOHandler.getTags()
+        tagNames = tags.__dict__ 
+        newTagValues = {}
+
+        # Write the new tags
+        for tagName in tagNames:
+            if (tagName == 'date'):
+                newTagValue = '2001'
+            elif (tagName == 'trackNumber'):
+                newTagValue = '4'
+            elif (tagName == 'totalTracks'):
+                newTagValue = '33'
+            elif (tagName == 'discNumber'):
+                newTagValue = '1'
+            elif (tagName == 'totalDiscs'):
+                newTagValue = '2'
+            else:
+                newTagValue = mlutest.common.getRandomString(length=100, allowDigits=True, allowUppercase=True, allowSpecial=True, allowSpace=True)
+                newTagValue = newTagValue.replace('/', '')
+
+            newTagValues[tagName] = newTagValue
+
+        newAudioFileTags = mlu.tags.io.AudioFileTags(**newTagValues)
+        audioFileTagIOHandler.setTags(newAudioFileTags)
+
+        # Use the read test function to ensure the tags are now set to the new tag values 
+        self._checkAudioFileTagIOHandlerRead(audioFileTagIOHandler, expectedTagValues=newTagValues)
+
