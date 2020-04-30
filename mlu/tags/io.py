@@ -85,8 +85,6 @@ class AudioFileTagIOHandler:
         if (self._audioFileType not in SUPPORTED_AUDIO_TYPES):
             raise Exception("Cannot open file '{}': Audio file format is not supported".format(self.audioFilepath))
 
-        self._tags = None
-
     def getTags(self):
         '''
         Returns an AudioFileTags object representing all the values for all the tags on this audio
@@ -203,19 +201,32 @@ class AudioFileTagIOHandler:
         if ('/' in trackNumberOverTotal):
             trackNumber = trackNumberOverTotal.split('/')[0]
             totalTracks = trackNumberOverTotal.split('/')[1]
-        else:
+        elif (trackNumberOverTotal):
             trackNumber = trackNumberOverTotal
-            totalTracks = None
+            totalTracks = ''
+        else:
+            trackNumber = ''
+            totalTracks = ''
 
         if ('/' in discNumberOverTotal):
             discNumber = discNumberOverTotal.split('/')[0]
             totalDiscs = discNumberOverTotal.split('/')[1]
-        else:
+        elif (discNumberOverTotal):
             discNumber = discNumberOverTotal
-            totalDiscs = None
+            totalDiscs = ''
+        else:
+            discNumber = ''
+            totalDiscs = ''
         
         # Use the normal file interface for getting the nonstandard Mp3 tags
         mutagenInterface = mutagen.File(self.audioFilepath)
+
+        # These TXXX tags will be set if tracknumber is not set but totaltracks is, or if discnumber
+        # is not set and totaldiscs is
+        if (not totalTracks):
+            totalTracks = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:TOTALTRACKS')
+        if (not totalDiscs):
+            totalDiscs = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:TOTALDISCS')
 
         lyrics = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:LYRICS')
         dateAdded = self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:DATE_ADDED')
@@ -270,10 +281,37 @@ class AudioFileTagIOHandler:
         trackNumberTotal = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, 'trkn')
         discNumberTotal = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, 'disk')
 
-        trackNumber = str(trackNumberTotal[0])
-        totalTracks = str(trackNumberTotal[1])
-        discNumber = str(discNumberTotal[0])
-        totalDiscs = str(discNumberTotal[1])
+        if (trackNumberTotal):
+            if (trackNumberTotal[0] == 0):
+                trackNumber = ''
+            else: 
+                trackNumber = str(trackNumberTotal[0])
+
+            if (trackNumberTotal[1] == 0):
+                totalTracks = ''
+            else: 
+                totalTracks = str(trackNumberTotal[1]) 
+
+        else:
+            print("WARNING: M4A tag 'trkn' not found, the value returned for TOTALTRACKS tag could possibly be incorrectly empty")
+            trackNumber = ''
+            totalTracks = ''
+
+        if (discNumberTotal):
+            if (discNumberTotal[0] == 0):
+                discNumber = ''
+            else: 
+                discNumber = str(discNumberTotal[0]) 
+
+            if (discNumberTotal[1] == 0):
+                totalDiscs = ''
+            else: 
+                totalDiscs = str(discNumberTotal[1]) 
+
+        else:
+            print("WARNING: M4A tag 'disk' not found, the value returned for TOTALDISCS tag could possibly be incorrectly empty")
+            discNumber = ''
+            totalDiscs = ''       
 
         # Nonstandard (custom) M4A tags
         bpm = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:BPM')
@@ -318,10 +356,10 @@ class AudioFileTagIOHandler:
             elif (len(mutagenValue) > 1):
                 tagValue = ';'.join(mutagenValue)
             else:
-                tagValue = None
+                tagValue = ''
 
         except KeyError:
-            tagValue = None
+            tagValue = ''
 
         return tagValue  
 
@@ -337,10 +375,10 @@ class AudioFileTagIOHandler:
             elif (len(mutagenValue) > 1):
                 tagValue = ';'.join(mutagenValue)
             else:
-                tagValue = None
+                tagValue = ''
 
         except KeyError:
-            tagValue = None
+            tagValue = ''
 
         return tagValue 
 
@@ -356,7 +394,7 @@ class AudioFileTagIOHandler:
                     tagValueList = [value.decode('utf-8') for value in mutagenValue]
                     tagValue = ';'.join(tagValueList)
                 else:
-                    tagValue = None
+                    tagValue = ''
 
             else:
                 if (len(mutagenValue) == 1):
@@ -364,10 +402,10 @@ class AudioFileTagIOHandler:
                 elif (len(mutagenValue) > 1):
                     tagValue = ';'.join(mutagenValue)
                 else:
-                    tagValue = None
+                    tagValue = ''
 
         except KeyError:
-            tagValue = None
+            tagValue = ''
 
         return tagValue
 
@@ -375,7 +413,6 @@ class AudioFileTagIOHandler:
         '''
         Sets the FLAC file's tags to that of the AudioFileTags object given.
         '''
-
         mutagenInterface = mutagen.File(self.audioFilepath)
 
         mutagenInterface['title'] = audioFileTags.title
@@ -404,8 +441,6 @@ class AudioFileTagIOHandler:
         '''
         Sets the Mp3 file's tags to that of the AudioFileTags object given.
         '''
-
-
         # Use the EasyId3 interface for setting the standard Mp3 tags
         mutagenInterface = EasyID3(self.audioFilepath)
 
