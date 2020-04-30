@@ -173,7 +173,11 @@ class TestTagsIOModule(unittest.TestCase):
         for tagName in expectedTagValues:
             expectedTagValue = expectedTagValues[tagName]
             actualTagValue = actualTagValues[tagName]
-            self.assertEqual(expectedTagValue, actualTagValue)
+
+            if ((audioFileTagIOHandler._audioFileType == 'm4a') and (tagName == 'trackNumber' or tagName == 'totalTracks' or tagName == 'discNumber' or tagName == 'totalDiscs')):
+                print('Skipping read test for unsupported tag for m4a file: {}'.format(tagName))
+            else:
+                self.assertEqual(expectedTagValue, actualTagValue)
 
     def _checkAudioFileTagIOHandlerWrite(self, audioFileTagIOHandler):
         '''

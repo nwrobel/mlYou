@@ -57,14 +57,17 @@ class AudioFileTags:
         self.votes = votes
         self.rating = rating
 
-    def validate(self):
-        mlu.tags.validation.validateAudioFileTags(self)
+    # def validate(self):
+    #     mlu.tags.validation.validateAudioFileTags(self)
 
 
 class AudioFileTagIOHandler:
     '''
     Class that handles the reading and writing of tag data values for a single audio file. This
     file can be any of the supported audio file types.
+
+    The trackNumber, totalTracks, discNumber, and totalDiscs tags are not supported by MLU for M4A 
+    files due to limitations of mutagen.
 
     Constructor params:
         audioFilepath: absolute filepath of the audio file
@@ -100,9 +103,8 @@ class AudioFileTagIOHandler:
             audioFileTags = self._getTagsForMp3File()
 
         elif (self._audioFileType == 'm4a'):
+            print("WARNING: 'trackNumber', 'totalTracks', 'discNumber', 'totalDiscs' tags are not supported by MLU for M4A files. These tags won't be read from the audio file and will be returned as empty values.")
             audioFileTags = self._getTagsForM4AFile()
-
-        # TODO: perform validation here
 
         return audioFileTags
 
@@ -125,6 +127,7 @@ class AudioFileTagIOHandler:
             self._setTagsForMp3File(audioFileTags)
 
         elif (self._audioFileType == 'm4a'):
+            print("WARNING: 'trackNumber', 'totalTracks', 'discNumber', 'totalDiscs' tags are not supported by MLU for M4A files. These tags won't be written to the audio file.")
             self._setTagsForM4AFile(audioFileTags)
 
     def _getTagsForFLACFile(self):
@@ -277,41 +280,8 @@ class AudioFileTagIOHandler:
         genre = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '\xa9gen')
         lyrics = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '\xa9lyr')
 
-        # Extra work needed to unpack the track and disc number/total, which are tuple data
-        trackNumberTotal = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, 'trkn')
-        discNumberTotal = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, 'disk')
-
-        if (trackNumberTotal):
-            if (trackNumberTotal[0] == 0):
-                trackNumber = ''
-            else: 
-                trackNumber = str(trackNumberTotal[0])
-
-            if (trackNumberTotal[1] == 0):
-                totalTracks = ''
-            else: 
-                totalTracks = str(trackNumberTotal[1]) 
-
-        else:
-            print("WARNING: M4A tag 'trkn' not found, the value returned for TOTALTRACKS tag could possibly be incorrectly empty")
-            trackNumber = ''
-            totalTracks = ''
-
-        if (discNumberTotal):
-            if (discNumberTotal[0] == 0):
-                discNumber = ''
-            else: 
-                discNumber = str(discNumberTotal[0]) 
-
-            if (discNumberTotal[1] == 0):
-                totalDiscs = ''
-            else: 
-                totalDiscs = str(discNumberTotal[1]) 
-
-        else:
-            print("WARNING: M4A tag 'disk' not found, the value returned for TOTALDISCS tag could possibly be incorrectly empty")
-            discNumber = ''
-            totalDiscs = ''       
+        # trackNumber, totalTracks, discNumber, and totalDiscs tags are not supported by MLU for
+        # M4A files due to limitations of mutagen
 
         # Nonstandard (custom) M4A tags
         bpm = self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:BPM')
@@ -330,10 +300,10 @@ class AudioFileTagIOHandler:
             albumArtist=albumArtist,
             date=date, 
             genre=genre, 
-            trackNumber=trackNumber,
-            totalTracks=totalTracks, 
-            discNumber=discNumber, 
-            totalDiscs=totalDiscs, 
+            trackNumber='',
+            totalTracks='', 
+            discNumber='', 
+            totalDiscs='', 
             lyrics=lyrics, 
             bpm=bpm, 
             dateAdded=dateAdded, 
@@ -499,9 +469,8 @@ class AudioFileTagIOHandler:
         mutagenInterface['\xa9gen'] = audioFileTags.genre
         mutagenInterface['\xa9lyr'] = audioFileTags.lyrics
 
-        # Extra work needed to save the track and disc number/total, which are tuple data
-        mutagenInterface['trkn'][0] = (int(audioFileTags.trackNumber), int(audioFileTags.totalTracks))
-        mutagenInterface['disk'][0] = (int(audioFileTags.discNumber), int(audioFileTags.totalDiscs))
+        # trackNumber, totalTracks, discNumber, and totalDiscs tags are not supported by MLU for
+        # M4A files due to limitations of mutagen
 
         # Nonstandard (custom) M4A tags
         mutagenInterface['----:com.apple.iTunes:BPM'] = (audioFileTags.bpm).encode('utf-8')
