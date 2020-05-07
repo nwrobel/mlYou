@@ -41,14 +41,22 @@ args = parser.parse_args()
 logger.info("Loading audio file votes data from all vote playlists")
 audioFileVoteDataList = mlu.tags.ratestats.getAudioFileVoteDataFromRatePlaylists(args.playlistRootDir)
 
-logger.info("New votes data structure filled from vote playlists data successfully")
-logger.info("Writing tag data from data structure to audio files")
+logger.info("Vote playlists data loaded successfully")
+logger.info("Writing new ratestats tag data to audio files")
 
+errorFiles = []
 for audioFileVoteData in audioFileVoteDataList:
-    logger.debug("Processing new votes for audio file '{}'".format(songFilepath))
-    mlu.tags.ratestats.updateRatestatTags(audioFileVoteData)
+    logger.info("Processing new votes for audio file: File={}".format(audioFileVoteData.filepath))
 
-logger.info('Music ratestats tag data update completed successfully: {} songs were updated'.format(len(audioFileVoteDataList)))
+    try:
+        mlu.tags.ratestats.updateRatestatTagsFromVoteData(audioFileVoteData)
+    except:
+        logger.info("Failed to update ratestat tag values with new votes: File={}".format(audioFileVoteData.filepath))
+        errorFiles.append(audioFileVoteData.filepath)
+
+logger.info("Ratestats tag data update completed")
+logger.info("{} audio files were processed".format(len(audioFileVoteDataList)))
+logger.info("{} audio files failed update".format(len(errorFiles)))
 
 # Print the results of all updated songs in table form and what changes occurred
 tagUpdatesTable = PrettyTable()
@@ -71,10 +79,10 @@ for audioFileVotesData in audioFileVoteDataList:
 
 logger.info("\nThe following changes were made to music library:\n{}".format(tagUpdatesTable))
 
-logger.info('Archiving vote playlists...')
+logger.info('Archiving vote playlists')
 mlu.tags.ratestats.archiveRatePlaylists(playlistsDir=args.playlistRootDir, archiveDir=args.playlistArchiveDir)
 
-logger.info('Emptying already counted votes from vote playlists...')
+logger.info('Emptying already counted votes from vote playlists')
 mlu.tags.ratestats.resetRatePlaylists(playlistsDir=args.playlistRootDir)
 
 logger.info('Script complete')

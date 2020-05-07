@@ -23,7 +23,7 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args": ["D:\\Temp\\mlu-test\\test-vote-playlists-input", "D:\\Temp\\mlu-test\\test-vote-playlists-output"],
+            "args": ["D:\\Temp\\mlu-test\\test-playlists-root-dir", "D:\\Temp\\mlu-test\\test-vote-playlists-archived"],
             "console": "integratedTerminal"
         }
     ]

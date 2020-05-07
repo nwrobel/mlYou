@@ -23,7 +23,8 @@ class AudioFileVoteData:
         self.filepath = filepath
         self.votes = votes
 
-def updateRatestatTags(audioFileVoteData):
+
+def updateRatestatTagsFromVoteData(audioFileVoteData):
     '''
     '''
     logger.debug("Updating ratestat tags with new votes: File={}, NewVotes={}".format(audioFileVoteData.filepath, audioFileVoteData.votes))
@@ -43,12 +44,33 @@ def updateRatestatTags(audioFileVoteData):
     logger.info("Updated ratestat tags to the following values: File={}, Votes={}, Rating={}".format(audioFileVoteData.filepath, newTags.votes, newTags.rating))
 
 
+def updateRatingTag(audioFilepath):
+    '''
+    '''
+    tagHandler = mlu.tags.io.AudioFileTagIOHandler(audioFileVoteData.filepath)
+    currentTags = tagHandler.getTags()
+
+    votesCurrent = mlu.tags.common.formatAudioTagToValuesList(currentTags.votes, valuesAsInt=True) 
+    ratingCurrent = currentTags.rating
+    ratingUpdated = _calculateRatingTagValue(votesCurrent)
+
+    if (ratingCurrent != ratingUpdated):
+        newTags = currentTags
+        newTags.rating = ratingUpdated
+        tagHandler.setTags(newTags)
+
+        logger.info("Rating tag updated with new value: File={}, OldRating={}, NewRating={}".format(audioFilepath, ratingCurrent, ratingUpdated))
+
+    else:
+        logger.info("Rating tag not updated, no change needed: File={}".format(audioFilepath))
+
+
 def getAudioFileVoteDataFromRatePlaylists(playlistsDir):
     '''
     '''
     audioFileVoteDataList = []
 
-    for currentVoteValue in range(1, 10):
+    for currentVoteValue in range(1, 11):
         currentVoteValuePlaylistName = "{}.m3u8".format(currentVoteValue)
         currentVoteValuePlaylistPath =  mlu.common.file.JoinPaths(playlistsDir, currentVoteValuePlaylistName)
 
@@ -78,26 +100,42 @@ def getAudioFileVoteDataFromRatePlaylists(playlistsDir):
 
     return audioFileVoteDataList
 
-# TODO: finish
-def archiveRatePlaylists(playlistsDir, archiveDir):
-    '''
-    '''
-    archiveFilename = "[{}] Archived vote playlists (already written to ratestat tags).gz".format(mlu.common.time.getCurrentFormattedTime())
-    archiveFilePath = mlu.common.file.JoinPaths(args.votePlaylistsArchiveDir, archiveFilename)
 
-    mlu.common.file.compressFileToArchive(inputFilePath=votePlaylists, archiveOutFilePath=archiveFilePath)
-    logger.info('Vote playlists successfully compressed into archive file {}'.format(archiveFilePath))
+def archiveVotePlaylists(playlistsDir, archiveDir):
+    '''
+    '''
+    archiveFilename = "[{}] Archived vote playlists.gz".format(mlu.common.time.getCurrentFormattedTime())
+    archiveFilePath = mlu.common.file.JoinPaths(archiveDir, archiveFilename)
+    playlistFilepaths = _getVotePlaylistFilepaths(playlistsDir)    
 
-# TODO: finish
-def resetRatePlaylists(playlistsDir):
+    mlu.common.file.compressFileToArchive(inputFilePath=playlistFilepaths, archiveOutFilePath=archiveFilePath)
+    logger.info("Vote playlists successfully compressed into archive file '{}'".format(archiveFilePath))
+
+
+def resetVotePlaylists(playlistsDir):
     '''
     '''
-    for votePlaylist in votePlaylists:
+    playlistFilepaths = _getVotePlaylistFilepaths(playlistsDir)    
+
+    for votePlaylist in playlistFilepaths:
         mlu.common.file.clearFileContents(filePath=votePlaylist)
+
+    logger.info("Vote playlists reset successfully")
+
+
+def _getVotePlaylistFilepaths(playlistsDir):
+    playlistFilepaths = []
+    for currentVoteValue in range(1, 11):
+        currentVoteValuePlaylistName = "{}.m3u8".format(currentVoteValue)
+        currentVoteValuePlaylistPath =  mlu.common.file.JoinPaths(playlistsDir, currentVoteValuePlaylistName)
+        playlistFilepaths.append(currentVoteValuePlaylistPath)
+
+    return playlistFilepaths
+
 
 def _calculateRatingTagValue(votes):
     if (votes):
-        rating = sum(self._votes) / len(self._votes)
+        rating = sum(votes) / len(votes)
         rating = float(rating)
         ratingTagValue = '{0:.2f}'.format(round(rating, 2))
 
