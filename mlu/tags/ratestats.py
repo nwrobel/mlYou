@@ -137,7 +137,7 @@ def _calculateRatingTagValue(votes):
     if (votes):
         rating = sum(votes) / len(votes)
         rating = float(rating)
-        ratingTagValue = '{0:.2f}'.format(round(rating, 2))
+        ratingTagValue = '{0:.1f}'.format(round(rating, 2))
 
     else:
         ratingTagValue = ''

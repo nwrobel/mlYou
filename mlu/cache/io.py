@@ -19,8 +19,8 @@ def WriteMLUObjectsToJSONFile(mluObjects, outputFilepath):
     The properties that will be written out for a class instance are those returned when running
     the code "vars(object)", where object is the instance of the given class.
     """
-    with open(outputFilepath, "w+") as outfile:
-        json.dump(mluObjects, outfile, default=_prepareMLUObjectForJSON)
+    with open(outputFilepath, 'w', encoding='utf-8') as outfile:
+        json.dump(mluObjects, outfile, default=_prepareMLUObjectForJSON, ensure_ascii=False, indent=4)
 
 
 def ReadMLUObjectsFromJSONFile(inputFilepath, mluClassDefinition):
@@ -32,7 +32,7 @@ def ReadMLUObjectsFromJSONFile(inputFilepath, mluClassDefinition):
     Note: mluClassDefinition must be the class name/class definition for the type of object
     that each JSON item in the file represents.
     """
-    with open(inputFilepath, "r") as inputfile:
+    with open(inputFilepath, "r", encoding='utf-8') as inputfile:
         mluObjDicts = json.load(inputfile)
         
     # Create a list with one element if only one object dictionary is read from the given json file
@@ -51,6 +51,14 @@ def ReadMLUObjectsFromJSONFile(inputFilepath, mluClassDefinition):
 
     return mluObjs
 
+def getDictFromJsonFile(filePath):
+    '''
+    Reads the data of the given JSON file. Returns a dictionary of key value pairs representing the
+    data (as returned by json.loads()). 
+    '''
+    with open(filePath, 'r', encoding='utf-8') as inputfile:
+        dataDict = json.load(inputfile)
+    return dataDict
 
 def _prepareMLUObjectForJSON(self):
     # Given the instance of a class defined in this project, create an ordered dictionary out of its 
