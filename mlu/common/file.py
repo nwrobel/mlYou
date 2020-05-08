@@ -12,7 +12,7 @@ import os
 from pathlib import Path
 import gzip
 import shutil
-import json
+import tarfile
 
 def isValidPossibleFilepath(filepath):
     '''
@@ -250,16 +250,20 @@ def compressFileToArchive(inputFilePath, archiveOutFilePath):
     '''
     Compresses one or more files to a .GZ archive, given the absolute input file path(s) and file
     path for the archive file.
+
+    Params:
+        inputFilepath: single path of the file to compress, or a list of paths
+        archiveOutFilePath: filepath of the archive file to output to
     '''
     if (not isinstance(inputFilePath, list)):
         inputFilePath = [inputFilePath]
 
-    for filepath in inputFilePath:
-        # TODO: FINISH
-        pass
+    with tarfile.open(archiveOutFilePath, 'w:gz') as archive:
+        for filepath in inputFilePath:
+            archive.add(filepath)
 
 
-def clearFileContents(filePath):
+def clearFileContents(filepath):
     '''
     Removes all the data from the target file by deleting the file and re-creating it as an empty
     file with 0 bytes of data.
@@ -268,6 +272,18 @@ def clearFileContents(filePath):
 
     emptyFile = open(filePath, 'wb')
     emptyFile.save()
+
+
+def writeToFile(filepath, content):
+    '''
+    Writes the given content to the given file. This only works with string data.
+
+    Params:
+        filePath: path to the output file
+        content: string data to be written to the file
+    '''
+    with open(filepath, 'w', encoding='utf-8') as outputFile:
+        outputFile.write(content)
 
 
 

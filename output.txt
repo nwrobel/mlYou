@@ -1,0 +1,836 @@
++------------------------------------------------------------+----------------------------------+-------------+------------+-------------------------------------------------------------------------+
+| Title                                                      | Artist                           | Votes Added | New Rating |                                                          New Votes List |
++------------------------------------------------------------+----------------------------------+-------------+------------+-------------------------------------------------------------------------+
+| Mount Analogue                                             | Varg                             |           1 |        1.0 |                                                             1;1;1;1;1;1 |
+| Clean It Up                                                | Butthole Surfers                 |     2;3;6;7 |        4.5 |                         2;3;6;7;2;3;6;7;2;3;6;7;2;3;6;7;2;3;6;7;2;3;6;7 |
+| Bien Venidos                                               | Static-X                         |           2 |        2.0 |                                                             2;2;2;2;2;2 |
+| Playground For A Wedgeless Firm                            | The Chemical Brothers            |           3 |        3.0 |                                                             3;3;3;3;3;3 |
+| Fairy                                                      | KMFDM                            |           3 |        3.0 |                                                             3;3;3;3;3;3 |
+| Giant Robot (Giant Robot Vs. Guillatine)                   | Buckethead                       |         3;5 |        4.0 |                                                 3;5;3;5;3;5;3;5;3;5;3;5 |
+| Monolith                                                   | Mudvayne                         |           3 |        3.0 |                                                             3;3;3;3;3;3 |
+| Golden Ratio                                               | Mudvayne                         |           3 |        3.0 |                                                             3;3;3;3;3;3 |
+| Someday                                                    | Nickelback                       |         3;5 |        4.0 |                                                 3;5;3;5;3;5;3;5;3;5;3;5 |
+| Chewin' George Lucas' Chocolate                            | Butthole Surfers                 |           3 |        3.0 |                                                             3;3;3;3;3;3 |
+| Dog Inside Your Body                                       | Butthole Surfers                 |           3 |        3.0 |                                                             3;3;3;3;3;3 |
+| On Your Own                                                | Blur                             |         3;4 |        3.5 |                                                 3;4;3;4;3;4;3;4;3;4;3;4 |
+| Don't Wanna Fall In Love                                   | Green Day                        |           3 |        3.0 |                                                             3;3;3;3;3;3 |
+| Do Da Da                                                   | Green Day                        |       3;4;5 |        4.0 |                                     3;4;5;3;4;5;3;4;5;3;4;5;3;4;5;3;4;5 |
+| Ha Ha You're Dead                                          | Green Day                        |           3 |        3.0 |                                                             3;3;3;3;3;3 |
+| Pollution                                                  | Limp Bizkit                      |           3 |        3.0 |                                                             3;3;3;3;3;3 |
+| Faith                                                      | Limp Bizkit                      |         3;5 |        4.0 |                                                 3;5;3;5;3;5;3;5;3;5;3;5 |
+| Manifest Density Pt. 1                                     | Local H                          |           3 |        3.0 |                                                             3;3;3;3;3;3 |
+| Green Onions                                               | The Ventures                     |           4 |        4.0 |                                                             4;4;4;4;4;4 |
+| Always & Never                                             | Coheed And Cambria               |           4 |        4.0 |                                                             4;4;4;4;4;4 |
+| Thrash Up!                                                 | KMFDM                            |           4 |        4.0 |                                                             4;4;4;4;4;4 |
+| En Esch                                                    | KMFDM                            |           4 |        4.0 |                                                             4;4;4;4;4;4 |
+| Giant Robot (Interlude)                                    | Buckethead                       |         4;5 |        4.5 |                                                 4;5;4;5;4;5;4;5;4;5;4;5 |
+| Giant Robot (Giant Robot Theme)                            | Buckethead                       |         4;5 |        4.5 |                                                 4;5;4;5;4;5;4;5;4;5;4;5 |
+| Giant Robot (Enter Guillatine)                             | Buckethead                       |           4 |        4.0 |                                                             4;4;4;4;4;4 |
+| - 1                                                        | Mudvayne                         |         4;4 |        4.0 |                                                 4;4;4;4;4;4;4;4;4;4;4;4 |
+| Death Blooms                                               | Mudvayne                         |         4;5 |        4.5 |                                                 4;5;4;5;4;5;4;5;4;5;4;5 |
+| Cradle                                                     | Mudvayne                         |           4 |        4.0 |                                                             4;4;4;4;4;4 |
+| Wide Open                                                  | The Chemical Brothers            |           4 |        4.0 |                                                             4;4;4;4;4;4 |
+| Reborn                                                     | Stone Sour                       |           4 |        4.0 |                                                             4;4;4;4;4;4 |
+| Should've Listened                                         | Nickelback                       |         4;5 |        4.5 |                                                 4;5;4;5;4;5;4;5;4;5;4;5 |
+| Slinky                                                     | 311                              |         4;5 |        4.5 |                                                 4;5;4;5;4;5;4;5;4;5;4;5 |
+| Summer Of Love                                             | 311                              |       4;4;6 |        4.7 |                                     4;4;6;4;4;6;4;4;6;4;4;6;4;4;6;4;4;6 |
+| Theme From Retro                                           | Blur                             |           4 |        4.0 |                                                             4;4;4;4;4;4 |
+| Suffocate                                                  | Green Day                        |           4 |        4.0 |                                                             4;4;4;4;4;4 |
+| Sick Of Me                                                 | Green Day                        |           4 |        4.0 |                                                             4;4;4;4;4;4 |
+| No Problem                                                 | Local H                          |           4 |        4.0 |                                                             4;4;4;4;4;4 |
+| Naomi                                                      | Slick Idiot                      |           4 |        4.0 |                                                             4;4;4;4;4;4 |
+| Digital Child                                              | Carbon Based Lifeforms           |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Wishful Thinking                                           | Between Interval                 |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Ain't Even Done With The Night                             | John Mellencamp                  |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Golgotha                                                   | Asura                            |         5;6 |        5.5 |                                                 5;6;5;6;5;6;5;6;5;6;5;6 |
+| Naked Sunday                                               | Stone Temple Pilots              |         5;7 |        6.0 |                                                 5;7;5;7;5;7;5;7;5;7;5;7 |
+| Keeping The Blade                                          | Coheed And Cambria               |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| UAIOE                                                      | KMFDM                            |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Thumb Thumb                                                | KMFDM                            |       5;6;6 |        5.7 |                                     5;6;6;5;6;6;5;6;6;5;6;6;5;6;6;5;6;6 |
+| Apathy                                                     | KMFDM                            |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Son Of A Gun                                               | KMFDM                            |         5;6 |        5.5 |                                                 5;6;5;6;5;6;5;6;5;6;5;6 |
+| Pushing Me Away                                            | Linkin Park                      |         5;8 |        6.5 |                                                 5;8;5;8;5;8;5;8;5;8;5;8 |
+| Internal Primates Forever                                  | Mudvayne                         |         5;6 |        5.5 |                                                 5;6;5;6;5;6;5;6;5;6;5;6 |
+| In The Meantime                                            | Helmet                           |         5;6 |        5.5 |                                                 5;6;5;6;5;6;5;6;5;6;5;6 |
+| Radiate                                                    | The Chemical Brothers            |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Your God                                                   | Stone Sour                       |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Norrländska Vemodet                                        | Varg                             |         5;7 |        6.0 |                                                 5;7;5;7;5;7;5;7;5;7;5;7 |
+| Skoptsky                                                   | Varg                             |         5;6 |        5.5 |                                                 5;6;5;6;5;6;5;6;5;6;5;6 |
+| Neuwerld                                                   | Skinny Puppy                     |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Do This Anymore                                            | Nickelback                       |         5;6 |        5.5 |                                                 5;6;5;6;5;6;5;6;5;6;5;6 |
+| Alcohol                                                    | Butthole Surfers                 |         5;6 |        5.5 |                                                 5;6;5;6;5;6;5;6;5;6;5;6 |
+| Jimi                                                       | Butthole Surfers                 |         5;6 |        5.5 |                                                 5;6;5;6;5;6;5;6;5;6;5;6 |
+| Rocky                                                      | Butthole Surfers                 |         5;6 |        5.5 |                                                 5;6;5;6;5;6;5;6;5;6;5;6 |
+| Fart Song                                                  | Butthole Surfers                 |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Overdrive                                                  | Foo Fighters                     |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Burn Away                                                  | Foo Fighters                     |         5;6 |        5.5 |                                                 5;6;5;6;5;6;5;6;5;6;5;6 |
+| Capsized                                                   | Fozzy                            |         5;6 |        5.5 |                                                 5;6;5;6;5;6;5;6;5;6;5;6 |
+| Wolves At Bay                                              | Fozzy                            |         5;6 |        5.5 |                                                 5;6;5;6;5;6;5;6;5;6;5;6 |
+| Dog New Tricks                                             | Garbage                          |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| My Lover's Box                                             | Garbage                          |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Milk                                                       | Garbage                          |         5;6 |        5.5 |                                                 5;6;5;6;5;6;5;6;5;6;5;6 |
+| On The Wagon                                               | Green Day                        |         5;6 |        5.5 |                                                 5;6;5;6;5;6;5;6;5;6;5;6 |
+| Murder My Heart                                            | KMFDM                            |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Quantum Ritual                                             | Traxon                           |         5;6 |        5.5 |                                                 5;6;5;6;5;6;5;6;5;6;5;6 |
+| Maria Lionza                                               | Cosmogonía                       |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Megalo                                                     | KMFDM                            |         5;6 |        5.5 |                                                 5;6;5;6;5;6;5;6;5;6;5;6 |
+| Clunk                                                      | Limp Bizkit                      |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Joseph Merrick                                             | Mastodon                         |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Frontlines                                                 | Nonpoint                         |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| I Prefer                                                   | Ministry                         |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Extra                                                      | Slick Idiot                      |           5 |        5.0 |                                                             5;5;5;5;5;5 |
+| Little Girls Eat Chocolate                                 | Circular                         |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Rablekok                                                   | Circular                         |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Metro Entrance I                                           | Varg & Abdulla Rashim            |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| War Machine                                                | AC/DC                            |         6;8 |        7.0 |                                                 6;8;6;8;6;8;6;8;6;8;6;8 |
+| Constantly Hating (feat. Birdman)                          | Young Thug                       |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Paper In Fire                                              | John Mellencamp                  |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Rockin' Down The Highway                                   | The Doobie Brothers              |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| She Hates Me                                               | Puddle Of Mudd                   |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| A Place For My Head                                        | Linkin Park                      |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Where Do I Begin                                           | The Chemical Brothers            |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Starting Over                                              | The Crystal Method               |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Murder                                                     | KMFDM                            |       6;7;7 |        6.7 |                                     6;7;7;6;7;7;6;7;7;6;7;7;6;7;7;6;7;7 |
+| Dogma                                                      | KMFDM                            |         6;8 |        7.0 |                                                 6;8;6;8;6;8;6;8;6;8;6;8 |
+| Wrath                                                      | KMFDM                            |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| In My Eyes                                                 | Rage Against The Machine         |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Ironhead                                                   | Helmet                           |       6;6;7 |        6.3 |                                     6;6;7;6;6;7;6;6;7;6;6;7;6;6;7;6;6;7 |
+| Serious                                                    | Scars On Broadway                | 6;6;6;7;7;8 |        6.7 | 6;6;6;7;7;8;6;6;6;7;7;8;6;6;6;7;7;8;6;6;6;7;7;8;6;6;6;7;7;8;6;6;6;7;7;8 |
+| Funny                                                      | Scars On Broadway                |         6;6 |        6.0 |                                                 6;6;6;6;6;6;6;6;6;6;6;6 |
+| Insane                                                     | Scars On Broadway                |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Babylon                                                    | Scars On Broadway                |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| All The Love In The World                                  | Nine Inch Nails                  |   6;9;10;10 |       10.0 |    10;20;30;6;9;10;10;6;9;10;10;6;9;10;10;6;9;10;10;6;9;10;10;6;9;10;10 |
+| I'mmortal                                                  | Skinny Puppy                     |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Links 2 3 4                                                | Rammstein                        |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Mutter                                                     | Rammstein                        |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Spieluhr                                                   | Rammstein                        |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| dOwnsizer                                                  | Skinny Puppy                     |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Something Else                                             | Seether                          |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| I'll Survive                                               | Seether                          |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Believe It Or Not                                          | Nickelback                       |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Throw Yourself Away                                        | Nickelback                       |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Polyamorous                                                | Breaking Benjamin                |       6;7;8 |        7.0 |                                     6;7;8;6;7;8;6;7;8;6;7;8;6;7;8;6;7;8 |
+| Skin                                                       | Breaking Benjamin                |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| The Ballad Of Naked Man                                    | Butthole Surfers                 |         6;8 |        7.0 |                                                 6;8;6;8;6;8;6;8;6;8;6;8 |
+| I Saw An X-Ray Of A Girl Passing Gas                       | Butthole Surfers                 |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| John E. Smoke                                              | Butthole Surfers                 |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Julio Iglesias                                             | Butthole Surfers                 |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Backass                                                    | Butthole Surfers                 |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Strange News From Another Star                             | Blur                             |     6;7;8;8 |        7.2 |                         6;7;8;8;6;7;8;8;6;7;8;8;6;7;8;8;6;7;8;8;6;7;8;8 |
+| Look Inside America                                        | Blur                             |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Essex Dogs                                                 | Blur                             |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Tired Of You                                               | Foo Fighters                     |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Wordsworth Way                                             | Fozzy                            |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Elevator                                                   | Fozzy                            |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Running With The Bulls                                     | Fozzy                            |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Queer                                                      | Garbage                          |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Scumbag                                                    | Green Day                        |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Rotting                                                    | Green Day                        |       6;7;7 |        6.7 |                                     6;7;7;6;7;7;6;7;7;6;7;7;6;7;7;6;7;7 |
+| Better                                                     | Helmet                           |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Shock                                                      | KMFDM                            |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Binge Boil & Blow                                          | KMFDM                            |       6;6;7 |        6.3 |                                     6;6;7;6;6;7;6;6;7;6;6;7;6;6;7;6;6;7 |
+| Stuck                                                      | Limp Bizkit                      |       6;6;7 |        6.3 |                                     6;6;7;6;6;7;6;6;7;6;6;7;6;6;7;6;6;7 |
+| Stalemate                                                  | Limp Bizkit                      |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Indigo Flow                                                | Limp Bizkit                      |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Leech                                                      | Limp Bizkit                      |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| The Speed Of Pain                                          | Mar1lyn Man5on                   |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Miracle                                                    | Nonpoint                         |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Crazy                                                      | Nonpoint                         |       6;7;7 |        6.7 |                                     6;7;7;6;7;7;6;7;7;6;7;7;6;7;7;6;7;7 |
+| Corrosion                                                  | Ministry                         |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Grace                                                      | Ministry                         |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Hive                                                       | 311                              |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Ogopogo                                                    | Slick Idiot                      |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Wonderful World                                            | Slick Idiot                      |         6;7 |        6.5 |                                                 6;7;6;7;6;7;6;7;6;7;6;7 |
+| Imago                                                      | Slick Idiot                      |           6 |        6.0 |                                                             6;6;6;6;6;6 |
+| Creep                                                      | Stone Temple Pilots              |         7;7 |        7.0 |                                                 7;7;7;7;7;7;7;7;7;7;7;7 |
+| Time Machine                                               | Circular                         |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Space And Time                                             | 009 Sound System                 |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Smash N Grab                                               | AC/DC                            |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| You're No Good                                             | KMFDM                            |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Ticks & Leeches                                            | Tool                             |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| I Need A Lover                                             | John Mellencamp                  |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Hurts So Good                                              | John Mellencamp                  |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Crumblin' Down                                             | John Mellencamp                  |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Dirty Little Secret                                        | The All-American Rejects         |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Free Bird (Live)                                           | Lynyrd Skynyrd                   |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Machinehead                                                | Bush                             |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Make It Wit Chu                                            | Queens Of The Stone Age          |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| American Idiot                                             | Green Day                        |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Brown Sugar                                                | Rolling Stones                   |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Smoke Two Joints                                           | Sublime                          |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| I Am Machine                                               | Three Days Grace                 |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Learn To Fly                                               | Foo Fighters                     |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| In The End                                                 | Linkin Park                      |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Back To Light                                              | Asura                            |   7;7;8;8;8 |        7.6 |             7;7;8;8;8;7;7;8;8;8;7;7;8;8;8;7;7;8;8;8;7;7;8;8;8;7;7;8;8;8 |
+| The Frail                                                  | Nine Inch Nails                  |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| The Day Is My Enemy                                        | Prodigy                          |         7;9 |        8.0 |                                                 7;9;7;9;7;9;7;9;7;9;7;9 |
+| Sacrum                                                     | Artefakt                         |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Drachme Tolosate                                           | Amandra                          |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| So High                                                    | Essential Trip                   |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| No Memory                                                  | Stone Temple Pilots              |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Piece Of Pie                                               | Stone Temple Pilots              |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| A Warm Place                                               | Nine Inch Nails                  |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Light Up The Sky                                           | Thousand Foot Krutch             |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Breaking The Habit                                         | Linkin Park                      |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Numb                                                       | Linkin Park                      |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Galaxies Part One (Album Edit)                             | Asura                            |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| The Prophecy                                               | Asura                            |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Five Lines                                                 | Asura                            |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Life Is Sweet                                              | The Chemical Brothers            |       7;8;8 |        7.7 |                                     7;8;8;7;8;8;7;8;8;7;8;8;7;8;8;7;8;8 |
+| Elektrobank                                                | The Chemical Brothers            |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Piku                                                       | The Chemical Brothers            |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| It Doesn't Matter                                          | The Chemical Brothers            |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Born Too Slow                                              | The Crystal Method               |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| True Grit                                                  | The Crystal Method               |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Broken Glass                                               | The Crystal Method               |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Loving Can Be An Art (Saturation Mix)                      | KMFDM                            |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| More And Faster 243                                        | KMFDM                            |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Rip The System (Duck And Cover Mix)                        | KMFDM                            |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Ganja Rock                                                 | KMFDM                            |       7;7;8 |        7.3 |                                     7;7;8;7;7;8;7;7;8;7;7;8;7;7;8;7;7;8 |
+| Power                                                      | KMFDM                            |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Craze                                                      | KMFDM                            |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Intro: Park Theme                                          | Buckethead                       |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Wish I May                                                 | Breaking Benjamin                |  7;8;8;9;10 |        8.4 |       7;8;8;9;10;7;8;8;9;10;7;8;8;9;10;7;8;8;9;10;7;8;8;9;10;7;8;8;9;10 |
+| Medicate                                                   | Breaking Benjamin                |     7;8;9;9 |        8.2 |                         7;8;9;9;7;8;9;9;7;8;9;9;7;8;9;9;7;8;9;9;7;8;9;9 |
+| Shpongle Falls                                             | Shpongle                         |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Monster Hit                                                | Shpongle                         |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Turned Out                                                 | Helmet                           |       7;8;8 |        7.7 |                                     7;8;8;7;8;8;7;8;8;7;8;8;7;8;8;7;8;8 |
+| Under Neon Lights                                          | The Chemical Brothers            |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Born In The Echoes                                         | The Chemical Brothers            |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Exploding/Reloading                                        | Scars On Broadway                |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| World Long Gone                                            | Scars On Broadway                |       7;8;8 |        7.7 |                                     7;8;8;7;8;8;7;8;8;7;8;8;7;8;8;7;8;8 |
+| Kill Each Other/Live Forever                               | Scars On Broadway                |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Deep Kick                                                  | Red Hot Chili Peppers            |       7;7;8 |        7.3 |                                     7;7;8;7;7;8;7;7;8;7;7;8;7;7;8;7;7;8 |
+| 30/30-150                                                  | Stone Sour                       |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Made Of Scars                                              | Stone Sour                       |       7;8;8 |        7.7 |                                     7;8;8;7;8;8;7;8;8;7;8;8;7;8;8;7;8;8 |
+| Through Glass                                              | Stone Sour                       |       7;8;9 |        8.0 |                                     7;8;9;7;8;9;7;8;9;7;8;9;7;8;9;7;8;9 |
+| Первый                                                     | SARS                             |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Третий                                                     | SARS                             |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Mein Herz Brennt                                           | Rammstein                        |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Feuer Frei!                                                | Rammstein                        |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| ACF                                                        | Stabbing Westward                |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Nasty                                                      | Prodigy                          |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Ibiza                                                      | Prodigy                          |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Flat On The Floor                                          | Nickelback                       |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Next To Nothing                                            | Breaking Benjamin                |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Feels So Good                                              | 311                              |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Do You Right                                               | 311                              |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Goofy's Concern                                            | Butthole Surfers                 |       7;7;8 |        7.3 |                                     7;7;8;7;7;8;7;7;8;7;7;8;7;7;8;7;7;8 |
+| Strawberry                                                 | Butthole Surfers                 |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Ricky                                                      | Butthole Surfers                 |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Beetlebum                                                  | Blur                             |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Country Sad Ballad Man                                     | Blur                             |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| You're So Great                                            | Blur                             |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Chinese Bombs                                              | Blur                             |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Movin' On                                                  | Blur                             |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Wolves At The Door                                         | Bad Seed Rising                  |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Low                                                        | Foo Fighters                     |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Lonely As You                                              | Foo Fighters                     |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Painless                                                   | Fozzy                            |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Right Round                                                | Flo Rida                         |         7;9 |        8.0 |                                                 7;9;7;9;7;9;7;9;7;9;7;9 |
+| Only Happy When It Rains                                   | Garbage                          |       7;8;9 |        8.0 |                                     7;8;9;7;8;9;7;8;9;7;8;9;7;8;9;7;8;9 |
+| Fix Me Now                                                 | Garbage                          |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| The Weird Revolution                                       | Butthole Surfers                 |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| You Lied                                                   | Green Day                        |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Tired Of Waiting For You                                   | Green Day                        |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| You Borrowed                                               | Helmet                           |       7;8;8 |        7.7 |                                     7;8;8;7;8;8;7;8;8;7;8;8;7;8;8;7;8;8 |
+| Total State Machine                                        | KMFDM                            |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Burning Brain                                              | KMFDM                            |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Oh My Goth                                                 | KMFDM                            |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Prologue: Clear Eyed Visions                               | Contemplare Secundum Intentionem |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| WDYWB                                                      | KMFDM                            |       7;8;8 |        7.7 |                                     7;8;8;7;8;8;7;8;8;7;8;8;7;8;8;7;8;8 |
+| Automaton                                                  | KMFDM                            |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Nobody Loves Me                                            | Limp Bizkit                      |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Stinkfinger                                                | Limp Bizkit                      |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Great Big White World                                      | Mar1lyn Man5on                   |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| The Dope Show                                              | Mar1lyn Man5on                   |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Disassociative                                             | Mar1lyn Man5on                   |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Lovey Dovey                                                | Local H                          |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| I Saw What You Did And I Know Who You Are                  | Local H                          |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Ísland                                                     | Mastodon                         |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Hearts Alive                                               | Mastodon                         |     7;8;8;8 |        7.8 |                         7;8;8;8;7;8;8;8;7;8;8;8;7;8;8;8;7;8;8;8;7;8;8;8 |
+| Shadow                                                     | Nonpoint                         |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Son Of A Gun (Overhauled Mix Edit)                         | KMFDM                            |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Get To The Gone                                            | Static-X                         |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Permanence                                                 | Static-X                         |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Black And White                                            | Static-X                         |       7;8;8 |        7.7 |                                     7;8;8;7;8;8;7;8;8;7;8;8;7;8;8;7;8;8 |
+| Lunatic                                                    | Static-X                         |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| Gave Up                                                    | Nine Inch Nails                  |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| TV II                                                      | Ministry                         |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Jackolantern's Weather                                     | 311                              |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Loco                                                       | 311                              |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Deity                                                      | Ministry                         |         7;9 |        8.0 |                                                 7;9;7;9;7;9;7;9;7;9;7;9 |
+| Ain't Talking' 'Bout Love                                  | Slick Idiot                      |         7;8 |        7.5 |                                                 7;8;7;8;7;8;7;8;7;8;7;8 |
+| NY Boogie                                                  | Slick Idiot                      |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Idiot                                                      | Slick Idiot                      |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Get Down - Give In [Sex Song]                              | Slick Idiot                      |           7 |        7.0 |                                                             7;7;7;7;7;7 |
+| Crackerman                                                 | Stone Temple Pilots              |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Galaxy                                                     | 311                              |       8;8;9 |        8.3 |                                           8;8;9;8;8;9;8;8;9;8;8;9;8;8;9 |
+| It's A Long Way To The Top (If You Wanna Rock 'n' Roll)    | AC/DC                            |         8;8 |        8.0 |                                                     8;8;8;8;8;8;8;8;8;8 |
+| Beautiful Psychedelic Chillout Mix                         | Trance Tribal                    |         8;8 |        8.0 |                                                     8;8;8;8;8;8;8;8;8;8 |
+| Dreamscape                                                 | 009 Sound System                 |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Shine Down                                                 | 009 Sound System                 |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Number Two                                                 | 009 Sound System                 |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Suck It Up                                                 | (hed) Planet Earth               |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Bartender                                                  | (hed) Planet Earth               |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Shoot To Thrill                                            | AC/DC                            |         8;8 |        8.0 |                                                     8;8;8;8;8;8;8;8;8;8 |
+| Given The Dog A Bone                                       | AC/DC                            |         8;8 |        8.0 |                                                     8;8;8;8;8;8;8;8;8;8 |
+| Shake A Leg                                                | AC/DC                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Cover You In Oil                                           | AC/DC                            |         8;8 |        8.0 |                                                     8;8;8;8;8;8;8;8;8;8 |
+| Burnin' Alive                                              | AC/DC                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Cherokee Boogie                                            | BR549                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Passenger  (ft. Maynard Keenan)                            | Deftones                         |           8 |        8.0 |                                                               8;8;8;8;8 |
+| The Last One Alive                                         | Demon Hunter                     |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Stupify                                                    | Disturbed                        |           8 |        8.0 |                                                               8;8;8;8;8 |
+| One Thing                                                  | Finger Eleven                    |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Professional Killer                                        | KMFDM                            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Edge Of A Revolution                                       | Nickelback                       |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Alter Mann                                                 | Rammstein                        |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Wings For Marie (Pt 1)                                     | Tool                             |      8;9;10 |        9.0 |                                      8;9;10;8;9;10;8;9;10;8;9;10;8;9;10 |
+| 10,000 Days (Wings Pt 2)                                   | Tool                             |      8;9;10 |        9.0 |                                      8;9;10;8;9;10;8;9;10;8;9;10;8;9;10 |
+| Rosetta Stoned                                             | Tool                             |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Eon Blue Apocalypse                                        | Tool                             |        8;10 |        9.0 |                                                8;10;8;10;8;10;8;10;8;10 |
+| Land Of Confusion                                          | Disturbed                        |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Freedom Of Choice                                          | A Perfect Circle                 |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Fiddle And The Drum                                        | A Perfect Circle                 |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Check                                                      | Young Thug                       |           8 |        8.0 |                                                               8;8;8;8;8 |
+| The Outsider                                               | A Perfect Circle                 |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Here I Am                                                  | The Explosion                    |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Move Along                                                 | The All-American Rejects         |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Free Ride                                                  | Edgar Winter                     |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Simple Man                                                 | Lynyrd Skynyrd                   |           8 |        8.0 |                                                               8;8;8;8;8 |
+| White Knuckle Ride                                         | Lynyrd Skynyrd                   |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Comedown                                                   | Bush                             |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Lonely Is The Night                                        | Billy Squier                     |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Only Happy When It Rains                                   | Garbage                          |           8 |        8.0 |                                                               8;8;8;8;8 |
+| American Woman                                             | The Guess Who                    |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Uprising                                                   | Muse                             |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Resistance                                                 | Muse                             |           8 |        8.0 |                                                               8;8;8;8;8 |
+| The Mountain                                               | Three Days Grace                 |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Right Left Wrong                                           | Three Days Grace                 |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Getting Away With Murder                                   | Papa Roach                       |           8 |        8.0 |                                                               8;8;8;8;8 |
+| China Grove                                                | The Doobie Brothers              |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Without You                                                | The Doobie Brothers              |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Doesn't Remind Me                                          | Audioslave                       |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Thread                                                     | Flyleaf                          |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Whore                                                      | In This Moment                   |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Disobedience                                               | KMFDM                            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Cure For The Itch                                          | Linkin Park                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Figure.09                                                  | Linkin Park                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Nobody's Listening                                         | Linkin Park                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| How You Remind Me                                          | Nickelback                       |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Too Bad                                                    | Nickelback                       |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Where Do I Hide                                            | Nickelback                       |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Pinion                                                     | Nine Inch Nails                  |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Somewhat Damaged                                           | Nine Inch Nails                  |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Into The Void                                              | Nine Inch Nails                  |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Complication                                               | Nine Inch Nails                  |           8 |        8.0 |                                                               8;8;8;8;8 |
+| The Big Come Down                                          | Nine Inch Nails                  |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Discipline                                                 | Nine Inch Nails                  |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Miscellanea                                                | 10 Years                         |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Die Trying                                                 | Art Of Dying                     |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Risk It All                                                | Escape The Fate                  |           8 |        8.0 |                                                               8;8;8;8;8 |
+| One For The Money                                          | Escape The Fate                  |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Die & Rise                                                 | Lacuna Coil                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Mirror People                                              | Love And Rockets                 |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Lose My Life                                               | Papercut Massacre                |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Come Original                                              | 311                              |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Cuts You Up                                                | Static X                         |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Reptile                                                    | Static X                         |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Team Hate                                                  | Static X                         |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Eidetic                                                    | ASC                              |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Terra Nova                                                 | Essential Trip                   |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Courtesy Call                                              | Thousand Foot Krutch             |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Trip Like I Do                                             | The Crystal Method               |           8 |        8.0 |                                                               8;8;8;8;8 |
+| High Roller                                                | The Crystal Method               |           8 |        8.0 |                                                               8;8;8;8;8 |
+| One Of Us Is The Killer                                    | The Dillinger Escape Plan        |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Take Out The Gunman                                        | Chevelle                         |           8 |        8.0 |                                                               8;8;8;8;8 |
+| I Am One                                                   | Smashing Pumpkins                |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Control                                                    | Puddle Of Mudd                   |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Out Of My Head                                             | Puddle Of Mudd                   |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Nobody Told Me                                             | Puddle Of Mudd                   |           8 |        8.0 |                                                               8;8;8;8;8 |
+| P*** It All Away                                           | Puddle Of Mudd                   |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Fly Away                                                   | Lenny Kravitz                    |           8 |        8.0 |                                                               8;8;8;8;8 |
+| My Generation                                              | Limp Bizkit                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Crawling                                                   | Linkin Park                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Runaway                                                    | Linkin Park                      |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Hands Held High                                            | Linkin Park                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Down In A Hole                                             | Alice In Chains                  |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Them Bones                                                 | Alice In Chains                  |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Celestial Tendencies                                       | Asura                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Life²                                                      | Asura                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Butterfly FX                                               | Asura                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| La Chanson De Carla                                        | Asura                            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Leave Home                                                 | The Chemical Brothers            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| In Dust We Trust                                           | The Chemical Brothers            |      8;9;10 |        9.0 |                                      8;9;10;8;9;10;8;9;10;8;9;10;8;9;10 |
+| Three Little Birdies Down Beats                            | The Chemical Brothers            |       8;9;9 |        8.7 |                                           8;9;9;8;9;9;8;9;9;8;9;9;8;9;9 |
+| Chemical Beats                                             | The Chemical Brothers            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| One Too Many Mornings                                      | The Chemical Brothers            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Setting Sun                                                | The Chemical Brothers            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Lost In The K-Hole                                         | The Chemical Brothers            |         8;8 |        8.0 |                                                     8;8;8;8;8;8;8;8;8;8 |
+| The American Way                                           | The Crystal Method               |           8 |        8.0 |                                                               8;8;8;8;8 |
+| I Know It's You                                            | The Crystal Method               |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Realizer                                                   | The Crystal Method               |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Weapons Of Mass Distortion                                 | The Crystal Method               |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Rules                                                      | KMFDM                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Inane                                                      | KMFDM                            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Blame                                                      | KMFDM                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Ikons                                                      | KMFDM                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Jeremy                                                     | Pearl Jam                        |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Plug In Baby                                               | Muse                             |       8;9;9 |        8.7 |                                           8;9;9;8;9;9;8;9;9;8;9;9;8;9;9 |
+| Dig                                                        | Mudvayne                         |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Give It                                                    | Helmet                           |         8;8 |        8.0 |                                                     8;8;8;8;8;8;8;8;8;8 |
+| Unsung                                                     | Helmet                           |         8;8 |        8.0 |                                                     8;8;8;8;8;8;8;8;8;8 |
+| Transistor Intro                                           | 311                              |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Transistor                                                 | 311                              |       8;9;9 |        8.7 |                                           8;9;9;8;9;9;8;9;9;8;9;9;8;9;9 |
+| Go                                                         | The Chemical Brothers            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| EML Ritual                                                 | The Chemical Brothers            |  8;8;9;9;10 |        8.8 |                  8;8;9;9;10;8;8;9;9;10;8;8;9;9;10;8;8;9;9;10;8;8;9;9;10 |
+| Just Bang                                                  | The Chemical Brothers            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Taste Of Honey                                             | The Chemical Brothers            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Stoner Hate                                                | Scars On Broadway                |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Chemicals                                                  | Scars On Broadway                |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Enemy                                                      | Scars On Broadway                |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Sea Groove                                                 | Nickelback                       |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Falls Back On                                              | Nickelback                       |           8 |        8.0 |                                                               8;8;8;8;8 |
+| You Know What You Are?                                     | Nine Inch Nails                  |        8;10 |        9.0 |                                                8;10;8;10;8;10;8;10;8;10 |
+| My Friends                                                 | Red Hot Chili Peppers            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Hell & Consequences                                        | Stone Sour                       |           8 |        8.0 |                                                               8;8;8;8;8 |
+| sillyworld                                                 | Stone Sour                       |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Второй                                                     | SARS                             |           8 |        8.0 |                                                               8;8;8;8;8 |
+| EmpTe                                                      | Skinny Puppy                     |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Zwitter                                                    | Rammstein                        |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Adios                                                      | Rammstein                        |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Ghostman                                                   | Skinny Puppy                     |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Past Present                                               | Skinny Puppy                     |        8;10 |        9.0 |                                                8;10;8;10;8;10;8;10;8;10 |
+| Control                                                    | Stabbing Westward                |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Lies                                                       | Stabbing Westward                |      8;9;10 |        9.0 |                                      8;9;10;8;9;10;8;9;10;8;9;10;8;9;10 |
+| Rebel Radio                                                | Prodigy                          |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Destroy                                                    | Prodigy                          |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Wild Frontier                                              | Prodigy                          |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Rok-Weiler                                                 | Prodigy                          |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Stoke The Fire                                             | Seether                          |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Let You Down                                               | Seether                          |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Figured You Out                                            | Nickelback                       |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Natural Life                                               | Breaking Benjamin                |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Home                                                       | Breaking Benjamin                |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Ungod                                                      | Stabbing Westward                |           8 |        8.0 |                                                               8;8;8;8;8 |
+| !@#$ The &*?=!                                             | 311                              |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Unity                                                      | 311                              |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Tongue                                                     | Butthole Surfers                 |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Some Dispute Over T-Shirt Sales                            | Butthole Surfers                 |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Dust Devil                                                 | Butthole Surfers                 |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Leave Me Alone                                             | Butthole Surfers                 |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Edgar                                                      | Butthole Surfers                 |       8;8;9 |        8.3 |                                           8;8;9;8;8;9;8;8;9;8;8;9;8;8;9 |
+| M.O.R.                                                     | Blur                             |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Death Of A Party                                           | Blur                             |           8 |        8.0 |                                                               8;8;8;8;8 |
+| I'm Just A Killer For Your Love                            | Blur                             |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Timebomb                                                   | Bad Seed Rising                  |           8 |        8.0 |                                                               8;8;8;8;8 |
+| King Kong                                                  | Bad Seed Rising                  |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Have It All                                                | Foo Fighters                     |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Disenchanted Lullaby                                       | Foo Fighters                     |        8;10 |        9.0 |                                                8;10;8;10;8;10;8;10;8;10 |
+| Halo                                                       | Foo Fighters                     |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Come Back                                                  | Foo Fighters                     |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Drinkin With Jesus                                         | Fozzy                            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Weight Of My World                                         | Fozzy                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Burn Me Out                                                | Fozzy                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Three Days In Jail                                         | Fozzy                            |      8;9;10 |        9.0 |                                      8;9;10;8;9;10;8;9;10;8;9;10;8;9;10 |
+| Not My Idea                                                | Garbage                          |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| A Stroke Of Luck                                           | Garbage                          |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Stupid Girl                                                | Garbage                          |       8;9;9 |        8.7 |                                           8;9;9;8;9;9;8;9;9;8;9;9;8;9;9 |
+| Music: Response                                            | The Chemical Brothers            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Under The Influence                                        | The Chemical Brothers            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Out Of Control                                             | The Chemical Brothers            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| The Shame Of Life                                          | Butthole Surfers                 |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Hell Yeah                                                  | KMFDM                            | 8;9;9;10;10 |        9.2 |             8;9;9;10;10;8;9;9;10;10;8;9;9;10;10;8;9;9;10;10;8;9;9;10;10 |
+| Rip The System V. 2.0                                      | KMFDM                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Fake News                                                  | KMFDM                            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Only Lovers                                                | KMFDM                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Glam, Glitz, Guts & Gore                                   | KMFDM                            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| K-M-F                                                      | KMFDM                            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| No Regret                                                  | KMFDM                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Shake The Cage                                             | KMFDM                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Respekt                                                    | KMFDM                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Our Time Will Come                                         | KMFDM                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Get The Tongue Wet                                         | KMFDM                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Brainwashed                                                | KMFDM                            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Playing God                                                | KMFDM                            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Piggy                                                      | KMFDM                            |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Disturb The Peace                                          | KMFDM                            |       8;9;9 |        8.7 |                                           8;9;9;8;9;9;8;9;9;8;9;9;8;9;9 |
+| No God                                                     | KMFDM                            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Mechanical Animals                                         | Mar1lyn Man5on                   |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Rock Is Dead                                               | Mar1lyn Man5on                   |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Posthuman                                                  | Mar1lyn Man5on                   |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Nothing Special                                            | Local H                          |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Blood And Thunder                                          | Mastodon                         |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| I Am Ahab                                                  | Mastodon                         |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Seabeast                                                   | Mastodon                         |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Aqua Dementia                                              | Mastodon                         |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Sweat Of The Bud                                           | Static-X                         |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Wisconsin Death Trip                                       | Static-X                         |           8 |        8.0 |                                                               8;8;8;8;8 |
+| December                                                   | Static-X                         |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Tohuvabohu (Edit)                                          | KMFDM                            |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Structural Defect                                          | Static-X                         |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Burn To Burn                                               | Static-X                         |       8;8;9 |        8.3 |                                           8;8;9;8;8;9;8;8;9;8;8;9;8;8;9 |
+| A Dios Alma Perdida                                        | Static-X                         |         8;8 |        8.0 |                                                     8;8;8;8;8;8;8;8;8;8 |
+| The Mark Has Been Made                                     | Nine Inch Nails                  |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Wish                                                       | Nine Inch Nails                  |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Jesus Built My Hotrod                                      | Ministry                         |           8 |        8.0 |                                                               8;8;8;8;8 |
+| The Line Begins To Blur                                    | Nine Inch Nails                  |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Hero                                                       | Ministry                         |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Random                                                     | 311                              |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Guns (Are For Pussies)                                     | 311                              |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Purpose                                                    | 311                              |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Destruction                                                | Ministry                         |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Hizbollah                                                  | Ministry                         |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Flashback                                                  | Ministry                         |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Abortive                                                   | Ministry                         |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Pulse                                                      | Slick Idiot                      |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Get Laid                                                   | Slick Idiot                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Halb Und Halb                                              | Slick Idiot                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Hallelujah                                                 | Slick Idiot                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Immer Wieder                                               | Slick Idiot                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| It Won´t Do                                                | Slick Idiot                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Lazy                                                       | Slick Idiot                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Forgive Me                                                 | Slick Idiot                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| I Feel Fine                                                | Slick Idiot                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Xcess (Remixed By Schneider Of  Rammstein)                 | Slick Idiot                      |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| I.I.W.I.I.                                                 | Slick Idiot                      |         8;9 |        8.5 |                                                     8;9;8;9;8;9;8;9;8;9 |
+| Daydreams                                                  | Slick Idiot                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Everyone's A Winner                                        | Slick Idiot                      |           8 |        8.0 |                                                               8;8;8;8;8 |
+| Prisoner                                                   | 311                              |    9;9;9;10 |        9.2 |                            9;9;9;10;9;9;9;10;9;9;9;10;9;9;9;10;9;9;9;10 |
+| Have A Drink On Me                                         | AC/DC                            |  9;10;10;10 |        9.8 |                  9;10;10;10;9;10;10;10;9;10;10;10;9;10;10;10;9;10;10;10 |
+| You Shook Me All Night Long                                | AC/DC                            |   9;9;10;10 |        9.5 |                       9;9;10;10;9;9;10;10;9;9;10;10;9;9;10;10;9;9;10;10 |
+| Blackout                                                   | (hed) Planet Earth               |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Back In Black                                              | AC/DC                            |         9;9 |        9.0 |                                                     9;9;9;9;9;9;9;9;9;9 |
+| Rock N Roll Train                                          | AC/DC                            |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Vol 16 - Deep House, Tech House, Underground (BPM 120-126) | Deep, Tech and Underground       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Down With The Sickness                                     | Disturbed                        |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Conflict                                                   | Disturbed                        |           9 |        9.0 |                                                               9;9;9;9;9 |
+| No News                                                    | KMFDM                            |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Sweet Home Alabama                                         | Lynyrd Skynyrd                   |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Born To Be Wild                                            | Steppenwolf                      |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Supernova - Progressive Psytrance Mix 2014                 | Tobias Bassline                  |           9 |        9.0 |                                                               9;9;9;9;9 |
+| The Pot                                                    | Tool                             |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Lost Keys (Blame Hofmann)                                  | Tool                             |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Psychedelic Chillout Music for Your Mind                   | Upbeat Monk                      |           9 |        9.0 |                                                               9;9;9;9;9 |
+| All Mixed Up                                               | 311                              |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Halftime                                                   | Young Thug                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Room To Breathe                                            | You Me At Six                    |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Still Counting                                             | Volbeat                          |           9 |        9.0 |                                                               9;9;9;9;9 |
+| She Builds Quick Machines                                  | Velvet Revolver                  |           9 |        9.0 |                                                               9;9;9;9;9 |
+| The Perfect Drug                                           | Nine Inch Nails                  |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Down                                                       | 311                              |      9;9;10 |        9.3 |                                      9;9;10;9;9;10;9;9;10;9;9;10;9;9;10 |
+| Pusher                                                     | Nickelback                       |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Where?                                                     | Nickelback                       |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Too Many Puppies                                           | Primus                           |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Shake Hands With Beef                                      | Primus                           |           9 |        9.0 |                                                               9;9;9;9;9 |
+| 2 Minutes To Midnight                                      | Iron Maiden                      |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Night Drive                                                | The All-American Rejects         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Glycerine                                                  | Bush                             |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Ich Will                                                   | Rammstein                        |         9;9 |        9.0 |                                                     9;9;9;9;9;9;9;9;9;9 |
+| Benzin                                                     | Rammstein                        |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Du Hast                                                    | Rammstein                        |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Start Me Up                                                | The Rolling Stones               |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Say You'll Haunt Me                                        | Stone Sour                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Agoraphobia                                                | Incubus                          |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Lose It                                                    | Atreyu                           |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Lose Yourself (Album Version) (Explicit)                   | Eminem                           |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Lose Yourself (Instrumental)                               | Eminem                           |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Soothsayer (Dedicated To Aunt Suzie)                       | Buckethead                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Crazy                                                      | From Ashes To New                |           9 |        9.0 |                                                               9;9;9;9;9 |
+| My Struggle                                                | Lil Boosie                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Lydia                                                      | Highly Suspect                   |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Never Gonna Stop (The Red Red Kroovy)                      | Rob Zombie                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Show Me How To Live                                        | Audioslave                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Bring Em Back Alive                                        | Audioslave                       |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Your Time Has Come                                         | Audioslave                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Man Or Animal                                              | Audioslave                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Low                                                        | Cracker                          |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Judas                                                      | Fozzy                            |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Ave Maria                                                  | KMFDM                            |           9 |        9.0 |                                                               9;9;9;9;9 |
+| One Step Closer                                            | Linkin Park                      |           9 |        9.0 |                                                               9;9;9;9;9 |
+| By Myself                                                  | Linkin Park                      |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Don't Stay                                                 | Linkin Park                      |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Somewhere I Belong                                         | Linkin Park                      |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Lying From You                                             | Linkin Park                      |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Easier To Run                                              | Linkin Park                      |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Leader Of Men                                              | Nickelback                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Money Bought                                               | Nickelback                       |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Something In Your Mouth                                    | Nickelback                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Burn It To The Ground                                      | Nickelback                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Shakin' Hands                                              | Nickelback                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Get 'Em Up                                                 | Nickelback                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Last                                                       | Nine Inch Nails                  |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Help Me I Am In Hell                                       | Nine Inch Nails                  |         9;9 |        9.0 |                                                     9;9;9;9;9;9;9;9;9;9 |
+| Gave Up                                                    | Nine Inch Nails                  |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Physical                                                   | Nine Inch Nails                  |         9;9 |        9.0 |                                                     9;9;9;9;9;9;9;9;9;9 |
+| The Wretched                                               | Nine Inch Nails                  |           9 |        9.0 |                                                               9;9;9;9;9 |
+| We're In This Together                                     | Nine Inch Nails                  |           9 |        9.0 |                                                               9;9;9;9;9 |
+| The Fragile                                                | Nine Inch Nails                  |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Even Deeper                                                | Nine Inch Nails                  |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Starfuckers, Inc.                                          | Nine Inch Nails                  |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Underneath It All                                          | Nine Inch Nails                  |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Pets                                                       | Porno For Pyros                  |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Novacaine                                                  | 10 Years                         |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Giving In                                                  | Adema                            |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Picture Perfect                                            | Escape The Fate                  |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Goat                                                       | Static X                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Dead & Bloated                                             | Stone Temple Pilots              |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Plush                                                      | Stone Temple Pilots              |     9;10;10 |        9.7 |                                 9;10;10;9;10;10;9;10;10;9;10;10;9;10;10 |
+| Where The River Goes                                       | Stone Temple Pilots              |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Eraser                                                     | Nine Inch Nails                  |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Big Man With A Gun                                         | Nine Inch Nails                  |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Reptile                                                    | Nine Inch Nails                  |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| The Downward Spiral                                        | Nine Inch Nails                  |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Let The Sparks Fly                                         | Thousand Foot Krutch             |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Rammstein                                                  | Rammstein                        |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Wollt Ihr Das Bett In Flammen Sehen                        | Rammstein                        |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Crush                                                      | Smashing Pumpkins                |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Siva                                                       | Smashing Pumpkins                |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Bury Me                                                    | Smashing Pumpkins                |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Blurry                                                     | Puddle Of Mudd                   |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Basement                                                   | Puddle Of Mudd                   |           9 |        9.0 |                                                               9;9;9;9;9 |
+| 3 Peat                                                     | Lil Wayne                        |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Soldiers                                                   | Otherwise                        |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Aeroplane                                                  | Red Hot Chili Peppers            |         9;9 |        9.0 |                                                     9;9;9;9;9;9;9;9;9;9 |
+| Fortune Faded                                              | Red Hot Chili Peppers            |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Voodoo Too                                                 | Godsmack                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Over Now                                                   | Alice In Chains                  |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Revolution                                                 | Dope                             |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Smooth Criminal                                            | Alien Ant Farm                   |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Rooster                                                    | Alice In Chains                  |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Song To The Siren                                          | The Chemical Brothers            |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Chico's Groove                                             | The Chemical Brothers            |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Alive Alone                                                | The Chemical Brothers            |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Block Rockin' Beats                                        | The Chemical Brothers            |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Dig Your Own Hole                                          | The Chemical Brothers            |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Welcome Home                                               | Coheed And Cambria               |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Sometimes I Feel So Deserted                               | The Chemical Brothers            |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Reflexion                                                  | The Chemical Brothers            |     9;10;10 |        9.7 |                                 9;10;10;9;10;10;9;10;10;9;10;10;9;10;10 |
+| Vicarious                                                  | Tool                             |     9;10;10 |        9.7 |                                 9;10;10;9;10;10;9;10;10;9;10;10;9;10;10 |
+| Overlord                                                   | Lamb Of God                      |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Another Heart                                              | Tremonti                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Lit Up                                                     | Buckcherry                       |     9;10;10 |        9.7 |                                 9;10;10;9;10;10;9;10;10;9;10;10;9;10;10 |
+| Pepper                                                     | Butthole Surfers                 |     9;10;10 |        9.7 |                                 9;10;10;9;10;10;9;10;10;9;10;10;9;10;10 |
+| Detangler                                                  | Nickelback                       |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Little Friend                                              | Nickelback                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Spitfire                                                   | Prodigy                          |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Girls                                                      | Prodigy                          |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Warped                                                     | Red Hot Chili Peppers            |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Come What(ever) May                                        | Stone Sour                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Socio                                                      | Stone Sour                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| 1st Person                                                 | Stone Sour                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Pro-test                                                   | Skinny Puppy                     |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Sonne                                                      | Rammstein                        |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Lost                                                       | Stabbing Westward                |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Nothing                                                    | Stabbing Westward                |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Betray And Degrade                                         | Seether                          |           9 |        8.9 |                                                         8;9;9;9;9;9;9;9 |
+| Feelin' Way Too Damn Good                                  | Nickelback                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Because Of You                                             | Nickelback                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Another Hole In The Head                                   | Nickelback                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| See You At The Show                                        | Nickelback                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Water                                                      | Breaking Benjamin                |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Throw                                                      | Stabbing Westward                |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Who Was In My Room Last Night?                             | Butthole Surfers                 |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| The Wooden Song                                            | Butthole Surfers                 |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Dancing Fool                                               | Butthole Surfers                 |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| You Don't Know Me                                          | Butthole Surfers                 |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Song 2                                                     | Blur                             |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Bad Seed Rising                                            | Bad Seed Rising                  |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Hells Bells                                                | AC/DC                            |     9;10;10 |        9.7 |                                 9;10;10;9;10;10;9;10;10;9;10;10;9;10;10 |
+| Crazy Bitch                                                | Buckcherry                       |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Fear Inoculum                                              | Tool                             |     9;10;10 |        9.7 |                                 9;10;10;9;10;10;9;10;10;9;10;10;9;10;10 |
+| Pneuma                                                     | Tool                             |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Descending                                                 | Tool                             |           9 |        9.0 |                                                               9;9;9;9;9 |
+| 7empest                                                    | Tool                             |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Supervixen                                                 | Garbage                          |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Vow                                                        | Garbage                          |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Freak Flag                                                 | KMFDM                            |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| ℞ 4 The Damned                                             | KMFDM                            |           9 |        9.0 |                                                               9;9;9;9;9 |
+| HELL YEAH                                                  | KMFDM                            |           9 |        9.0 |                                                               9;9;9;9;9 |
+| FREAK FLAG (Edit)                                          | KMFDM                            |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Genau                                                      | KMFDM                            |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Salvation                                                  | KMFDM                            |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Blood Vs. Money                                            | KMFDM                            |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Make Your Stand                                            | KMFDM                            |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Sour                                                       | Limp Bizkit                      |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Everything                                                 | Limp Bizkit                      |           9 |        9.0 |                                                               9;9;9;9;9 |
+| High-Fiving MF                                             | Local H                          |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Bound For The Floor                                        | Local H                          |           9 |        9.0 |                                                               9;9;9;9;9 |
+| RX Queen                                                   | Deftones                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Iron Tusk                                                  | Mastodon                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Megalodon                                                  | Mastodon                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Naked Burn                                                 | Mastodon                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Push It                                                    | Static-X                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| I'm With Stupid                                            | Static-X                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Love Dump                                                  | Static-X                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| I Am                                                       | Static-X                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Otsegolation                                               | Static-X                         |         9;9 |        9.0 |                                                     9;9;9;9;9;9;9;9;9;9 |
+| Stem                                                       | Static-X                         |         9;9 |        9.0 |                                                     9;9;9;9;9;9;9;9;9;9 |
+| Fix                                                        | Static-X                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| The Trance Is The Motion                                   | Static-X                         |  9;10;10;10 |        9.8 |                  9;10;10;10;9;10;10;10;9;10;10;10;9;10;10;10;9;10;10;10 |
+| D.I.Y. (Edit)                                              | KMFDM                            |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| This Is Not                                                | Static-X                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Otsego Undead                                              | Static-X                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| ...In A Bag                                                | Static-X                         |         9;9 |        9.0 |                                                     9;9;9;9;9;9;9;9;9;9 |
+| Machine                                                    | Static-X                         |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Z28                                                        | Static-X                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| The Way Out Is Through                                     | Nine Inch Nails                  |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Please                                                     | Nine Inch Nails                  |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Just One Fix                                               | Ministry                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| N.W.O                                                      | Ministry                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| With Teeth                                                 | Nine Inch Nails                  |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Stigmata                                                   | Ministry                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| The Missing                                                | Ministry                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Misdirected Hostility                                      | 311                              |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Golden Dawn                                                | Ministry                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| The Land Of Rape And Honey                                 | Ministry                         |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Merry-Go-Round                                             | Slick Idiot                      |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Let It Rain                                                | Slick Idiot                      |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Make Me Believe                                            | Slick Idiot                      |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Blast                                                      | Slick Idiot                      |           9 |        9.0 |                                                               9;9;9;9;9 |
+| Wish                                                       | Nine Inch Nails                  |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Happiness In Slavery                                       | Nine Inch Nails                  |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Psalm 69                                                   | Ministry                         |        9;10 |        9.5 |                                                9;10;9;10;9;10;9;10;9;10 |
+| Sex Type Thing                                             | Stone Temple Pilots              |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Wicked Garden                                              | Stone Temple Pilots              |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Sin                                                        | Stone Temple Pilots              |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Beautiful Disaster                                         | 311                              |    10;10;10 |       10.0 |                            10;10;10;10;10;10;10;10;10;10;10;10;10;10;10 |
+| Light My Way                                               | Audioslave                       |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| The Grudge                                                 | Tool                             |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| The Patient                                                | Tool                             |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Mantra                                                     | Tool                             |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Jambi                                                      | Tool                             |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Judith                                                     | A Perfect Circle                 |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| It's A Long Way To The Top (If You Wanna Rock 'N' Roll)    | AC/DC                            |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Thunderstruck                                              | AC/DC                            |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Lifter                                                     | Deftones                         |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| My Own Summer (Shove It)                                   | Deftones                         |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Swerve City                                                | Deftones                         |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Change (In The House Of Flies)                             | Deftones                         |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Sail                                                       | DevilDriver                      |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Respect                                                    | Devour The Day                   |          10 |       10.0 |                                                          10;10;10;10;10 |
+| No Meat - No Man                                           | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Don't Blow Your Top                                        | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Oh Look                                                    | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Killing (For Your Sampling Kit)                            | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Oh Shit                                                    | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Free Your Hate                                             | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Hau Ruck                                                   | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Real Thing                                                 | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Every Day's A Good Day                                     | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Ready To Blow                                              | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Auf Wiederseh'n                                            | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Spike In My Veins                                          | Korn                             |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Schism                                                     | Tool                             |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Parabol                                                    | Tool                             |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Parabola                                                   | Tool                             |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Counting Bodies Like Sheep To The Rhythm Of The War Drums  | A Perfect Circle                 |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Dream (feat. Yak Gotti)                                    | Young Thug                       |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Curb                                                       | Nickelback                       |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Spin Me Round (American Psycho Mix)                        | Dope                             |          10 |       10.0 |                                                          10;10;10;10;10 |
+| John The Fisherman                                         | Primus                           |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Hunger Strike                                              | Temple Of The Dog                |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Der Meister                                                | Rammstein                        |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Rein Raus                                                  | Rammstein                        |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Turnin' On The Screw                                       | Queens Of The Stone Age          |          10 |       10.0 |                                                          10;10;10;10;10 |
+| I'm Designer                                               | Queens Of The Stone Age          |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Take It To The Limit                                       | Hinder                           |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Leech                                                      | Incubus                          |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Pure                                                       | Helmet                           |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Thermador                                                  | Butthole Surfers                 |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Jawbreaker                                                 | Chevelle                         |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Hail The Apocalypse                                        | Avatar                           |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Face To The Floor                                          | Chevelle                         |          10 |       10.0 |                                                          10;10;10;10;10 |
+| My Way                                                     | Limp Bizkit                      |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Psycho                                                     | Muse                             |          10 |       10.0 |                                                          10;10;10;10;10 |
+| This Is A Call                                             | Foo Fighters                     |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Addicted                                                   | Saving Abel                      |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Let It Die                                                 | Foo Fighters                     |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Cry Of Achilles                                            | Alter Bridge                     |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Cochise                                                    | Audioslave                       |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Gasoline                                                   | Audioslave                       |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Exploder                                                   | Audioslave                       |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Out Of Exile                                               | Audioslave                       |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Ah Ha                                                      | Butthole Surfers                 |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Blue Day                                                   | Darker My Love                   |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Set Me On Fire                                             | Flyleaf                          |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Lights Go Out                                              | Fozzy                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Blood                                                      | In This Moment                   |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Oh Lord                                                    | In This Moment                   |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Money                                                      | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Ultra                                                      | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Juke Joint Jezebel                                         | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Megalomaniac                                               | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Unfit                                                      | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Kunst                                                      | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Pussy Riot                                                 | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| I ♥ Not                                                    | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Krank                                                      | KMFDM                            |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Rebels In Kontrol                                          | KMFDM                            |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Lynchmob                                                   | KMFDM                            |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Take It Like A Man                                         | KMFDM                            |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Vive La Mort!                                              | KMFDM                            |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Dystopia                                                   | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Papercut                                                   | Linkin Park                      |          10 |       10.0 |                                                          10;10;10;10;10 |
+| With You                                                   | Linkin Park                      |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Points Of Authority                                        | Linkin Park                      |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Hit The Floor                                              | Linkin Park                      |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Cowboy Hat                                                 | Nickelback                       |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Never Again                                                | Nickelback                       |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Woke Up This Morning                                       | Nickelback                       |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Hollywood                                                  | Nickelback                       |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Hangnail                                                   | Nickelback                       |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Superman's Dead                                            | Our Lady Peace                   |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Suck                                                       | Nine Inch Nails                  |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| The Day The World Went Away                                | Nine Inch Nails                  |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Pilgrimage                                                 | Nine Inch Nails                  |          10 |       10.0 |                                                          10;10;10;10;10 |
+| No, You Don't                                              | Nine Inch Nails                  |          10 |       10.0 |                                                          10;10;10;10;10 |
+| La Mer                                                     | Nine Inch Nails                  |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Where Is Everybody?                                        | Nine Inch Nails                  |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Demon Seed                                                 | Nine Inch Nails                  |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Bleed American                                             | Jimmy Eat World                  |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Followed The Waves                                         | Auf der Maur                     |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Chroma-matic                                               | Static X                         |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Electric Pulse                                             | Static X                         |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Tera-Fied                                                  | Static-X                         |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Pure Morning                                               | Placebo                          |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Hating Hollywood                                           | Theory Of A Deadman              |       10;10 |       10.0 |                                           10;10;10;10;10;10;10;10;10;10 |
+| Heresy                                                     | Nine Inch Nails                  |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Cherub Rock                                                | Smashing Pumpkins                |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Drift & Die                                                | Puddle Of Mudd                   |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Hummer                                                     | Smashing Pumpkins                |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Rhinoceros                                                 | Smashing Pumpkins                |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Snail                                                      | Smashing Pumpkins                |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Never Change                                               | Puddle Of Mudd                   |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Said                                                       | Puddle Of Mudd                   |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Champagne Supernova                                        | Oasis                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Given Up                                                   | Linkin Park                      |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Love-Hate-Sex-Pain                                         | Godsmack                         |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Morning Glory                                              | Oasis                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Can You Feel My Heart                                      | Bring Me The Horizon             |          10 |       10.0 |                                                          10;10;10;10;10 |
+| No Excuses                                                 | Alice In Chains                  |          10 |       10.0 |                                                          10;10;10;10;10 |
+| People Of The Sun                                          | Rage Against The Machine         |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Testify                                                    | Rage Against The Machine         |          10 |       10.0 |                                                          10;10;10;10;10 |
+| The Ghost Of Tom Joad                                      | Rage Against The Machine         |          10 |       10.0 |                                                          10;10;10;10;10 |
+| I'll See You There                                         | The Chemical Brothers            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Memphis Bells                                              | Prodigy                          |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Deep Six                                                   | Marilyn Manson                   |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Jawbreaker                                                 | Chevelle                         |          10 |       10.0 |                                                          10;10;10;10;10 |
+| The Annoying Song                                          | Butthole Surfers                 |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Hey Kid                                                    | Bad Seed Rising                  |          10 |       10.0 |                                                          10;10;10;10;10 |
+| All My Life                                                | Foo Fighters                     |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Times Like These                                           | Foo Fighters                     |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Invincible                                                 | Tool                             |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Jane Says (Live at Hammerstein Ballroom)                   | Jane's Addiction                 |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Paradise                                                   | KMFDM                            |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Bled For Days                                              | Static-X                         |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Cold                                                       | Static-X                         |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Terminal                                                   | Static-X                         |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Happiness In Slavery                                       | Nine Inch Nails                  |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Beside You In Time                                         | Nine Inch Nails                  |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Scarecrow                                                  | Ministry                         |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Mind Over Matter                                           | Slick Idiot                      |          10 |       10.0 |                                                          10;10;10;10;10 |
+| Xcess                                                      | Slick Idiot                      |          10 |        9.9 |                                                     10;9;10;10;10;10;10 |
+| Heresy (Blind)                                             | Nine Inch Nails                  |          10 |       10.0 |                                                          10;10;10;10;10 |
++------------------------------------------------------------+----------------------------------+-------------+------------+-------------------------------------------------------------------------+

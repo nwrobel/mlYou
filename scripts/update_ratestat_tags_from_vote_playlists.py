@@ -50,12 +50,20 @@ for audioFileVoteData in audioFileVoteDataList:
     try:
         mlu.tags.ratestats.updateRatestatTagsFromVoteData(audioFileVoteData)
     except:
-        logger.info("Failed to update ratestat tag values with new votes: File={}".format(audioFileVoteData.filepath))
         erroredAudioFileVoteDataList.append(audioFileVoteData)
+
+for audioFileVoteData in erroredAudioFileVoteDataList:
+    logger.info("Failed to update ratestat tag values with new votes: File={}".format(audioFileVoteData.filepath))
 
 logger.info("Ratestats tag data update completed")
 logger.info("{} audio files were processed".format(len(audioFileVoteDataList)))
 logger.info("{} audio files failed update".format(len(erroredAudioFileVoteDataList)))
+
+errorJsonFilename = 'update-ratestat-tags-from-vote-playlists-failed-data.json'
+errorJsonFilepath = mlu.common.file.JoinPaths(mlu.common.file.getMLUCacheDirectory(), errorJsonFilename)
+mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=erroredAudioFileVoteDataList, outputFilepath=errorJsonFilepath)
+logger.info("Failed to update ratestat tags for some audio files: see JSON file '{}' for the unsaved data from these files".format(errorJsonFilename))
+
 
 # Print the results of all updated songs in table form and what changes occurred
 tagUpdatesTable = PrettyTable()
@@ -83,11 +91,10 @@ for audioFileVotesData in successfulAudioFileVoteDataList:
         currentTags.votes
     ])
 
-logger.info("\nThe following changes were made to music library:\n{}".format(tagUpdatesTable.get_string()))
-
-logger.info("Failed to update ratestat tags for some audio files: see 'update-ratestat-tags-failed-data.json'")
-errorJsonFilepath = mlu.common.file.JoinPaths(mlu.common.file.getMLUCacheDirectory(), 'update-ratestat-tags-failed-data.json')
-mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=erroredAudioFileVoteDataList, outputFilepath=errorJsonFilepath)
+summaryFilename = 'update-ratestat-tags-from-vote-playlists-summary.txt'
+summaryFilepath = mlu.common.file.JoinPaths(mlu.common.file.getMLUCacheDirectory(), summaryFilename)
+mlu.common.file.writeToFile(filepath=summaryFilepath, content=tagUpdatesTable.get_string())
+logger.info("See file '{}' for a table summarizing changes to ratestat tags".format(summaryFilename))
    
 logger.info('Archiving vote playlists')
 mlu.tags.ratestats.archiveVotePlaylists(playlistsDir=args.playlistRootDir, archiveDir=args.playlistArchiveDir)
