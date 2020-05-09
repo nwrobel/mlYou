@@ -171,6 +171,12 @@ def DeleteDirectory(directoryPath):
     """
     shutil.rmtree(directoryPath)
 
+def getParentDirectory(filepath):
+    '''
+    Given a filepath, returns the parent directory of the file or folder object.
+    '''
+    filePathObject = Path(filepath)
+    return str(filePathObject.parent)
 
 def GetFilename(filePath):
     """
@@ -258,9 +264,13 @@ def compressFileToArchive(inputFilePath, archiveOutFilePath):
     if (not isinstance(inputFilePath, list)):
         inputFilePath = [inputFilePath]
 
+    archiveFileParentDir = getParentDirectory(archiveOutFilePath)
+    if (not directoryExists(archiveFileParentDir)):
+        createDirectory(archiveFileParentDir)
+
     with tarfile.open(archiveOutFilePath, 'w:gz') as archive:
         for filepath in inputFilePath:
-            archive.add(filepath)
+            archive.add(filepath, arcname=GetFilename(filepath))
 
 
 def clearFileContents(filepath):
@@ -268,10 +278,8 @@ def clearFileContents(filepath):
     Removes all the data from the target file by deleting the file and re-creating it as an empty
     file with 0 bytes of data.
     '''
-    DeleteFile(filePath)
-
-    emptyFile = open(filePath, 'wb')
-    emptyFile.save()
+    DeleteFile(filepath)
+    open(filepath, 'wb').close()
 
 
 def writeToFile(filepath, content):

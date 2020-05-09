@@ -104,7 +104,9 @@ def getAudioFileVoteDataFromRatePlaylists(playlistsDir):
 def archiveVotePlaylists(playlistsDir, archiveDir):
     '''
     '''
-    archiveFilename = "[{}] Archived vote playlists.gz".format(mlu.common.time.getCurrentFormattedTime())
+    timeForFilename = (mlu.common.time.getCurrentFormattedTime()).replace(':', '_')
+    archiveFilename = "[{}] Archived vote playlists.tar.gz".format(timeForFilename)
+
     archiveFilePath = mlu.common.file.JoinPaths(archiveDir, archiveFilename)
     playlistFilepaths = _getVotePlaylistFilepaths(playlistsDir)    
 
@@ -118,7 +120,7 @@ def resetVotePlaylists(playlistsDir):
     playlistFilepaths = _getVotePlaylistFilepaths(playlistsDir)    
 
     for votePlaylist in playlistFilepaths:
-        mlu.common.file.clearFileContents(filePath=votePlaylist)
+        mlu.common.file.clearFileContents(votePlaylist)
 
     logger.info("Vote playlists reset successfully")
 
