@@ -7,6 +7,9 @@ from mutagen.easyid3 import EasyID3
 from mutagen.id3 import ID3, TXXX
 from mutagen.mp4 import MP4
 
+import mlu.common.logger
+logger = mlu.common.logger.getMLULogger()
+
 import mlu.common.file
 import mlu.tags.validation
 
@@ -58,7 +61,7 @@ class AudioFileTags:
         self.rating = rating
 
     def equals(self, otherAudioFileTags):
-        if (
+        tagsAreEqual = (
             self.title == otherAudioFileTags.title and
             self.artist == otherAudioFileTags.artist and
             self.album == otherAudioFileTags.album and
@@ -79,6 +82,9 @@ class AudioFileTags:
             self.votes == otherAudioFileTags.votes and
             self.rating == otherAudioFileTags.rating
         )
+
+        return tagsAreEqual
+
 
     # def validate(self):
     #     mlu.tags.validation.validateAudioFileTags(self)
@@ -126,7 +132,7 @@ class AudioFileTagIOHandler:
             audioFileTags = self._getTagsForMp3File()
 
         elif (self._audioFileType == 'm4a'):
-            print("WARNING: 'trackNumber', 'totalTracks', 'discNumber', 'totalDiscs' tags are not supported by MLU for M4A files. These tags won't be read from the audio file and will be returned as empty values.")
+            logger.warning("MLU does not support tags 'trackNumber', 'totalTracks', 'discNumber', 'totalDiscs' for M4A files. These tags won't be read from the audio file and will be returned as empty values.")
             audioFileTags = self._getTagsForM4AFile()
 
         return audioFileTags
@@ -146,17 +152,19 @@ class AudioFileTagIOHandler:
         # Check to see whether or not the new tags to be set are actually new (did the values actually
         # change?): if not, a write operation is not needed
         currentTags = self.getTags()
+        if (currentTags.equals(audioFileTags)):
+            logger.debug("setTags() write operation skipped (no change needed): the current tag values are the same as the new given tag values")
 
+        else:
+            if (self._audioFileType == 'flac'):
+                self._setTagsForFLACFile(audioFileTags)
 
-        if (self._audioFileType == 'flac'):
-            self._setTagsForFLACFile(audioFileTags)
+            elif (self._audioFileType == 'mp3'):
+                self._setTagsForMp3File(audioFileTags)
 
-        elif (self._audioFileType == 'mp3'):
-            self._setTagsForMp3File(audioFileTags)
-
-        elif (self._audioFileType == 'm4a'):
-            print("WARNING: 'trackNumber', 'totalTracks', 'discNumber', 'totalDiscs' tags are not supported by MLU for M4A files. These tags won't be written to the audio file.")
-            self._setTagsForM4AFile(audioFileTags)
+            elif (self._audioFileType == 'm4a'):
+                logger.warning("MLU does not support tags 'trackNumber', 'totalTracks', 'discNumber', 'totalDiscs' for M4A files. These tags won't be written to the audio file.")
+                self._setTagsForM4AFile(audioFileTags)
 
     def _getTagsForFLACFile(self):
         '''
