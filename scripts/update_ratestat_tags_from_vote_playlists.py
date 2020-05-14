@@ -23,8 +23,10 @@ mlu.common.logger.initMLULogger()
 logger = mlu.common.logger.getMLULogger()
 
 # import project-related modules
-import mlu.tags.ratestats
 import mlu.cache.io
+import mlu.tags.backup
+import mlu.tags.ratestats
+
 
 parser = argparse.ArgumentParser()
 
@@ -38,7 +40,11 @@ parser.add_argument("playlistArchiveDir",
 
 args = parser.parse_args()
 
-# Start the main ratestat tag-writing process
+logger.info("Performing full backup of all music library audio files tags (checkpoint)")
+tagsBackupFilepath = mlu.tags.backup.backupMusicLibraryAudioTags()
+
+mlu.tags.backup.restoreMusicLibraryAudioTagsFromBackup(tagsBackupFilepath)
+
 logger.info("Loading audio file votes data from all vote playlists")
 audioFileVoteDataList = mlu.tags.ratestats.getAudioFileVoteDataFromRatePlaylists(args.playlistRootDir)
 

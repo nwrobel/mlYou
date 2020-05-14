@@ -7,11 +7,14 @@ This module handles functionality related to retreiving information related to t
 as a whole. 
 '''
 import mlu.common.file
+from mlu.common.settings import MLUSettings
 
-def getAllSongFilepathsInLibrary(libraryRootPath):
+
+def getAllMusicLibraryAudioFilepaths():
     '''
-    Returns a list of filepaths for all songs (audio files) in the music library, given the root filepath of the library.
+    Returns a list of filepaths for all songs (audio files) in the music library. The root directory
+    for the music library is taken from the MLU settings.
     '''
-    audioFileExtensions = ['.flac', '.mp3', '.m4a', '.ogg']
-    allSongs = mlu.common.file.GetAllFilesByExtension(rootPath=libraryRootPath, fileExt=audioFileExtensions)
+    audioFileExtensions = ['.flac', '.mp3', '.m4a']
+    allSongs = mlu.common.file.GetAllFilesByExtension(rootPath=MLUSettings.musicLibraryRootDir, fileExt=audioFileExtensions)
     return allSongs
