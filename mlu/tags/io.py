@@ -57,6 +57,29 @@ class AudioFileTags:
         self.votes = votes
         self.rating = rating
 
+    def equals(self, otherAudioFileTags):
+        if (
+            self.title == otherAudioFileTags.title and
+            self.artist == otherAudioFileTags.artist and
+            self.album == otherAudioFileTags.album and
+            self.albumArtist == otherAudioFileTags.albumArtist and
+            self.date == otherAudioFileTags.date and
+            self.genre == otherAudioFileTags.genre and
+            self.trackNumber == otherAudioFileTags.trackNumber and
+            self.totalTracks == otherAudioFileTags.totalTracks and
+            self.discNumber == otherAudioFileTags.discNumber and
+            self.totalDiscs == otherAudioFileTags.totalDiscs and
+            self.lyrics == otherAudioFileTags.lyrics and
+            self.bpm == otherAudioFileTags.bpm and
+            self.dateAdded == otherAudioFileTags.dateAdded and
+            self.dateFileCreated == otherAudioFileTags.dateFileCreated and
+            self.dateAllPlays == otherAudioFileTags.dateAllPlays and
+            self.dateLastPlayed == otherAudioFileTags.dateLastPlayed and
+            self.playCount == otherAudioFileTags.playCount and
+            self.votes == otherAudioFileTags.votes and
+            self.rating == otherAudioFileTags.rating
+        )
+
     # def validate(self):
     #     mlu.tags.validation.validateAudioFileTags(self)
 
@@ -119,6 +142,11 @@ class AudioFileTagIOHandler:
         '''
 
         # TODO: perform validation here
+
+        # Check to see whether or not the new tags to be set are actually new (did the values actually
+        # change?): if not, a write operation is not needed
+        currentTags = self.getTags()
+
 
         if (self._audioFileType == 'flac'):
             self._setTagsForFLACFile(audioFileTags)
