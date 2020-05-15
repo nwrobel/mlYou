@@ -66,6 +66,28 @@ def _writeRatestatTagUpdatesSummaryFile(audioFileVoteDataList, summaryFilepath):
 
 if __name__ == "__main__":
 
+    dirname = "D:\\Temp\\mlu-test\\test-music-lib\\Content\\Music\\Prodigy\\The Dirtchamber Sessions Volume One"
+    dirname2 = "D:\\Temp\\mlu-test\\test-music-lib\\Content\\Music\\Prodigy\\The Dirtchamber Sessions Volume One\\Prodigy - Bomb The Bass & Grandmaster Flash and The Furious Five & The Charlatans & Prodigy & Janes Addiction & Tim Dog featuring Kr's one & Babe  Ruth & ety"
+    filename = "D:\\Temp\\mlu-test\\test-music-lib\\Content\\Music\\Prodigy\\The Dirtchamber Sessions Volume One\\02. Prodigy - Bomb The Bass & Grandmaster Flash and The Furious Five & The Charlatans & Prodigy & Janes Addiction & Tim Dog featuring Kr's one & Babe  Ruth & The B-Boys.flac"
+
+    ans1 = mlu.common.file.FileExists(filename)
+    ans2 = mlu.common.file.directoryExists(dirname)
+    ans3 = mlu.common.file.directoryExists(dirname2)
+
+    files = mlu.common.file.GetAllFilesRecursive(dirname)
+    files2 = mlu.common.file.GetAllFilesAndDirectoriesRecursive(dirname)
+
+    dir1 = mlu.common.file.getParentDirectory(filename)
+    name1 = mlu.common.file.GetFilename(filename)
+    name2 = mlu.common.file.GetFileExtension(filename)
+    name3 = mlu.common.file.GetFileBaseName(filename)
+
+    ex1 = mlu.common.file.FileExists(filename)
+    ex11 = mlu.common.file.FileExists(files[1])
+    ex2 = mlu.common.file.directoryExists(filename)
+    ex3 = mlu.common.file.directoryExists(dirname2)
+
+
     logger.info("Performing full backup (checkpoint) of all music library audio files tags")
     tagsBackupFilepath = mlu.tags.backup.backupMusicLibraryAudioTags()
 

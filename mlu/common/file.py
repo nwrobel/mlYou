@@ -74,45 +74,51 @@ def GetAllFilesAndDirectoriesRecursive(rootPath):
     pathObj = Path(rootPath)
     children = pathObj.glob('**/*')
     
-    paths = [str(child) for child in children]
+    paths = [('\\\\?\\' + str(child)) for child in children]
     return paths
-
 
 def GetAllFilesRecursive(rootPath):
     """
     Gets the filepaths of all files in the given root directory and all of its subdirectories.
     Does not return directories.
     """
-    allFiles = []
+    # allFiles = []
     
-    for path, subdirs, files in os.walk(rootPath):
-        for name in files:
-            theFile = os.path.join(path, name)
-            allFiles.append(theFile)
+    # for path, subdirs, files in os.walk(rootPath):
+    #     for name in files:
+    #         theFile = os.path.join(path, name)
+    #         allFiles.append(theFile)
             
-    return allFiles
+    # return allFiles
+
+    pathObj = Path(rootPath)
+    childrenObjs = pathObj.glob('**/*')
+    
+    fileObjs = [childObj for childObj in childrenObjs if _isFile(childObj)]
+    filePaths = [('\\\\?\\' + str(fileObj)) for fileObj in fileObjs]
+    return filePaths
 
 
-def GetAllDirectoriesDepth1(rootPath):
-    """
-    Gets the directory path of all folders in the given root directory, limited to depth 1. It does
-    not get directories contained within the root directory's subfolders. Also does not get files.
-    """
-    path = Path(rootPath)
-    dirs = [x for x in path.iterdir() if x.is_dir()]
+# def GetAllDirectoriesDepth1(rootPath):
+#     """
+#     Gets the directory path of all folders in the given root directory, limited to depth 1. It does
+#     not get directories contained within the root directory's subfolders. Also does not get files.
+#     """
+#     path = Path(rootPath)
+#     dirs = [x for x in path.iterdir() if _isDir(x)]
 
-    return dirs
+#     return dirs
 
 
-def GetAllFilesDepth1(rootPath):
-    """
-    Gets the filepaths of all files in the given root directory, limited to depth 1. It does
-    not get files contained within the root directory's subfolders. Also does not get folders.
-    """
-    path = Path(rootPath)
-    files = [x for x in path.iterdir() if x.is_file()]
+# def GetAllFilesDepth1(rootPath):
+#     """
+#     Gets the filepaths of all files in the given root directory, limited to depth 1. It does
+#     not get files contained within the root directory's subfolders. Also does not get folders.
+#     """
+#     path = Path(rootPath)
+#     files = [x for x in path.iterdir() if _isFile(x)]
 
-    return files
+#     return files
 
 
 def GetAllFilesByExtension(rootPath, fileExt):
@@ -224,21 +230,52 @@ def FileExists(filePath):
     """
     Checks if the file at the given filepath exists (boolean)
     """
-    filePathObject = Path(filePath)
-    if (filePathObject.exists() and filePathObject.is_file()):
-        return True
+    # filePathObject = Path(filePath)
+    # if (filePathObject.exists() and filePathObject.is_file()):
+    #     return True
     
-    return False
+    # return False
 
-def directoryExists(folderPath):
+    pathObj = Path(filePath)
+    return (_isFile(pathObj))
+
+
+def directoryExists(filePath):
     """
     Checks if the folder at the given path exists (boolean)
     """
-    folderPathObject = Path(folderPath)
-    if (folderPathObject.exists() and folderPathObject.is_dir()):
-        return True
+    # folderPathObject = Path(folderPath)
+    # if (folderPathObject.exists() and folderPathObject.is_dir()):
+    #     return True
     
-    return False
+    # return False
+
+    pathObj = Path(filePath)
+    return (_isDir(pathObj))
+
+def _isFile(pathObj):
+    if (pathObj.is_file()):
+        return True
+    else:
+        extendedFilepath = "\\\\?\\" + str(pathObj)
+        extendedPathObj = Path(extendedFilepath)
+
+        if (extendedPathObj.is_file()):
+            return True
+        else:
+            return False
+
+def _isDir(pathObj):
+    if (pathObj.is_dir()):
+        return True
+    else:
+        extendedFilepath = "\\\\?\\" + str(pathObj)
+        extendedPathObj = Path(extendedFilepath)
+
+        if (extendedPathObj.is_dir()):
+            return True
+        else:
+            return False
 
 def DecompressSingleGZFile(gzippedFilePath, decompFilePath):
     """

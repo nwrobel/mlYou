@@ -19,11 +19,11 @@
             "console": "externalTerminal"
         },
         {
-            "name": "Ratestats vote playlist update script debug",
+            "name": "Ratestats vote playlist update script",
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "args": ["D:\\Temp\\mlu-test\\test-playlists-root-dir", "D:\\Temp\\mlu-test\\test-vote-playlists-archived"],
+            "args": [],
             "console": "integratedTerminal"
         }
     ]
