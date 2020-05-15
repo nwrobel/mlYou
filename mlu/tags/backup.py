@@ -22,8 +22,7 @@ def _getNewAudioTagsBackupFilepath():
 
 def backupMusicLibraryAudioTags():
     backupFilepath = _getNewAudioTagsBackupFilepath()
-    #allAudioFilepaths = mlu.library.musiclib.getAllMusicLibraryAudioFilepaths()
-    allAudioFilepaths = mlu.library.musiclib.getAllMusicLibraryAudioFilepaths()[:5]
+    allAudioFilepaths = mlu.library.musiclib.getAllMusicLibraryAudioFilepaths()
     allAudioTags = []
 
     for audioFilepath in allAudioFilepaths:

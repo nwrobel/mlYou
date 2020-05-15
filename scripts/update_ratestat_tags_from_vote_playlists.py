@@ -23,89 +23,90 @@ mlu.common.logger.initMLULogger()
 logger = mlu.common.logger.getMLULogger()
 
 # import project-related modules
-import mlu.cache.io
+import mlu.common.file
+import mlu.common.time
 import mlu.tags.backup
 import mlu.tags.ratestats
+from mlu.common.settings import MLUSettings
 
 
-parser = argparse.ArgumentParser()
+def _getRatestatTagUpdatesSummaryFilepath():
+    timeForFilename = (mlu.common.time.getCurrentFormattedTime()).replace(':', '_')
+    backupFilename = "[{}] update-ratestat-tags-from-vote-playlists_tag-updates-summary.txt".format(timeForFilename)
+    filepath = mlu.common.file.JoinPaths(MLUSettings.logDir, backupFilename)
 
-parser.add_argument("playlistRootDir", 
-                    help="absolute filepath of the folder containing the vote playlist files (1.m3u, 2.m3u, ..., 10.m3u) to use as the data source",
-                    type=str)
+    return filepath
 
-parser.add_argument("playlistArchiveDir", 
-                    help="absolute filepath of the folder where the archive of the vote playlist files should be saved for backup after the music rating tags are updated",
-                    type=str)
+def _writeRatestatTagUpdatesSummaryFile(audioFileVoteDataList, summaryFilepath):
+    # Print the results of all updated songs in table form and what changes occurred
+    tagUpdatesTable = PrettyTable()
+    tagUpdatesTable.field_names = ["Title", "Artist", "Votes Added", "New Rating", "New Votes List"]
+    tagUpdatesTable.align["Title"] = "l"
+    tagUpdatesTable.align["Artist"] = "l"
+    tagUpdatesTable.align["Votes Added"] = "r"
+    tagUpdatesTable.align["New Rating"] = "r"
+    tagUpdatesTable.align["New Votes List"] = "r"
 
-args = parser.parse_args()
+    for audioFileVotesData in audioFileVoteDataList:
+        tagHandler = mlu.tags.io.AudioFileTagIOHandler(audioFileVotesData.filepath)
+        currentTags = tagHandler.getTags()
 
-logger.info("Performing full backup of all music library audio files tags (checkpoint)")
-tagsBackupFilepath = mlu.tags.backup.backupMusicLibraryAudioTags()
+        votesAdded = mlu.tags.common.formatValuesListToAudioTag(audioFileVotesData.votes)
 
-mlu.tags.backup.restoreMusicLibraryAudioTagsFromBackup(tagsBackupFilepath)
+        tagUpdatesTable.add_row([
+            currentTags.title, 
+            currentTags.artist, 
+            votesAdded,
+            currentTags.rating,
+            currentTags.votes
+        ])
 
-logger.info("Loading audio file votes data from all vote playlists")
-audioFileVoteDataList = mlu.tags.ratestats.getAudioFileVoteDataFromRatePlaylists(args.playlistRootDir)
-
-logger.info("Vote playlists data loaded successfully")
-logger.info("Writing new ratestats tag data to audio files")
-
-erroredAudioFileVoteDataList = []
-for audioFileVoteData in audioFileVoteDataList:
-    try:
-        mlu.tags.ratestats.updateRatestatTagsFromVoteData(audioFileVoteData)
-    except:
-        erroredAudioFileVoteDataList.append(audioFileVoteData)
-
-for audioFileVoteData in erroredAudioFileVoteDataList:
-    logger.info("Failed to update ratestat tag values with new votes: File={}".format(audioFileVoteData.filepath))
-
-logger.info("Ratestats tag data update completed")
-logger.info("{} audio files were processed".format(len(audioFileVoteDataList)))
-logger.info("{} audio files failed update".format(len(erroredAudioFileVoteDataList)))
-
-errorJsonFilename = 'update-ratestat-tags-from-vote-playlists-failed-data.json'
-errorJsonFilepath = mlu.common.file.JoinPaths(mlu.common.file.getMLUCacheDirectory(), errorJsonFilename)
-mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=erroredAudioFileVoteDataList, outputFilepath=errorJsonFilepath)
-logger.info("Failed to update ratestat tags for some audio files: see JSON file '{}' for the unsaved data from these files".format(errorJsonFilename))
+    mlu.common.file.writeToFile(filepath=summaryFilepath, content=tagUpdatesTable.get_string())
 
 
-# Print the results of all updated songs in table form and what changes occurred
-tagUpdatesTable = PrettyTable()
-tagUpdatesTable.field_names = ["Title", "Artist", "Votes Added", "New Rating", "New Votes List"]
-tagUpdatesTable.align["Title"] = "l"
-tagUpdatesTable.align["Artist"] = "l"
-tagUpdatesTable.align["Votes Added"] = "r"
-tagUpdatesTable.align["New Rating"] = "r"
-tagUpdatesTable.align["New Votes List"] = "r"
+if __name__ == "__main__":
 
-successfulAudioFileVoteDataList = [voteData for voteData in audioFileVoteDataList if (voteData not in erroredAudioFileVoteDataList)]
+    logger.info("Performing full backup (checkpoint) of all music library audio files tags")
+    tagsBackupFilepath = mlu.tags.backup.backupMusicLibraryAudioTags()
 
-for audioFileVotesData in successfulAudioFileVoteDataList:
+    logger.info("Loading audio file votes data from all vote playlists")
+    audioFileVoteDataList = mlu.tags.ratestats.getAudioFileVoteDataFromRatePlaylists(playlistsDir=MLUSettings.votePlaylistsDir)
 
-    tagHandler = mlu.tags.io.AudioFileTagIOHandler(audioFileVotesData.filepath)
-    currentTags = tagHandler.getTags()
+    logger.info("Vote playlists data loaded successfully")
+    logger.info("Writing new ratestats tag data to audio files")
 
-    votesAdded = mlu.tags.common.formatValuesListToAudioTag(audioFileVotesData.votes)
+    erroredAudioFilepaths = []
+    for audioFileVoteData in audioFileVoteDataList:
+        try:
+            mlu.tags.ratestats.updateRatestatTagsFromVoteData(audioFileVoteData)
+        except:
+            logger.exception("updateRatestatTagsFromVoteData operation failed: File='{}'".format(audioFileVoteData.filepath))
+            erroredAudioFilepaths.append(audioFileVoteData.filepath)
 
-    tagUpdatesTable.add_row([
-        currentTags.title, 
-        currentTags.artist, 
-        votesAdded,
-        currentTags.rating,
-        currentTags.votes
-    ])
+    logger.info("Votes processing complete")
+    logger.info("{} audio files were processed".format(len(audioFileVoteDataList)))
+    logger.info("{} audio files failed update".format(len(erroredAudioFilepaths)))
 
-summaryFilename = 'update-ratestat-tags-from-vote-playlists-summary.txt'
-summaryFilepath = mlu.common.file.JoinPaths(mlu.common.file.getMLUCacheDirectory(), summaryFilename)
-mlu.common.file.writeToFile(filepath=summaryFilepath, content=tagUpdatesTable.get_string())
-logger.info("See file '{}' for a table summarizing changes to ratestat tags".format(summaryFilename))
-   
-logger.info('Archiving vote playlists')
-mlu.tags.ratestats.archiveVotePlaylists(playlistsDir=args.playlistRootDir, archiveDir=args.playlistArchiveDir)
+    if (not erroredAudioFilepaths):
+        logger.info("Process completed successfully: all ratestat tags updated with new votes")
+        logger.info("Writing ratestat tag updates summary file")
 
-logger.info('Emptying already counted votes from vote playlists')
-mlu.tags.ratestats.resetVotePlaylists(playlistsDir=args.playlistRootDir)
+        summaryFilepath = _getRatestatTagUpdatesSummaryFilepath()
+        _writeRatestatTagUpdatesSummaryFile(audioFileVoteDataList, summaryFilepath)
+        logger.info("Summary file written successfully: File='{}'".format(summaryFilepath))
 
-logger.info('Script complete')
+        logger.info('Archiving old vote playlists data')
+        mlu.tags.ratestats.archiveVotePlaylists(playlistsDir=MLUSettings.votePlaylistsDir, archiveDir=MLUSettings.votePlaylistsArchiveDir)
+
+        logger.info('Emptying already counted votes from vote playlists')
+        mlu.tags.ratestats.resetVotePlaylists(playlistsDir=MLUSettings.votePlaylistsDir)
+
+    else:
+        logger.info("Failed to update ratestat tag values with new votes for the following files:\n{}\n".format("\n".join(erroredAudioFilepaths)))
+        
+        logger.info("Process completed with failures: undoing all tag changes to the music library (reverting to checkpoint)")
+        mlu.tags.backup.restoreMusicLibraryAudioTagsFromBackup(tagsBackupFilepath)
+
+        logger.info("Tags backup restored successfully: all changes were undone - run this script again to retry")
+
+    logger.info('Script complete')

@@ -10,6 +10,7 @@ class MLUSettings:
     projectRoot = mlu.common.file.getMLUProjectRoot()
     logDir = mlu.common.file.JoinPaths(projectRoot, '~logs')
     cacheDir = mlu.common.file.JoinPaths(projectRoot, '~cache')
+    
     musicLibraryRootDir = "D:\\Temp\\mlu-test\\test-music-lib\\Content"
     votePlaylistsDir = ''
     votePlaylistsArchiveDir = mlu.common.file.JoinPaths(cacheDir, 'vote-playlists-archive')
