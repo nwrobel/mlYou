@@ -182,7 +182,7 @@ def getParentDirectory(filepath):
     Given a filepath, returns the parent directory of the file or folder object.
     '''
     filePathObject = Path(filepath)
-    return str(filePathObject.parent)
+    return ('\\\\?\\' + str(filePathObject.parent))
 
 def GetFilename(filePath):
     """
