@@ -125,6 +125,14 @@ def getCurrentFormattedTime():
     '''
     return formatTimestampForDisplay(getCurrentTimestamp())
 
+def getCurrentTimestampForFilename():
+    '''
+    Returns the current time, formatted in such a way as to allow it to be used as a string in file
+    names. This is useful for applying archive timestamps to files through their name.
+    '''
+    timeForFilename = getCurrentFormattedTime().replace(':', '_')
+    return timeForFilename
+
 
 
 

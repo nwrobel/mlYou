@@ -104,7 +104,7 @@ class AudioFileTagIOHandler:
 
     def __init__(self, audioFilepath):
         # validate that the filepath exists
-        if (not mlu.common.file.FileExists(audioFilepath)):
+        if (not mlu.common.file.fileExists(audioFilepath)):
             raise ValueError("Class attribute 'audioFilepath' must be a valid absolute filepath string to an existing file")
 
         self.audioFilepath = audioFilepath

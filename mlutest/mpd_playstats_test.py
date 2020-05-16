@@ -112,7 +112,7 @@ class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
         WriteMLUObjectsToJSONFile(mluObjects=playbackRecord, outputFilepath=self.testJsonFilepath)
 
         # Check - output file should exist
-        self.assertTrue(mlu.common.file.FileExists(self.testJsonFilepath))
+        self.assertTrue(mlu.common.file.fileExists(self.testJsonFilepath))
         # Read Results - read in the expected data from the test json output file
         jsonFileContent = self.readTestJsonFile()
 
@@ -127,7 +127,7 @@ class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
         playstatTags = self.getTestSongPlaystatTags()
         WriteMLUObjectsToJSONFile(mluObjects=playstatTags, outputFilepath=self.testJsonFilepath)
 
-        self.assertTrue(mlu.common.file.FileExists(self.testJsonFilepath))
+        self.assertTrue(mlu.common.file.fileExists(self.testJsonFilepath))
         jsonFileContent = self.readTestJsonFile()
 
         # Check - compare actual to expected data
@@ -143,7 +143,7 @@ class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
         logLine = self.getTestMPDLogLine()
         WriteMLUObjectsToJSONFile(mluObjects=logLine, outputFilepath=self.testJsonFilepath)
 
-        self.assertTrue(mlu.common.file.FileExists(self.testJsonFilepath))
+        self.assertTrue(mlu.common.file.fileExists(self.testJsonFilepath))
         jsonFileContent = self.readTestJsonFile()
 
         # Check - compare actual to expected data
@@ -161,7 +161,7 @@ class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
         WriteMLUObjectsToJSONFile(mluObjects=playbackRecords, outputFilepath=self.testJsonFilepath)
 
         # Check - ensure output file exists
-        self.assertTrue(mlu.common.file.FileExists(self.testJsonFilepath))
+        self.assertTrue(mlu.common.file.fileExists(self.testJsonFilepath))
         # Read in the resulting output json file
         jsonFileContent = self.readTestJsonFile()
 
@@ -184,7 +184,7 @@ class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
         WriteMLUObjectsToJSONFile(mluObjects=songsPlaystatTags, outputFilepath=self.testJsonFilepath)
 
         # Check - ensure output file exists
-        self.assertTrue(mlu.common.file.FileExists(self.testJsonFilepath))
+        self.assertTrue(mlu.common.file.fileExists(self.testJsonFilepath))
         # Read in the resulting output json file
         jsonFileContent = self.readTestJsonFile()
 
@@ -209,7 +209,7 @@ class TestCacheIOWriteMLUObjectsToJSONFile(unittest.TestCase):
         WriteMLUObjectsToJSONFile(mluObjects=logLines, outputFilepath=self.testJsonFilepath)
 
         # Check - ensure output file exists
-        self.assertTrue(mlu.common.file.FileExists(self.testJsonFilepath))
+        self.assertTrue(mlu.common.file.fileExists(self.testJsonFilepath))
         # Read in the resulting output json file
         jsonFileContent = self.readTestJsonFile()
 
@@ -280,7 +280,7 @@ class TestCacheIOReadMLUObjectsFromJSONFile(unittest.TestCase):
         with open(self.testJsonFilepath, 'w+') as outputFile:
             json.dump(jsonContent, outputFile)
 
-        if (not mlu.common.file.FileExists(self.testJsonFilepath)):
+        if (not mlu.common.file.fileExists(self.testJsonFilepath)):
             raise Exception("Error creating test JSON input file for TestCacheIOReadMLUObjectsFromJSONFile")
 
     # ---------------------------------- Test Functions --------------------------------------------

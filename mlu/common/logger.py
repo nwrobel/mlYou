@@ -10,6 +10,7 @@ import logging
 import inspect
 
 import mlu.common.file
+from mlu.common.settings import MLUSettings
 
 global _mluLogger
 
@@ -80,8 +81,8 @@ def initMLULogger(logFilename=''):
     # create a file handler which logs all messages by default by saving them to a static log file
     # (given the filename), which is used by all the other Python modules to write log statements into: 
     # this is a global/"shared" log output file instead of having them seperated by module into various log files
-    logFilepath = mlu.common.file.JoinPaths(mlu.common.file.getMLULogDirectory(), logFilename)
-    fh = logging.FileHandler(logFilepath)
+    logFilepath = mlu.common.file.JoinPaths(MLUSettings.logDir, logFilename)
+    fh = logging.FileHandler(logFilepath, encoding='utf-8')
     fh.setLevel(logging.DEBUG)
 
     # create console output handler which logs all messages (debug up through critical)
