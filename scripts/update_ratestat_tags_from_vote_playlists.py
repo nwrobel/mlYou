@@ -1,9 +1,8 @@
 '''
 update_ratestat_tags_from_vote_playlists.py
 
-Created: ?
-Modified: 01/22/20
-
+This script uses the votes playlists (1-10) to add the new votes to and update the ratestat tags of 
+audio files in the music library. 
 
 '''
 
@@ -77,9 +76,6 @@ def _writeRatestatTagUpdatesSummaryFile(audioFileVoteDataList, summaryFilepath):
 # ------------------------------- Main script procedure --------------------------------------------
 #
 if __name__ == "__main__":
-
-    #mlu.tags.backup.restoreMusicLibraryAudioTagsFromBackup("C:\\Nick-Local-Data\\Development\\mlYou\\~cache\\audio-tag-backups\\[2020-05-15 22_20_46] Music Library Audio Tags Full Backup.json")
-
 
     logger.info("Performing full backup (checkpoint) of all music library audio files tags")
     tagsBackupFilepath = mlu.tags.backup.backupMusicLibraryAudioTags()
