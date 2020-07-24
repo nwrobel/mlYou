@@ -26,6 +26,14 @@
             "program": "${file}",
             "args": [],
             "console": "integratedTerminal"
+        },
+                {
+            "name": "Convert Playlist Script",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\convert-playlist.py",
+            "args": ["Z:\\Music Library\\Playlist Workbench\\Genre", "Z:\\Music Library\\Content\\!mpd-published-playlists\\Genre","Z:\\", "/datastore/nick/"],
+            "console": "integratedTerminal"
         }
     ]
 }

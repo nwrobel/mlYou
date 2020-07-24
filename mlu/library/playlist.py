@@ -75,8 +75,9 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
         originalLines = getAllPlaylistLines(playlistFilePath)
 
         # Remove the '#' that is sometimes added to playlists when exported from Foobar2000
-        if (len(originalLines) > 0 and originalLines[0] == '#'):
-            originalLines.pop(0) 
+        for index, line in enumerate(originalLines):
+            if (line == "#"):
+                originalLines.pop(index)
         
         # Convert each line and add the result to the list of new playlist lines
         newPlaylistLines = []
@@ -91,7 +92,7 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
                
         # Write out the converted lines to a new playlist file in the output dir
         # with UTF-8 encoding (important!)
-        with open(outputPlaylistFilePath, mode='w+', encoding='utf-8') as newPlaylist:
+        with open(outputPlaylistFilePath, mode='w', encoding='utf-8') as newPlaylist:
             newPlaylist.writelines(newPlaylistLines)
   
         print("Playlist converted successfully! New file:", outputPlaylistFilePath)
@@ -104,7 +105,7 @@ def getAllPlaylistLines(playlistFilepath):
     Returns a list of all the lines contained within a playlist, given the path of the playlist.
     Each line should be a filepath pointing to an audio file/song entry on that playlist.
     '''
-    with open(playlistFilepath, mode='r', encoding='utf-8') as file:
+    with open(playlistFilepath, mode='r', encoding='utf-8-sig') as file:
         lines = file.readlines()
 
     playlistLines = []
