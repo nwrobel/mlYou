@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
     
         {
             "name": "Python: Current File (Integrated Terminal)",
@@ -33,6 +34,34 @@
             "request": "launch",
             "program": "scripts\\convert-playlist.py",
             "args": ["Z:\\Music Library\\Playlist Workbench\\Genre", "Z:\\Music Library\\Content\\!mpd-published-playlists\\Genre","Z:\\", "/datastore/nick/"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Fix MPD logs Script",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\fix-mpd-logs-missing-yr.py",
+            "args": ["Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\mpd.log.7", "2019"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Merge MPD logs Script",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\merge-mpd-logs.py",
+            "args": [
+                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\mpd.master.out.log", 
+                "--logs", 
+                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\[YR+FIX] mpd.log.0",
+                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\[YR+FIX] mpd.log.1",
+                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\[YR+FIX] mpd.log.2",
+                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\[YR+FIX] mpd.log.3",
+                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\[YR+FIX] mpd.log.4",
+                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\[YR+FIX] mpd.log.5",
+                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\[YR+FIX] mpd.log.6",
+                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\[YR+FIX] mpd.log.7",
+
+            ],
             "console": "integratedTerminal"
         }
     ]
