@@ -11,14 +11,18 @@ def formatValuesListToAudioTag(valuesList):
     listStr = ';'.join(map(str, valuesList))
     return str(listStr)
 
-def formatAudioTagToValuesList(audioTagStr, valuesAsInt=False):
+def formatAudioTagToValuesList(audioTagStr, valuesAs=''):
     if (not audioTagStr):
         return []
     
     valuesList = audioTagStr.split(';')
 
-    if (valuesAsInt):
+    if (valuesAs == 'int'):
         valuesList = [int(value) for value in valuesList]
+
+    elif (valuesAs == 'float'):
+        valuesList = [float(value) for value in valuesList]
+
     else:
         valuesList = [str(value) for value in valuesList]
 

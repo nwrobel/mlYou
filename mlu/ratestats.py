@@ -1,21 +1,20 @@
 '''
 mlu.tags.ratestats
 
-First created: ?
-Last modified: 01/17/20
-
 Module containing functionality for the music rating system of the music library.
 
 '''
+import numpy as np
 
-# setup logging for the module using preconfigured MLU logger
-import mlu.common.logger
-logger = mlu.common.logger.getMLULogger()
+from com.nwrobel import mypycommons
+import com.nwrobel.mypycommons.logger
+import com.nwrobel.mypycommons.file
+import com.nwrobel.mypycommons.time
+
+logger = mypycommons.logger.getSharedLogger()
 
 import mlu.tags.io
 import mlu.tags.common
-import mlu.common.file 
-import mlu.common.time
 import mlu.library.playlist
 
 class AudioFileVoteData:
@@ -26,13 +25,15 @@ class AudioFileVoteData:
 
 def updateRatestatTagsFromVoteData(audioFileVoteData):
     '''
+    Updates the ratestat tags for an audio file, given an AudioFileVoteData object containing the
+    new votes to be added.
     '''
     logger.debug("Updating ratestat tags with new votes: File={}, NewVotes={}".format(audioFileVoteData.filepath, audioFileVoteData.votes))
 
     tagHandler = mlu.tags.io.AudioFileTagIOHandler(audioFileVoteData.filepath)
     currentTags = tagHandler.getTags()
 
-    votesCurrent = mlu.tags.common.formatAudioTagToValuesList(currentTags.votes, valuesAsInt=True) 
+    votesCurrent = mlu.tags.common.formatAudioTagToValuesList(currentTags.votes, valuesAs='float') 
     votesUpdated = votesCurrent + audioFileVoteData.votes
     votesUpdatedTagValue = mlu.tags.common.formatValuesListToAudioTag(votesUpdated)
 
@@ -46,11 +47,13 @@ def updateRatestatTagsFromVoteData(audioFileVoteData):
 
 def updateRatingTag(audioFilepath):
     '''
+    Updates the rating tag value for an audio file by calculating the average of all the existing
+    vote values in the file's 'votes' tag.
     '''
-    tagHandler = mlu.tags.io.AudioFileTagIOHandler(audioFileVoteData.filepath)
+    tagHandler = mlu.tags.io.AudioFileTagIOHandler(audioFilepath)
     currentTags = tagHandler.getTags()
 
-    votesCurrent = mlu.tags.common.formatAudioTagToValuesList(currentTags.votes, valuesAsInt=True) 
+    votesCurrent = mlu.tags.common.formatAudioTagToValuesList(currentTags.votes, valuesAs='float') 
     ratingCurrent = currentTags.rating
     ratingUpdated = _calculateRatingTagValue(votesCurrent)
 
@@ -65,21 +68,21 @@ def updateRatingTag(audioFilepath):
         logger.info("Rating tag not updated, no change needed: File={}".format(audioFilepath))
 
 
-def getAudioFileVoteDataFromRatePlaylists(playlistsDir):
+def getAudioFileVoteDataFromRatePlaylists(votePlaylistsDir):
     '''
     '''
     audioFileVoteDataList = []
+    votePlaylists = _getVotePlaylistFilepaths(votePlaylistsDir)
 
-    for currentVoteValue in range(1, 11):
-        currentVoteValuePlaylistName = "{}.m3u8".format(currentVoteValue)
-        currentVoteValuePlaylistPath =  mlu.common.file.JoinPaths(playlistsDir, currentVoteValuePlaylistName)
+    for currentVotePlaylistFilepath in votePlaylists:
+        currentVoteValue = float(mypycommons.file.GetFileBaseName(currentVotePlaylistFilepath))
 
-        logger.info("Reading songs with vote value {} from playlist {}".format(currentVoteValue, currentVoteValuePlaylistPath))
-        playlistSongs = mlu.library.playlist.getAllPlaylistLines(currentVoteValuePlaylistPath)
+        logger.info("Reading songs with vote value {} from playlist {}".format(currentVoteValue, currentVotePlaylistFilepath))
+        playlistSongs = mlu.library.playlist.getAllPlaylistLines(currentVotePlaylistFilepath)
         logger.info("Found {} songs in vote value {} playlist: loading them into the data structure".format(len(playlistSongs), currentVoteValue))
 
         for songFilepath in playlistSongs:
-            logger.debug("Adding new vote (value {}) for song '{}'".format(currentVoteValue, songFilepath))
+            logger.debug("Adding to data structure: new vote (value {}) for song '{}'".format(currentVoteValue, songFilepath))
 
             # Find the current song in the existing vote data, if it's there, and add the vote
             # to the existing vote data object
@@ -100,40 +103,56 @@ def getAudioFileVoteDataFromRatePlaylists(playlistsDir):
 
     return audioFileVoteDataList
 
-
 def archiveVotePlaylists(playlistsDir, archiveDir):
     '''
     '''
-    timeForFilename = (mlu.common.time.getCurrentFormattedTime()).replace(':', '_')
-    archiveFilename = "[{}] Archived vote playlists.tar.gz".format(timeForFilename)
+    timeForFilename = (mypycommons.time.getCurrentFormattedTime()).replace(':', '_')
+    archiveFilename = "[{}] Archived vote playlists batch.7z".format(timeForFilename)
 
-    archiveFilePath = mlu.common.file.JoinPaths(archiveDir, archiveFilename)
+    archiveFilePath = mypycommons.file.JoinPaths(archiveDir, archiveFilename)
     playlistFilepaths = _getVotePlaylistFilepaths(playlistsDir)    
 
-    mlu.common.file.compressFileToArchive(inputFilePath=playlistFilepaths, archiveOutFilePath=archiveFilePath)
+    mypycommons.file.create7zArchive(inputFilePath=playlistFilepaths, archiveOutFilePath=archiveFilePath)
     logger.info("Vote playlists successfully compressed into archive file '{}'".format(archiveFilePath))
 
 
-def resetVotePlaylists(playlistsDir):
+def resetVotePlaylists(votePlaylistsSourceDir, votePlaylistsTempDir):
     '''
     '''
-    playlistFilepaths = _getVotePlaylistFilepaths(playlistsDir)    
+    processedVotePlaylistsFilepaths = _getVotePlaylistFilepaths(votePlaylistsTempDir)    
+    processedVotePlaylistsLineCounts = {}
 
-    for votePlaylist in playlistFilepaths:
-        mlu.common.file.clearFileContents(votePlaylist)
+    for votePlaylist in processedVotePlaylistsFilepaths:
+        votePlaylistName = mypycommons.file.GetFilename(votePlaylist)
+        lineCount = mypycommons.file.getTextFileLineCount(votePlaylist)
+        processedVotePlaylistsLineCounts[votePlaylistName] = lineCount
+
+    sourceVotePlaylistsFilepaths = _getVotePlaylistFilepaths(votePlaylistsSourceDir) 
+
+    # Remove from the start of each of the original vote playlists the number of lines that were 
+    # processed in the playlists from the temp dir earlier - essentially we remove the lines that
+    # have been processed already, leaving behind any new playlist lines that may have been created
+    # in the time between when the playlists were first copied to temp and now  
+    for votePlaylist in sourceVotePlaylistsFilepaths:
+        votePlaylistName = mypycommons.file.GetFilename(votePlaylist)
+        removeFirstNLines = processedVotePlaylistsLineCounts[votePlaylistName]
+        mypycommons.file.removeFirstNLinesFromTextFile(votePlaylist, removeFirstNLines)
 
     logger.info("Vote playlists reset successfully")
 
+def copyVotePlaylistsToTemp(votePlaylistsSourceDir, votePlaylistsTempDir):
+    sourceVotePlaylists = _getVotePlaylistFilepaths(votePlaylistsSourceDir)
+    mypycommons.file.CopyFilesToDirectory(sourceVotePlaylists, votePlaylistsTempDir)
 
 def _getVotePlaylistFilepaths(playlistsDir):
     playlistFilepaths = []
-    for currentVoteValue in range(1, 11):
-        currentVoteValuePlaylistName = "{}.m3u8".format(currentVoteValue)
-        currentVoteValuePlaylistPath =  mlu.common.file.JoinPaths(playlistsDir, currentVoteValuePlaylistName)
+    possibleVoteValues = np.linspace(0.5,10,20)
+    for currentVoteValue in possibleVoteValues:
+        currentVoteValuePlaylistName = "{}.m3u".format(str(currentVoteValue))
+        currentVoteValuePlaylistPath =  mypycommons.file.JoinPaths(playlistsDir, currentVoteValuePlaylistName)
         playlistFilepaths.append(currentVoteValuePlaylistPath)
 
     return playlistFilepaths
-
 
 def _calculateRatingTagValue(votes):
     if (votes):

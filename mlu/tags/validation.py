@@ -8,7 +8,8 @@ IN DEVELOPMENT, may or may not be used in the future
 
 '''
 
-import mlu.common.time
+from com.nwrobel import mypycommons
+import com.nwrobel.mypycommons.time
 
 class AudioFileTagsValidationError(Exception):
     pass
@@ -30,7 +31,7 @@ def validateAudioFileTags(audioFileTags):
 
 def validateDateTagValue(value):
     MIN_YEAR = 1900
-    currentYear = mlu.common.time.getCurrentYear()
+    currentYear = mypycommons.time.getCurrentYear()
 
     if ((value < MIN_YEAR) or (value > currentYear)):
         raise AudioFileTagsValidationError("Invalid tag value: date")

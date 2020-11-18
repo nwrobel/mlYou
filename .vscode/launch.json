@@ -23,7 +23,7 @@
             "name": "Ratestats vote playlist update script",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "scripts\\update_ratestat_tags_from_vote_playlists.py",
             "args": [],
             "console": "integratedTerminal"
         },

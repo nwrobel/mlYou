@@ -4,7 +4,8 @@ mlu.file.playlist
 Module containing functionality related to working with audio playlists.
 '''
 
-import mlu.common.file
+from com.nwrobel import mypycommons
+import com.nwrobel.mypycommons.file
 
 def RemoveTrailingSlash(path):
     while (path[-1] == '/' or path[-1] == '\\'):
@@ -25,18 +26,18 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
     
     print("Attempting to load all playlists in source directory:", sourcePlaylistDir)
     
-    assert mlu.common.file.directoryExists(sourcePlaylistDir), "ERROR: The given playlist source folder is invalid or cannot be found"
+    assert mypycommons.file.directoryExists(sourcePlaylistDir), "ERROR: The given playlist source folder is invalid or cannot be found"
     
-    playlistFilePathsM3U = mlu.common.file.GetAllFilesByExtension(sourcePlaylistDir, ".m3u")
-    playlistFilePathsM3U8 = mlu.common.file.GetAllFilesByExtension(sourcePlaylistDir, ".m3u8")
+    playlistFilePathsM3U = mypycommons.file.GetAllFilesByExtension(sourcePlaylistDir, ".m3u")
+    playlistFilePathsM3U8 = mypycommons.file.GetAllFilesByExtension(sourcePlaylistDir, ".m3u8")
     playlistFilePaths = playlistFilePathsM3U + playlistFilePathsM3U8
     numPlaylists = len(playlistFilePaths)
     
     print("Looking for output directory:", outputPlaylistDir)
     
-    if (not mlu.common.file.directoryExists(outputPlaylistDir)):
+    if (not mypycommons.file.directoryExists(outputPlaylistDir)):
         print("Output directory not found...attempting to create it")
-        mlu.common.file.createDirectory(outputPlaylistDir)
+        mypycommons.file.createDirectory(outputPlaylistDir)
         
     else:
         print("WARNING: Output directory already exists - all files currently within this directory WILL BE DELETED:\n", outputPlaylistDir)        
@@ -54,8 +55,8 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
             else:
                 print("Invalid choice: please enter Y or N (case insensitive)")
                 
-        mlu.common.file.DeleteDirectory(outputPlaylistDir)
-        mlu.common.file.createDirectory(outputPlaylistDir)
+        mypycommons.file.DeleteDirectory(outputPlaylistDir)
+        mypycommons.file.createDirectory(outputPlaylistDir)
 
     oldRoot = RemoveTrailingSlash(oldRoot)
     newRoot = RemoveTrailingSlash(newRoot)
@@ -68,8 +69,8 @@ def ChangeRootPathForAllPlaylistEntries(sourcePlaylistDir, outputPlaylistDir, ol
 
         # Each output playlist will have a .m3u8 extension by default, even if original was .m3u
         # This ensures support for UTF-8 encoding always will be used
-        outputPlaylistFileName = mlu.common.file.GetFileBaseName(playlistFilePath) + ".m3u8"
-        outputPlaylistFilePath = mlu.common.file.JoinPaths(outputPlaylistDir, outputPlaylistFileName)
+        outputPlaylistFileName = mypycommons.file.GetFileBaseName(playlistFilePath) + ".m3u8"
+        outputPlaylistFilePath = mypycommons.file.JoinPaths(outputPlaylistDir, outputPlaylistFileName)
         
         # Read in all lines from the original playlist
         originalLines = getAllPlaylistLines(playlistFilePath)

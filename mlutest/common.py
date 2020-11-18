@@ -5,26 +5,27 @@ This module contains functions that are commonly needed/used by various MLU unit
 mlutest package. They deal with setting up and teardown of test cases and creation of random test
 data.
 """
+
 import mlutest.envsetup
 mlutest.envsetup.PreparePythonProjectEnvironment()
-
 
 from random import randrange
 from random import choice
 from string import ascii_uppercase, ascii_lowercase, digits
 
-import mlu.common.time
+from com.nwrobel import mypycommons
+import com.nwrobel.mypycommons.time
 
 
 def getRandomTimestamp():
     """
     Returns a pseudo-random epoch timestamp for a time sometime in the past 15 years.
     """
-    now = mlu.common.time.getCurrentTimestamp()
+    now = mypycommons.time.getCurrentTimestamp()
     # 500 million seconds ~ 15 years of range
     # make it negative to go into the past
     deltaSeconds = -(getRandomNumber(min=0, max=500000000)) 
-    randomTimestamp = mlu.common.time.applyDeltaSecondsToTimestamp(startTimestamp=now, seconds=deltaSeconds)
+    randomTimestamp = mypycommons.time.applyDeltaSecondsToTimestamp(startTimestamp=now, seconds=deltaSeconds)
 
     return randomTimestamp
 
@@ -100,3 +101,9 @@ def getRandomNumber(min, max):
     or equal to the given maximum numbers.
     """
     return randrange(start=min, stop=(max + 1))
+
+def getRandomItemFromList(inputList):
+    print("input list: ", inputList)
+    randIndex = getRandomNumber(0, len(inputList) - 1)
+    print(randIndex)
+    return inputList[randIndex]

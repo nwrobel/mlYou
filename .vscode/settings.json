@@ -7,7 +7,7 @@
         "editorRuler.foreground": "#34361b"
     },
 
-    "python.pythonPath": "py-venv\\Scripts\\python.exe",
+    "python.pythonPath": "py-venv-windows\\Scripts\\python.exe",
 
     "python.testing.unittestEnabled": true,
     "python.testing.unittestArgs": [
@@ -15,7 +15,7 @@
         "-s",
         "./mlutest",
         "-p",
-        "*test.py"
+        "*_test.py"
     ],
     "python.testing.pytestEnabled": false,
     "python.testing.nosetestsEnabled": false,

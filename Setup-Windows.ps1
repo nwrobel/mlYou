@@ -1,24 +1,30 @@
-# MLU project deployment script for Windows OSs - Powershell script
+# Python project deployment script for Windows OSs - Powershell script
 #
-# After cloning the MLU repo from Github and saving it in the directory of choice, run this script
+# After cloning the project repo from Github and saving it in the directory of choice, run this script
 # to setup the project so it can be used. 
 #
-# Please refer to the README.md on Github or in this directory for setup troubleshooting and for
-# information on how to use the features of MLU!
+# DEPENDENCIES
+# This script should always be located in the project root (most parent) folder.
+# requirements.txt should also be present in project root
+#
+# Please refer to the README.md for additional info
+#
 
-# This script is located in <projectRoot>\setup folder
-$pythonVenvLocation = '..\py-venv'
-$pipRequirementsLocation = '..\requirements.txt'
 
-function Deploy-MLUProject {
+function Deploy-PythonProject {
+    [CmdletBinding()]
+    param ()
+
+    $pythonVenvDir = Join-Path $PSScriptRoot -ChildPath 'py-venv-windows'
+    $pipRequirementsFilepath = Join-Path $PSScriptRoot -ChildPath 'requirements.txt'
 
     # Remove pre-exisitng path of the projects virtual environment, if it exists
-    Remove-MLUVenvIfExists
+    Remove-VenvIfExists -VenvDir $pythonVenvDir
 
     # Create virtual env. and activate it if the version check passes
     if (Test-VenvPythonVersionIsCorrect) {
-        Write-Host "Version requirement check passed!" -ForegroundColor Cyan
-        Install-MLUPythonPackages
+        Write-Host "Python version requirement check passed!" -ForegroundColor Cyan
+        Install-PythonPackages -VenvDir $pythonVenvDir -PipReqsFilepath $pipRequirementsFilepath
 
     # If the version check fails, print out troubleshooting steps to guide user 
     # and allow user to specifiy the full path to virtualenv.exe, if they choose to
@@ -40,7 +46,7 @@ function Deploy-MLUProject {
 
         # Try to use a non-default virtualenv path that the user enters
         do {
-            $continue = Read-Host -Prompt "`nTo proceed with setup, please enter 'P' to input your path to 'virtualenv.exe' and retry the setup (alternative method), or enter 'Q' to quit"
+            $continue = Read-Host -Prompt "`nTo proceed, enter 'P' to input the path to the Python 3 'virtualenv.exe' on this system, or enter 'Q' to quit"
 
             if ($continue -eq 'q') {
                 throw "Exiting due to choice of user"
@@ -51,20 +57,20 @@ function Deploy-MLUProject {
         
         } while ($continue -ne 'p') 
 
-        $venvCustomPath = Read-Host -Prompt "Please enter the path of the python3 'virtualenv.exe' program installed on your system"
-        Write-Host "Attempting to use virtualenv.exe at $venvCustomPath" -ForegroundColor Cyan
+        $venvExeCustomPath = Read-Host -Prompt "Please enter the path of the python3 'virtualenv.exe' program installed on your system"
+        Write-Host "Attempting to use virtualenv.exe at $venvExeCustomPath" -ForegroundColor Cyan
 
         # Check that the path is valid and that this new virtualenv.exe uses correct python version
-=        if (Test-Path -Path $venvCustomPath) {
-            if (Test-VenvPythonVersionIsCorrect -VenvExePath $venvCustomPath) {
-                Install-MLUPythonPackages -VenvExePath $venvCustomPath
+=        if (Test-Path -Path $venvExeCustomPath) {
+            if (Test-VenvPythonVersionIsCorrect -VenvExePath $venvExeCustomPath) {
+                Install-PythonPackages -VenvDir $pythonVenvDir -PipReqsFilepath $pipRequirementsFilepath -VenvExePath $venvExeCustomPath
             
             } else {
-                throw "Error: Version requirement check failed. $venvCustomPath does not use the required version of python for this project."
+                throw "Error: Version requirement check failed. $venvExeCustomPath does not use the required version of python for this project."
             }
 
         } else {
-            throw "Error: Specified virtualenv executable file not found: $venvCustomPath"
+            throw "Error: Specified virtualenv executable file not found: $venvExeCustomPath"
         }
     }
     
@@ -97,11 +103,17 @@ function Test-VenvPythonVersionIsCorrect {
     }
 }
 
-function Remove-MLUVenvIfExists {
+function Remove-VenvIfExists {
+    [CmdletBinding()]
+    param (
+        [Parameter()]
+        [string]$VenvDir
+    )
+
     # Remove existing folder of same venv name, if present in project dir
-    if (Test-Path -Path $pythonVenvLocation) {
-        Write-Host 'Python virtual environment seems to already exist...we need to remove it to install MLU fresh' -ForegroundColor Yellow
-        Write-Host "The directory named 'py-venv' inside this project directory will be removed" -ForegroundColor Yellow
+    if (Test-Path -Path $VenvDir) {
+        Write-Host 'Python virtual environment already exists: we need to remove it to install this project from scratch' -ForegroundColor Cyan
+        Write-Host "WARNING: The directory named 'py-venv-windows' inside this project directory will be removed" -ForegroundColor Yellow
 
         do {
             $continue = Read-Host -Prompt "Proceed with removing 'py-venv'? [Y/N]"
@@ -115,48 +127,55 @@ function Remove-MLUVenvIfExists {
         
         } while ($continue -ne 'y') 
         
-        Remove-Item -Path $pythonVenvLocation -Recurse -Force
+        Remove-Item -Path $VenvDir -Recurse -Force
     } 
 }
 
-function Install-MLUPythonPackages {
+function UpdatePythonPip {
+    ou should consider upgrading via the '\\zinc\nick\Development\Projects\mlYou\py-venv-windows\Scripts\python.exe -m pip
+nstall --upgrade pip' command.
+}
+
+function Install-PythonPackages {
     param(
+        [Parameter()]
+        [string]$VenvDir,
+
+        [Parameter()]
+        [string]$PipReqsFilepath,
+
         [Parameter(Mandatory=$false)]
         [string]$VenvExePath
     )
 
-    Write-Host "Creating python virtual environment 'py-venv', in which MLU dependencies will be installed" -ForegroundColor Cyan
+    Write-Host "Creating virtual environment 'py-venv-windows', in which the Python project dependencies will be installed" -ForegroundColor Cyan
 
     # run the virtualenv command to make the virtual env.
     # Use the virtualenv exe specified, or use the default one if none is specified
     if ($VenvExePath) {
-        & $VenvExePath $pythonVenvLocation
+        & $VenvExePath $VenvDir
     } else {
-        virtualenv $pythonVenvLocation     
+        virtualenv $VenvDir     
     }
 
-    if (Test-Path -Path $pythonVenvLocation) {
-        Write-Host "Virtual environment 'py-venv' directory exists - it appears to have been created successfully" -ForegroundColor Cyan
-        Write-Host "Activating virtual environment 'py-venv'" -ForegroundColor Cyan
-        & "$pythonVenvLocation\Scripts\activate" # run the 'activate' script to activate the virtual env.
+    if (Test-Path -Path $VenvDir) {
+        Write-Host "Virtual environment 'py-venv-windows' exists: creation successfully" -ForegroundColor Cyan
+        # Write-Host "Activating virtual environment 'py-venv-windows'" -ForegroundColor Cyan
+        # & "$VenvDir\Scripts\activate" # run the 'activate' script to activate the virtual env.
     
     } else {
-        throw "Error: Virtual environment 'py-env' was not found...there was an issue creating this env. Please see the docs to setup the project manually."
+        throw "Error: Virtual environment 'py-venv-windows' was not found...there was an issue creating this env"
     } 
 
-    Write-Host "Installing Pip packages into virtual environment" -ForegroundColor Cyan
-    pip install -r $pipRequirementsLocation
-    
+    Write-Host "Updating pip.exe for new virtualenv"
+    $venvPythonExePath = Join-Path $VenvDir -ChildPath "Scripts\python.exe"
+    & $venvPythonExePath -m pip install --upgrade pip
+
+    Write-Host "Installing Python Pip packages into virtual environment" -ForegroundColor Cyan
+    $venvPipFilepath = Join-Path $VenvDir -ChildPath 'Scripts\pip.exe'
+
+    Write-Host "Using Pip executable of the Venv" -ForegroundColor Cyan
+    & $venvPipFilepath install -r $PipReqsFilepath
 }
 
-Deploy-MLUProject
-
-
-
-
-
-
-
-
-
-
+Deploy-PythonProject
