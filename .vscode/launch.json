@@ -41,7 +41,7 @@
             "type": "python",
             "request": "launch",
             "program": "scripts\\fix-mpd-logs-missing-yr.py",
-            "args": ["Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\mpd.log.7", "2019"],
+            "args": ["D:\\Temp\\mpd-logs\\mpd-2018-02-08 23.log", "2018"],
             "console": "integratedTerminal"
         },
         {
@@ -50,17 +50,21 @@
             "request": "launch",
             "program": "scripts\\merge-mpd-logs.py",
             "args": [
-                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\mpd.master.out.log", 
+                "D:\\Temp\\mpd-logs\\mpd.master.final.log", 
                 "--logs", 
-                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\[YR+FIX] mpd.log.0",
-                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\[YR+FIX] mpd.log.1",
-                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\[YR+FIX] mpd.log.2",
-                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\[YR+FIX] mpd.log.3",
-                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\[YR+FIX] mpd.log.4",
-                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\[YR+FIX] mpd.log.5",
-                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\[YR+FIX] mpd.log.6",
-                "Z:\\Development\\Test Data\\mlYou\\test-mpd-logs\\[YR+FIX] mpd.log.7",
-
+                "D:\\Temp\\mpd-logs\\mpd.master.out1.log",
+                "D:\\Temp\\mpd-logs\\mpd.master.out2.log",
+                "D:\\Temp\\mpd-logs\\mpd.master.out3.log",
+                "D:\\Temp\\mpd-logs\\mpd.master.out4.log",
+                "D:\\Temp\\mpd-logs\\mpd.master.out5.log",
+                "D:\\Temp\\mpd-logs\\mpd.master.out6.log",
+                "D:\\Temp\\mpd-logs\\mpd.master.out-fromtestdata.log",
+                "D:\\Temp\\mpd-logs\\mpd-2018-02-08 23.log",
+                "D:\\Temp\\mpd-logs\\mpd-master0.log",
+                "D:\\Temp\\mpd-logs\\mpd-master1.log",
+                "D:\\Temp\\mpd-logs\\mpd-master2.log",
+                "D:\\Temp\\mpd-logs\\mpd-master3.log",
+                "D:\\Temp\\mpd-logs\\mpd-master4.log"
             ],
             "console": "integratedTerminal"
         }

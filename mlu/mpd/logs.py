@@ -13,6 +13,7 @@ of MPDLogLine objects - each object has 2 properties:
 - text: what the log actually says (minus the string timestamp info)
 - timestamp: Epoch timestamp for when this log ocurred, with correct year calculated
 '''
+from collections import Counter
 
 import datetime
 
@@ -66,6 +67,22 @@ def collectMPDLogLinesFromLogFile(mpdLogFilepath):
 def sortMPDLogLinesByTimestamp(mpdLogLines):
    mpdLogLines.sort(key=lambda line: line.timestamp)
    return mpdLogLines
+
+def removeDuplicateMPDLogLines(mpdLogLines):
+   mpdLogLinesCollapsed = []
+   for mpdLogLine in mpdLogLines:
+      mpdLogLinesCollapsed.append(str(mpdLogLine.timestamp) + "(|)" + mpdLogLine.text)
+   
+   uniqueLogLinesCollapsed = set(mpdLogLinesCollapsed)
+
+   uniqueMPDLogLines = []
+   for logLineCollapsed in uniqueLogLinesCollapsed:
+      lineTimestamp = float(logLineCollapsed.split("(|)")[0])
+      lineText = logLineCollapsed.split("(|)")[1]
+      uniqueMPDLogLines.append(MPDLogLine(timestamp=lineTimestamp, text=lineText))
+
+   sortedUniqueMPDLogLines = sortMPDLogLinesByTimestamp(uniqueMPDLogLines)
+   return sortedUniqueMPDLogLines
 
 def dumpMPDLogLinesToLogFile(destLogFilepath, mpdLogLines):
    rawLogLines = []

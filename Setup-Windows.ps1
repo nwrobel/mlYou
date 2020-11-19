@@ -131,11 +131,6 @@ function Remove-VenvIfExists {
     } 
 }
 
-function UpdatePythonPip {
-    ou should consider upgrading via the '\\zinc\nick\Development\Projects\mlYou\py-venv-windows\Scripts\python.exe -m pip
-nstall --upgrade pip' command.
-}
-
 function Install-PythonPackages {
     param(
         [Parameter()]

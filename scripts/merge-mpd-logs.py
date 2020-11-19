@@ -15,10 +15,15 @@ import datetime
 import envsetup
 envsetup.PreparePythonProjectEnvironment()
 
+from mlu.settings import MLUSettings
 
 from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.file
 import com.nwrobel.mypycommons.time
+import com.nwrobel.mypycommons.logger
+
+mypycommons.logger.initSharedLogger(logDir=MLUSettings.logDir)
+logger = mypycommons.logger.getSharedLogger()
 
 import mlu.mpd.logs
 
@@ -34,7 +39,14 @@ if __name__ == "__main__":
 
     allMPDLogLines = []
     for logFilepath in args.logs:
-        allMPDLogLines += mlu.mpd.logs.collectMPDLogLinesFromLogFile(logFilepath)
+        currentMPDLogLines = mlu.mpd.logs.collectMPDLogLinesFromLogFile(logFilepath)
+        allMPDLogLines += currentMPDLogLines
+        logger.info("Found {} MPDLogLines in log file '{}'".format(len(currentMPDLogLines), logFilepath))
 
-    allMPDLogLinesSorted = mlu.mpd.logs.sortMPDLogLinesByTimestamp(allMPDLogLines)
-    mlu.mpd.logs.dumpMPDLogLinesToLogFile(destLogFilepath=args.masterLogFilepath, mpdLogLines=allMPDLogLinesSorted)
+    logger.info("MPDLogLines collected total: {}".format(len(allMPDLogLines)))
+    logger.info("Removing duplicate MPDLogLines from total list and sorting them oldest -> newest")
+    uniqueSortedMPDLogLines = mlu.mpd.logs.removeDuplicateMPDLogLines(allMPDLogLines)
+
+    logger.info("Unique MPDLogLines total: {} ({} were duplicates and were removed)".format(len(uniqueSortedMPDLogLines), len(allMPDLogLines) - len(uniqueSortedMPDLogLines) ))
+    logger.info("Dumping all MPDLogLines to master MPD log file '{}'".format(args.masterLogFilepath))
+    mlu.mpd.logs.dumpMPDLogLinesToLogFile(destLogFilepath=args.masterLogFilepath, mpdLogLines=uniqueSortedMPDLogLines)
