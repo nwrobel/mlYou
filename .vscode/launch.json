@@ -58,23 +58,20 @@
             "request": "launch",
             "program": "scripts\\merge-mpd-logs.py",
             "args": [
-                "D:\\Temp\\mpd-logs\\mpd.master.final.log", 
+                "D:\\Temp\\mpd-logs\\mpd.master.finalfinal.log", 
                 "--logs", 
-                "D:\\Temp\\mpd-logs\\mpd.master.out1.log",
-                "D:\\Temp\\mpd-logs\\mpd.master.out2.log",
-                "D:\\Temp\\mpd-logs\\mpd.master.out3.log",
-                "D:\\Temp\\mpd-logs\\mpd.master.out4.log",
-                "D:\\Temp\\mpd-logs\\mpd.master.out5.log",
-                "D:\\Temp\\mpd-logs\\mpd.master.out6.log",
-                "D:\\Temp\\mpd-logs\\mpd.master.out-fromtestdata.log",
-                "D:\\Temp\\mpd-logs\\mpd-2018-02-08 23.log",
-                "D:\\Temp\\mpd-logs\\mpd-master0.log",
-                "D:\\Temp\\mpd-logs\\mpd-master1.log",
-                "D:\\Temp\\mpd-logs\\mpd-master2.log",
-                "D:\\Temp\\mpd-logs\\mpd-master3.log",
-                "D:\\Temp\\mpd-logs\\mpd-master4.log"
+                "D:\\Temp\\mpd-logs\\mpd.master.final3.log",
+                "D:\\Temp\\mpd-logs\\mpd-master.log"
             ],
             "console": "integratedTerminal"
-        }
+        },
+        {
+            "name": "Playstats tags update from MPD log script",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\update-playstat-tags-from-mpd-log.py",
+            "args": [],
+            "console": "integratedTerminal"
+        },
     ]
 }

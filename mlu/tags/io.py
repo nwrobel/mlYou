@@ -18,6 +18,7 @@ from mutagen.mp4 import MP4
 from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.logger
 import com.nwrobel.mypycommons.file
+import com.nwrobel.mypycommons.time
 
 logger = mypycommons.logger.getSharedLogger()
 
@@ -25,12 +26,12 @@ import mlu.tags.validation
 
 SUPPORTED_AUDIO_TYPES = ['flac', 'mp3', 'm4a']
 
-def getAudioFileDuration(audioFilepath):
+def getAudioFileDurationAsTimestamp(audioFilepath):
     mutagenInterface = mutagen.File(audioFilepath)
     durationSeconds = mutagenInterface.info.length
-    return durationSeconds
+    durationTimestamp = mypycommons.time.convertSecondsToTimestamp(durationSeconds)
 
-    
+    return durationTimestamp
 
 class AudioFileTags:
     '''
@@ -97,7 +98,7 @@ class AudioFileTagIOHandler:
     def __init__(self, audioFilepath):
         # validate that the filepath exists
         if (not mypycommons.file.fileExists(audioFilepath)):
-            raise ValueError("Class attribute 'audioFilepath' must be a valid absolute filepath string to an existing file")
+            raise ValueError("Class attribute 'audioFilepath' must be a valid filepath to an existing file: invalid value '{}'".format(audioFilepath))
 
         self.audioFilepath = audioFilepath
 

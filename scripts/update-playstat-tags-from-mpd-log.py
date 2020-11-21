@@ -3,118 +3,167 @@ update-playstat-tags-from-mpd-log.py
 
 '''
 
-from prettytable import PrettyTable
-import mutagen
-from mutagen.easyid3 import EasyID3
-from mutagen.id3 import ID3, TXXX
-from mutagen.mp4 import MP4
 # Do setup processing so that this script can import all the needed modules from the "mlu" package.
 # This is necessary because these scripts are not located in the root directory of the project, but
 # instead in the 'scripts' folder.
 import envsetup
 envsetup.PreparePythonProjectEnvironment()
 
+# import external Python modules
+from prettytable import PrettyTable
+
+from mlu.settings import MLUSettings
+
+from com.nwrobel import mypycommons
+import com.nwrobel.mypycommons.logger
+import com.nwrobel.mypycommons.file
+import com.nwrobel.mypycommons.time
+
+mypycommons.logger.initSharedLogger(logDir=MLUSettings.logDir)
+mypycommons.logger.setSharedLoggerConsoleOutputLogLevel("info")
+mypycommons.logger.setSharedLoggerFileOutputLogLevel("info")
+logger = mypycommons.logger.getSharedLogger()
+
+# import project-related modules
+import mlu.tags.backup
+import mlu.mpd.logs
+import mlu.mpd.plays
+import mlu.playstats
 
 
+def _getPlaystatTagUpdatesPreviewFilepath():
+    '''
+    '''
+    backupFilename = "[{}] update-playstat-tags-from-mpd-log_preview-changes.txt".format(
+        mypycommons.time.getCurrentTimestampForFilename()
+    )
+    filepath = mypycommons.file.JoinPaths(MLUSettings.logDir, backupFilename)
 
+    return filepath
 
-# #--------------------------------------------------------------------------------------------------
-# def PrintPlaybackDataTable(songPlaybackRecords):
-    
-#     # Create a table, which will have these 4 columns with corresponding header titles
-#     table = PrettyTable(['Song Title', 'Artist', '# Plays', 'Play Times'])
+def _writePlaystatTagUpdatesPreviewFile(audioFilePlaybackDataList, logFilepath):
+    '''
+    '''
+    tagUpdatesTable = PrettyTable()
+    tagUpdatesTable.field_names = ["Title", "Artist", "Plays Added", "Added Play Times"]
+    tagUpdatesTable.align["Title"] = "l"
+    tagUpdatesTable.align["Artist"] = "l"
+    tagUpdatesTable.align["Plays Added"] = "r"
+    tagUpdatesTable.align["Added Play Times"] = "r"
 
-#     for songPlaybackRecord in songPlaybackRecords:
-#         # Get the common tags so we can display the ones we need to in the playback table for this song
-#         songTags = mlu.tags.basic.getSongBasicTags(songFilepath=songPlaybackRecord.songFilePath)
+    for audioFilePlaybackData in audioFilePlaybackDataList:
+        tagHandler = mlu.tags.io.AudioFileTagIOHandler(audioFilePlaybackData.audioFilepath)
+        currentTags = tagHandler.getTags()
 
-#         numPlays = len(songPlaybackRecord.playbackTimes)
-#         # Get the playback times: for each playback timestamp on this songPlaybackRecord, format it for display
-#         # and return this formatted timestamp
-#         playTimes = ( mlu.common.time.formatTimestampForDisplay(timestamp) for timestamp in songPlaybackRecord.playbackTimes )
+        tagUpdatesTable.add_row([
+            currentTags.title, 
+            currentTags.artist, 
+            len(audioFilePlaybackData.playbackInstances),
+            [playbackInstance.playTimeStart for playbackInstance in audioFilePlaybackData.playbackInstances],
+        ])
 
-#         # Add the songPlaybackRecord data we found above to the table as a row
-#         table.add_row([songTags.title, songTags.artist, numPlays, playTimes])
+    mypycommons.file.writeToFile(filepath=logFilepath, content=tagUpdatesTable.get_string())
 
-#     # Display the table, begin and end it with a newline to look better
-#     print("\n" + table + "\n")
+def _getPlaystatTagUpdatesSummaryFilepath():
+    '''
+    Returns the filepath for the playstat tags updates summary log file.
+    '''
+    backupFilename = "[{}] update-playstat-tags-from-mpd-log_updates-summary.txt".format(
+        mypycommons.time.getCurrentTimestampForFilename()
+    )
+    filepath = mypycommons.file.JoinPaths(MLUSettings.logDir, backupFilename)
 
-# #--------------------------------------------------------------------------------------------------
-# def GetJSONCacheFilepath(cacheFileID ):
-#     jsonFilename = "mpd-playstats-cache-" + cacheFileID + ".json"
-#     return mlu.common.file.JoinPaths(mlu.common.file.getMLUCacheDirectory(), jsonFilename)
+    return filepath
 
+def _writePlaystatTagUpdatesSummaryFile(audioFilePlaybackDataList, summaryFilepath):
+    '''
+    Writes out a log file containing a table in pretty format with the playstat tags updates.
+    '''
+    tagUpdatesTable = PrettyTable()
+    tagUpdatesTable.field_names = ["Title", "Artist", "Playcount Increase", "Added Play Times", "New Playcount", "New Last Play Time", "New All Play Times"]
+    tagUpdatesTable.align["Title"] = "l"
+    tagUpdatesTable.align["Artist"] = "l"
+    tagUpdatesTable.align["Playcount Increase"] = "r"
+    tagUpdatesTable.align["Added Play Times"] = "r"
+    tagUpdatesTable.align["New Playcount"] = "r"
+    tagUpdatesTable.align["New Last Play Time"] = "r"
+    tagUpdatesTable.align["New All Play Times"] = "r"
 
-# # ------------------------------- Main script procedure --------------------------------------------
-# #
+    for audioFilePlaybackData in audioFilePlaybackDataList:
+        tagHandler = mlu.tags.io.AudioFileTagIOHandler(audioFilePlaybackData.audioFilepath)
+        currentTags = tagHandler.getTags()
+
+        tagUpdatesTable.add_row([
+            currentTags.title, 
+            currentTags.artist, 
+            len(audioFilePlaybackData.playbackInstances),
+            [playbackInstance.playTimeStart for playbackInstance in audioFilePlaybackData.playbackInstances],
+            currentTags.playCount,
+            currentTags.dateLastPlayed,
+            currentTags.dateAllPlays
+        ])
+
+    mypycommons.file.writeToFile(filepath=summaryFilepath, content=tagUpdatesTable.get_string())
+
+# ------------------------------- Main script procedure --------------------------------------------
+#
 if __name__ == "__main__":
-    mutagenInterface = mutagen.File("Z:\\Development\\Test Data\\mlYou\\test-audio-files\\test-1.flac")
-    print(mutagenInterface.info.length)
 
-    mutagenInterface = mutagen.File("Z:\\Development\\Test Data\\mlYou\\test-audio-files\\test-1.mp3")
-    print(mutagenInterface.info.length)
+    #logger.info("Performing full backup (checkpoint) of all music library audio files tags")
+    #tagsBackupFilepath = mlu.tags.backup.backupMusicLibraryAudioTags()
 
-    mutagenInterface = mutagen.File("Z:\\Development\\Test Data\\mlYou\\test-audio-files\\test-1.m4a")
-    print(mutagenInterface.info.length)
+    logger.info("Copying MPD log file at '{}' to ~cache temp dir".format(MLUSettings.mpdLogFilepath))
+    mypycommons.file.CopyFilesToDirectory(MLUSettings.mpdLogFilepath, MLUSettings.tempDir)
+    tempMpdLogFilepath = mypycommons.file.JoinPaths(
+        MLUSettings.tempDir, 
+        mypycommons.file.GetFilename(MLUSettings.mpdLogFilepath)
+    )
 
-   
-   
-#     print("Caching data...")
+    mpdLogLines = mlu.mpd.logs.collectMPDLogLinesFromLogFile(tempMpdLogFilepath)
 
-#     # Write 1st cache file: SongPlaybackRecords found from MPD
-#     print("Cache step 1: Writing newly found playback data...")
-#     mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=songPlaybackRecords, outputFilepath=GetJSONCacheFilepath(1))
+    collectResults = mlu.mpd.plays.collectAudioFilePlaybackDataFromMPDLogLines(mpdLogLines)
+    audioFilePlaybackDataList = collectResults['playbackDataList']
+    preserveLastLogLine = collectResults['preserveLastLogLine']
 
-#     # Write 2nd cache file: current SongPlaystatTags values for each song that will be updated
-#     print("Cache step 2: Writing current playstat tags for all songs...")
-#     songsToUpdate = (playbackRecord.songFilePath for playbackRecord in songPlaybackRecords)
-#     allSongPlaystatTagsCurrent = mlu.tags.playstats.ReadPlaystatTagsFromSongs(songFilepaths=songsToUpdate)
+    previewFilepath = _getPlaystatTagUpdatesPreviewFilepath()
+    _writePlaystatTagUpdatesPreviewFile(audioFilePlaybackDataList, previewFilepath)
+    logger.info("Changes preview file written successfully: File='{}'".format(previewFilepath))
 
-#     mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=allSongPlaystatTagsCurrent, outputFilepath=GetJSONCacheFilepath(2))
+    updatedAudioFiles = []
+    failedAudioFiles = []
+    for audioFilePlaybackData in audioFilePlaybackDataList:
+        try:
+            mlu.playstats.updateAudioFilePlaystatTagsFromPlaybackData(audioFilePlaybackData)
 
-#     # Write 3rd cache file: calculate new playstat tags based on playback instances + old tags
-#     # and return new, updated SongPlaystatTags values for all the songs
-#     print("Cache step 3: Writing new computed tag values (current tags + playback data) for all songs...")
+            logger.info("Updated playstats tags from audioFilePlaybackData for audio file '{}'".format(audioFilePlaybackData.audioFilepath))
+            updatedAudioFiles.append(audioFilePlaybackData.audioFilepath)
+
+        except:
+            logger.exception("Failed to update playstats tags from audioFilePlaybackData: File='{}'".format(audioFilePlaybackData.audioFilepath))
+            failedAudioFiles.append(audioFilePlaybackData.audioFilepath)
     
-#     # new code:
-#     allSongPlaystatTagsNew = mlu.tags.playstats.MergeSongPlaystatTagsWithPlaybackRecords(songPlaystatTags=allSongPlaystatTagsCurrent, songPlaybackRecords=songPlaybackRecords)
+    logger.info("Playstats tags update process complete")
+    logger.info("{} audio files had playstats tags updated successfully".format(len(updatedAudioFiles)))
+    logger.info("{} audio files failed to have playstats tags updated".format(len(failedAudioFiles)))
 
-#     # old code:
-#     # tagUpdateResolver = mlu.tags.playstats.SongPlaystatTagsUpdateResolver(songPlaybackRecords=songPlaybackRecords, songsPlaystatTags=songsCurrentPlaystatTags)
-#     # songsNewPlaystatTags = tagUpdateResolver.GetUpdatedPlaystatTags()
-#     mlu.cache.io.WriteMLUObjectsToJSONFile(mluObjects=allSongPlaystatTagsNew, outputFilepath=GetJSONCacheFilepath(3))
+    if (not failedAudioFiles):
+        logger.info("Process completed successfully without errors")
+        logger.info("Writing playstats tags updates summary file")
 
-#     print("Playback data gathering, caching, and tag preparation complete!\n")
+        summaryFilepath = _getPlaystatTagUpdatesSummaryFilepath()
+        _writePlaystatTagUpdatesSummaryFile(audioFilePlaybackDataList, summaryFilepath)
+        logger.info("Summary file written successfully: File='{}'".format(summaryFilepath))
 
-#     # Take the SongPlaybackRecord instances display them in table form to the user, once everything
-#     # has been prepared and we are ready to write the updated tags
-#     print("The following playstat tag updates are ready to write to the audio library:")
-#     PrintPlaybackDataTable(songPlaybackRecords)
+        logger.info("Resetting MPD log file, now that it has been parsed and the data was used")
+        mlu.mpd.logs.resetMPDLog(mpdLogFilepath=MLUSettings.mpdLogFilepath, tempMpdLogFilepath=tempMpdLogFilepath, preserveLastLogLine=preserveLastLogLine)
 
-#     # continue if we want to make the changes, otherwise we exit
-#     writeChanges = input("Do you wish to continue? [y/n]: ")
+    else:
+        failedAudioFilesFmt = "\n".join(failedAudioFiles)
+        logger.info("Failed to update playstats tags for the following files:\n{}".format(failedAudioFilesFmt))
+        
+        logger.info("Process completed with failures: undoing all tag changes to the music library (reverting to checkpoint)")
+        #mlu.tags.backup.restoreMusicLibraryAudioTagsFromBackup(tagsBackupFilepath)
 
-#     if ( (writeChanges != 'y') and (writeChanges != 'Y') ):
-#         print("Exiting due to choice of user")
-#         return
-    
-#     # write the new, updated tag values (same ones we just wrote to the 3rd json cache file) to the
-#     # audio files
-#     mlu.tags.playstats.WritePlaystatTagsToSongs(songsPlaystatTags=allSongPlaystatTagsNew)
+        logger.info("Tags backup restored successfully: all changes were undone - run this script again to retry")
 
-#     # Verify the changes made: read in the current, now updated playstat tags from the audio files 
-#     # and verify they match the updated tags list built earlier
-#     tagIssueSongs = mlu.tags.playstats.FindSongsWithWrongPlaystatTags(expectedSongsPlaystatTags=allSongPlaystatTagsNew)
-
-#     if (tagIssueSongs):
-#         logger.error("Playstats tag verification failed: one or more songs have incorrect playstat tag values: examine the files below to resolve incorrect tags manually")
-#         for songFilePath in tagIssueSongs:
-#             logger.error("Incorrect playstat tags: {}".format(songFilePath))
-
-#     # archive log files and clear/reset mpd logs
-#     logger.info("Archiving MPD logs...")
-#     mpdLogsManager.archiveLogs()
-
-#     logger.info("Emptying MPD logs to reset collected playback data...")
-#     mpdLogsManager.clearLogs()
-    
+    logger.info('Script complete')

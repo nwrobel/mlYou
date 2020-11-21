@@ -82,10 +82,10 @@ if __name__ == "__main__":
     tagsBackupFilepath = mlu.tags.backup.backupMusicLibraryAudioTags()
 
     logger.info("Copying vote playlist files to temp location in ~cache")
-    mlu.ratestats.copyVotePlaylistsToTemp(votePlaylistsSourceDir=MLUSettings.votePlaylistsDir, votePlaylistsTempDir=MLUSettings.votePlaylistsTempDir)
+    mlu.ratestats.copyVotePlaylistsToTemp(votePlaylistsSourceDir=MLUSettings.votePlaylistsDir, votePlaylistsTempDir=MLUSettings.tempDir)
 
     logger.info("Loading audio file votes data from all vote playlists")
-    audioFileVoteDataList = mlu.ratestats.getAudioFileVoteDataFromRatePlaylists(votePlaylistsDir=MLUSettings.votePlaylistsTempDir)
+    audioFileVoteDataList = mlu.ratestats.getAudioFileVoteDataFromRatePlaylists(votePlaylistsDir=MLUSettings.tempDir)
 
     logger.info("Vote playlists data loaded successfully")
     logger.info("Writing new ratestats tag data to audio files")
@@ -111,10 +111,10 @@ if __name__ == "__main__":
         logger.info("Summary file written successfully: File='{}'".format(summaryFilepath))
 
         logger.info('Archiving the old vote playlists which were just processed')
-        mlu.ratestats.archiveVotePlaylists(playlistsDir=MLUSettings.votePlaylistsTempDir, archiveDir=MLUSettings.votePlaylistsArchiveDir)
+        mlu.ratestats.archiveVotePlaylists(playlistsDir=MLUSettings.tempDir, archiveDir=MLUSettings.votePlaylistsArchiveDir)
 
         logger.info('Emptying already counted votes from vote playlists')
-        mlu.ratestats.resetVotePlaylists(votePlaylistsSourceDir=MLUSettings.votePlaylistsDir, votePlaylistsTempDir=MLUSettings.votePlaylistsTempDir)
+        mlu.ratestats.resetVotePlaylists(votePlaylistsSourceDir=MLUSettings.votePlaylistsDir, votePlaylistsTempDir=MLUSettings.tempDir)
 
     else:
         erroredAudioFilepathsFmt = "\n".join(erroredAudioFilepaths)
@@ -125,5 +125,5 @@ if __name__ == "__main__":
 
         logger.info("Tags backup restored successfully: all changes were undone - run this script again to retry")
 
-    mypycommons.file.DeleteDirectory(MLUSettings.votePlaylistsTempDir)
+    mypycommons.file.DeleteDirectory(MLUSettings.tempDir)
     logger.info('Script complete')

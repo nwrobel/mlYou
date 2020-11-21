@@ -13,7 +13,7 @@ import com.nwrobel.mypycommons.time
 class MPDLogLine:
    '''
    Class representing a single log line entry from an MPD log file.
-   
+
    Params:
       text: what the log actually says (log line minus the string timestamp info)
       timestamp: time for when this log line occurred/was written, as an epoch timestamp (float or int)
@@ -33,7 +33,7 @@ def collectMPDLogLinesFromLogFile(mpdLogFilepath):
    '''
    Collects and returns all log lines (as MPDLogLine objects) from all the MPD log files currently
    stored in the MPD prepared log (temp) directory. 
-   
+
    Each log file in the prepared logs directory is opened, read, and loaded into an MPDLogLine objects list. 
    This list is then sorted by the timestamp of each line (earliest first) and returned.
    '''
@@ -61,7 +61,7 @@ def removeDuplicateMPDLogLines(mpdLogLines):
    mpdLogLinesCollapsed = []
    for mpdLogLine in mpdLogLines:
       mpdLogLinesCollapsed.append(str(mpdLogLine.timestamp) + "(|)" + mpdLogLine.text)
-   
+
    uniqueLogLinesCollapsed = set(mpdLogLinesCollapsed)
 
    uniqueMPDLogLines = []
@@ -84,9 +84,9 @@ def dumpMPDLogLinesToLogFile(destLogFilepath, mpdLogLines):
    mypycommons.file.writeToFile(filepath=destLogFilepath, content=rawLogLines)
 
 def formatTimestampToSyslogFormat(timestamp):
-    dt = datetime.datetime.fromtimestamp(timestamp)
-    formattedTime = datetime.datetime.strftime(dt, "%Y-%m-%dT%H:%M:%S.%f-04:00")
-    return formattedTime
+   dt = datetime.datetime.fromtimestamp(timestamp)
+   formattedTime = datetime.datetime.strftime(dt, "%Y-%m-%dT%H:%M:%S.%f-04:00")
+   return formattedTime
 
 def getTimestampFromRawLogLine(logLine):
    '''
@@ -100,18 +100,18 @@ def getTimestampFromRawLogLine(logLine):
    return epochTimestamp
 
 def getTimestampFromRawLogLineAddYear(logLine, year):
-    '''
-    Gets epoch timestamp from the raw log line of a log file - for the OLD, MPD default logfiles with
-    timestamps missing the year
-    '''
-    timePart = logLine.split(' : ')[0]
-    timePartWithYear = "{} {}".format(year, timePart)
+   '''
+   Gets epoch timestamp from the raw log line of a log file - for the OLD, MPD default logfiles with
+   timestamps missing the year
+   '''
+   timePart = logLine.split(' : ')[0]
+   timePartWithYear = "{} {}".format(year, timePart)
 
-    # Tell the datetime library how to parse this time string from the MPD log line into a timestamp value
-    lineDatetime = datetime.datetime.strptime(timePartWithYear, "%Y %b %d %H:%M")
-    epochTimestamp = lineDatetime.timestamp()
+   # Tell the datetime library how to parse this time string from the MPD log line into a timestamp value
+   lineDatetime = datetime.datetime.strptime(timePartWithYear, "%Y %b %d %H:%M")
+   epochTimestamp = lineDatetime.timestamp()
 
-    return epochTimestamp
+   return epochTimestamp
 
 def getTextFromRawLogLine(logLine):
    lineTextData = logLine[33:]
@@ -119,6 +119,22 @@ def getTextFromRawLogLine(logLine):
 
    return lineText
 
+
+def resetMPDLog(mpdLogFilepath, tempMpdLogFilepath, preserveLastLogLine):
+
+   processedMpdLoglineCount = mypycommons.file.getTextFileLineCount(tempMpdLogFilepath)
+
+      # Remove from the start of the actual log file the number of lines that were 
+      # processed in the mpd log from the temp dir earlier - essentially we remove the lines that
+      # have been processed already, leaving behind any new lines that may have been created
+      # in the time between when the log was first copied to temp and now 
+
+   if (preserveLastLogLine):
+      removeFirstNLines = processedMpdLoglineCount - 1
+   else:
+      removeFirstNLines = processedMpdLoglineCount
+
+   mypycommons.file.removeFirstNLinesFromTextFile(mpdLogFilepath, removeFirstNLines)
 
 
 

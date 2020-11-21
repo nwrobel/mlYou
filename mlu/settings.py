@@ -13,7 +13,7 @@ def getUserSettingsWindows():
     return {
         'musicLibraryRootDir': "Z:\\Music Library\\Content",
         'votePlaylistsDir': "Z:\\Music Library\\!mpd-saved-playlists",
-        'mpdLogFilepath': "D:\\Temp\\mpd-master.log"
+        'mpdLogFilepath': "D:\\Temp\\mpd-master-test.log"
     }
 
 def getUserSettingsLinux(): 
@@ -51,8 +51,8 @@ class MLUSettings:
     cacheDir = mypycommons.file.JoinPaths(projectRootDir, '~cache')
 
     # Dirs of where various types of cache files are stored
+    tempDir = mypycommons.file.JoinPaths(cacheDir, '_temp')
     tagBackupsDir = mypycommons.file.JoinPaths(cacheDir, 'audio-tag-backups')
-    votePlaylistsTempDir = mypycommons.file.JoinPaths(cacheDir, 'vote-playlists-temp')
     votePlaylistsArchiveDir = mypycommons.file.JoinPaths(cacheDir, 'vote-playlists-archive')
     mpdLogsArchiveDir = mypycommons.file.JoinPaths(cacheDir, 'mpd-logs-archive')
 
@@ -81,9 +81,6 @@ class MLUSettings:
     if (not mypycommons.file.directoryExists(testDataGenVotePlaylistsDir)):
         mypycommons.file.createDirectory(testDataGenVotePlaylistsDir)
 
-    if (not mypycommons.file.directoryExists(votePlaylistsTempDir)):
-        mypycommons.file.createDirectory(votePlaylistsTempDir)
-
     if (not mypycommons.file.directoryExists(votePlaylistsArchiveDir)):
         mypycommons.file.createDirectory(votePlaylistsArchiveDir)
 
@@ -92,3 +89,10 @@ class MLUSettings:
 
     if (not mypycommons.file.directoryExists(tagBackupsDir)):
         mypycommons.file.createDirectory(tagBackupsDir)
+
+    # Delete the temp dir if it exists, then recreate it fresh
+    # Temp dir should be fresh/empty at the start of any MLU script
+    if (mypycommons.file.directoryExists(tempDir)):
+        mypycommons.file.DeleteDirectory(tempDir)
+
+    mypycommons.file.createDirectory(tempDir)

@@ -1,37 +1,31 @@
 '''
 mlu.mpd.plays
 
-Author: Nick Wrobel
-First Created:  05/05/19
-Last Modified:  01/27/20
-
-This module handles data processing of MPDLogLine objects into SongPlaybackInstance objects: it creates
-meaningful playback information for songs from the MPD log data given. 
-
-These SongPlaybackInstance objects are not specific to MPD and are a general form for playback data that
-can be consumed by other MLU modules. Therefore this module serves as a link between MPD and its log
-data and a simple playback instance for single songs.
-
 '''
+import re
 
-import re 
-import mlu.mpd.logs
-import mlu.playback
+from com.nwrobel import mypycommons
+import com.nwrobel.mypycommons.logger
+import com.nwrobel.mypycommons.file
+import com.nwrobel.mypycommons.misc
 
+from mlu.settings import MLUSettings
+import mlu.playstats
 
+def _filterJunkMPDLogLines(mpdLogLines):
+    linesWithJunkRemoved = [logLine for logLine in mpdLogLines if (not _mpdLogLineIsJunk(logLine))]
+    return linesWithJunkRemoved
+        
 
-
-
-def collectPlaybackData(mpdLogLines):
+def collectAudioFilePlaybackDataFromMPDLogLines(mpdLogLines):
     '''
-    Takes the list of MPDLogLine objects (given to the class via constructor) and creates a list
-    of SongPlaybackInstance objects from them by reading each log line, determining which log lines
-    indicate a song playback, and for what song and how long these playbacks ocurred. 
-
-    Returns the list of SongPlaybackInstance objects collected from the mpd logs.
     '''
-    allPlaybackInstances = []
+    # Filter junk entries from the log lines, then delete the old original list of unfiltered log lines
+    # this will save memory for large log files
+    linesWithJunkRemoved = _filterJunkMPDLogLines(mpdLogLines)
+    del mpdLogLines
 
+    audioFilePlaybackDataList = []
     # go through each item in logline array:
     #       check/identify if current line is a 'playback' line (song played, song started/resumed, etc): if so:
     #           take note of the song filepath
@@ -43,12 +37,12 @@ def collectPlaybackData(mpdLogLines):
     # Have loop go to the next line - we will do the above again next time we hit the next consecutive 'playback' line
 
     # Go through each line in the list of log lines
-    for (index, currentLine) in enumerate(self._mpdLogLines):
-        # If the current log line is one that indicates a song was played back, get the data
-        # required to make a PlaybackInstance from the line and then create the PlaybackInstance
-        if (self._MPDLogLineIsPlaybackStarted(currentLine)):
+    preserveLastLogLine = False
+    for (index, currentLine) in enumerate(linesWithJunkRemoved):
+        # If the current log line is one that indicates a song was played back, get the info from the line
+        if (_mpdLogLineIsPlaybackStarted(currentLine)):
             
-            songFilepath = self._getSongFilepathFromMPDLogLine(currentLine)
+            audioFilepath = _getSongFilepathFromMPDLogLine(currentLine)
             playbackStartTime = currentLine.timestamp
 
             # determine playback duration: find out when the song actually stopped by looking ahead at the
@@ -63,66 +57,117 @@ def collectPlaybackData(mpdLogLines):
 
                 # Get the next line in the list of LogLines
                 try:
-                    nextLine = self._mpdLogLines[logLinesCursorIndex]
+                    nextLine = linesWithJunkRemoved[logLinesCursorIndex]
 
                     # Look for a line that comes after the playback start line that indicates the song playback ended: 
                     # - indicates another song started playing
                     # - indicates that the MPD client was disconnected/closed
-                    if (self._MPDLogLineIsPlaybackStarted(nextLine) or self._MPDLogLineIsMPDClosed(nextLine)):
+                    if (_mpdLogLineIsPlaybackStarted(nextLine) or _mpdLogLineIsException(nextLine) or _mpdLogLineIsClosedOrOpen(nextLine)):
                         playbackStopLogLine = nextLine
 
-                    # Use the timestamp of this playback stopped line to find the playback duration
-                    # Get the playback duration from the difference b/w playback stop and start times
-                    playbackStopTime = playbackStopLogLine.timestamp
-                    playbackDuration = playbackStopTime - playbackStartTime
+                        # Use the timestamp of this playback stopped line to find the playback duration
+                        # Get the playback duration from the difference b/w playback stop and start times
+                        playbackStopTime = playbackStopLogLine.timestamp
+                        playbackDuration = playbackStopTime - playbackStartTime
 
                 # If the list is out of bounds, we are at the end of the list, and we have no way to know what the play duration is, so
-                # leave playbackDuration at 0, which represents this ambiguity - this song playback will be preserved in the log file,
+                # leave playbackDuration at 0, which represents this ambiguity - this song playback line will be preserved in the log file,
                 # and we will not make a PlaybackInstance for it right now (we assume that the next round of log lines will have a stop playback indicator)
                 # Also break from the loop, since no playback stop line was found
                 except IndexError:
-                    self.preservedAmbiguousFinalPlaybackLine = currentLine
+                    preserveLastLogLine = True
                     break
 
             # Create the playbackInstance object from the values we found for this playback and add it to the list
             # (if the playback duration was found - if not, don't make a playback instance for the last playback)
-            if (playbackDuration != 0):
-                allPlaybackInstances.append(
-                    mlu.playback.SongPlaybackInstance(
-                        songFilepath=songFilepath, 
-                        playbackStartTime=playbackStartTime, 
-                        playbackDuration=playbackDuration
-                    ) 
+            if (not preserveLastLogLine):
+                playbackInstance = mlu.playstats.AudioFilePlaybackInstance(
+                    playTimeStart=playbackStartTime, 
+                    playTimeDuration=playbackDuration
                 )
 
-    return allPlaybackInstances
+                thisAudioFilePlaybackData = [playbackData for playbackData in audioFilePlaybackDataList if (playbackData.audioFilepath == audioFilepath)]
+                if (thisAudioFilePlaybackData):
+                    thisAudioFilePlaybackData[0].playbackInstances.append(playbackInstance)
+                else:
+                    thisAudioFilePlaybackData = mlu.playstats.AudioFilePlaybackData(
+                        audioFilepath=audioFilepath,
+                        playbackInstances=[playbackInstance]
+                    )
+                    audioFilePlaybackDataList.append(thisAudioFilePlaybackData)
 
-    def _MPDLogLineIsPlaybackStarted(self, logLine):
-        '''
-        Checks whether or not the given MPDLogLine instance represents/means that a song playback
-        was started.
-        
-        Returns boolean, true if it is a playback started line.
-        '''
-        return ("player: played" in logLine.text)
+    return {
+        'playbackDataList': audioFilePlaybackDataList,
+        'preserveLastLogLine': preserveLastLogLine
+    }
 
-    def _MPDLogLineIsMPDClosed(self, logLine):
-        '''
-        Checks whether or not the given MPDLogLine instance represents/means MPD was closed and/or
-        the client was disconnected, thus any playbacks were stopped.
-        
-        Returns boolean, true if it is a MPD closed/disconnected line.
-        '''
-        return ( ("client: [" in logLine.text) and ("] closed" in logLine.text) )
+def _mpdLogLineIsJunk(logLine):
+    if (
+        mypycommons.misc.stringStartsWith(inputString=logLine.text, startsWith="exception: Failed to register ") or
+        mypycommons.misc.stringStartsWith(inputString=logLine.text, startsWith="zinc mpd: exception: Failed to register ") or
+        mypycommons.misc.stringStartsWith(inputString=logLine.text, startsWith="inotify: Failed to open directory ") or
+        mypycommons.misc.stringStartsWith(inputString=logLine.text, startsWith="zinc mpd: inotify: Failed to open directory ") or
+        mypycommons.misc.stringStartsWith(inputString=logLine.text, startsWith="update: updating ") or
+        mypycommons.misc.stringStartsWith(inputString=logLine.text, startsWith="zinc mpd: update: updating ")
+    ):
+        return True
+    else:
+        return False    
 
-    def _getSongFilepathFromMPDLogLine(self, logLine):
-        '''
-        Parses the given MPDLogLine and returns the filepath for the audio file that was played/mentioned
-        in this log line.
-        '''
-        name = re.findall('"([^"]*)"', logLine.text)[0]
-        return name
+def _mpdLogLineIsPlaybackStarted(logLine):
+    '''
+    '''
+    if (
+        mypycommons.misc.stringStartsWith(inputString=logLine.text, startsWith="player: played ") or
+        mypycommons.misc.stringStartsWith(inputString=logLine.text, startsWith="zinc mpd: player: played ")
+    ):
+        return True
+    else:
+        return False
 
+# TODO: allow machine host name to be passed (replace "zinc mpd" with "<hostname> mpd")
+def _mpdLogLineIsException(logLine):
+    '''
+    Checks whether or not the given MPDLogLine instance represents/means that an exception occured
+    with MPD - this indicates, with a preceding playback line, that playback stopped here
+    
+    Returns boolean, true if it is a playback started line.
+    '''
+    if (
+        mypycommons.misc.stringStartsWith(inputString=logLine.text, startsWith="errno: ") or
+        mypycommons.misc.stringStartsWith(inputString=logLine.text, startsWith="exception: ") or
+        mypycommons.misc.stringStartsWith(inputString=logLine.text, startsWith="zinc mpd: errno: ") or
+        mypycommons.misc.stringStartsWith(inputString=logLine.text, startsWith="zinc mpd: exception: ")
+    ):
+        return True
+    else:
+        return False
+
+def _mpdLogLineIsClosedOrOpen(logLine):
+    '''
+    '''
+    if (
+        (
+            mypycommons.misc.stringStartsWith(inputString=logLine.text, startsWith="client: ") or
+            mypycommons.misc.stringStartsWith(inputString=logLine.text, startsWith="zinc mpd: client: ")
+        ) and
+        (
+            "closed" in logLine.text or
+            "opened" in logLine.text
+        )
+    ):
+        return True
+    else:
+        return False
+
+def _getSongFilepathFromMPDLogLine(logLine):
+    '''
+    Parses the given MPDLogLine and returns the filepath for the audio file that was played/mentioned
+    in this log line.
+    '''
+    partialPath = re.findall('"([^"]*)"', logLine.text)[0]
+    fullPath = mypycommons.file.JoinPaths(MLUSettings.musicLibraryRootDir, partialPath)
+    return fullPath
    
 
 
