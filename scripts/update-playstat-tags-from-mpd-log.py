@@ -97,7 +97,7 @@ def _writePlaystatTagUpdatesSummaryFile(audioFilePlaybackDataList, summaryFilepa
             currentTags.title, 
             currentTags.artist, 
             len(audioFilePlaybackData.playbackInstances),
-            [playbackInstance.playTimeStart for playbackInstance in audioFilePlaybackData.playbackInstances],
+            [mypycommons.time.formatTimestampForDisplay(playbackInstance.playTimeStart) for playbackInstance in audioFilePlaybackData.playbackInstances],
             currentTags.playCount,
             currentTags.dateLastPlayed,
             currentTags.dateAllPlays
