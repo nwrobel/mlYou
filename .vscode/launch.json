@@ -24,11 +24,19 @@
             "name": "Ratestats vote playlist update script",
             "type": "python",
             "request": "launch",
-            "program": "scripts\\update_ratestat_tags_from_vote_playlists.py",
+            "program": "scripts\\update-ratestat-tags-from-vote-playlists.py",
             "args": [],
             "console": "integratedTerminal"
         },
-                {
+        {
+            "name": "Rating tag update for library script",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\update-rating-tags-for-library.py",
+            "args": [],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Convert Playlist Script",
             "type": "python",
             "request": "launch",

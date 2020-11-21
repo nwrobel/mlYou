@@ -1,17 +1,6 @@
 '''
 mlu.mpd.logs
 
-Author: Nick Wrobel
-First Created:  05/05/19
-Last Modified:  01/27/20
-
-This module deals with reading, writing, moving, and copying MPD log files to support operations
-of the mlu.mpd.playstats module.
-
-The MPDLogsHandler class focuses on reading in all the current MPD logs and returning a single array
-of MPDLogLine objects - each object has 2 properties:
-- text: what the log actually says (minus the string timestamp info)
-- timestamp: Epoch timestamp for when this log ocurred, with correct year calculated
 '''
 from collections import Counter
 

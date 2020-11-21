@@ -1,5 +1,5 @@
 '''
-update_ratestat_tags_from_vote_playlists.py
+update-ratestat-tags-from-vote-playlists.py
 
 This script uses the votes playlists (1-10) to add the new votes to and update the ratestat tags of 
 audio files in the music library. 
@@ -79,7 +79,7 @@ def _writeRatestatTagUpdatesSummaryFile(audioFileVoteDataList, summaryFilepath):
 if __name__ == "__main__":
 
     logger.info("Performing full backup (checkpoint) of all music library audio files tags")
-    #tagsBackupFilepath = mlu.tags.backup.backupMusicLibraryAudioTags()
+    tagsBackupFilepath = mlu.tags.backup.backupMusicLibraryAudioTags()
 
     logger.info("Copying vote playlist files to temp location in ~cache")
     mlu.ratestats.copyVotePlaylistsToTemp(votePlaylistsSourceDir=MLUSettings.votePlaylistsDir, votePlaylistsTempDir=MLUSettings.votePlaylistsTempDir)
@@ -121,9 +121,9 @@ if __name__ == "__main__":
         logger.info("Failed to update ratestat tag values with new votes for the following files:\n{}".format(erroredAudioFilepathsFmt))
         
         logger.info("Process completed with failures: undoing all tag changes to the music library (reverting to checkpoint)")
-        #mlu.tags.backup.restoreMusicLibraryAudioTagsFromBackup(tagsBackupFilepath)
+        mlu.tags.backup.restoreMusicLibraryAudioTagsFromBackup(tagsBackupFilepath)
 
-        #logger.info("Tags backup restored successfully: all changes were undone - run this script again to retry")
+        logger.info("Tags backup restored successfully: all changes were undone - run this script again to retry")
 
     mypycommons.file.DeleteDirectory(MLUSettings.votePlaylistsTempDir)
     logger.info('Script complete')

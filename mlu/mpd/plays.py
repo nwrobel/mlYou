@@ -19,108 +19,83 @@ import mlu.mpd.logs
 import mlu.playback
 
 
-class MPDPlaybackInstanceCollector:
+
+
+
+def collectPlaybackData(mpdLogLines):
     '''
-    Collects/forms SongPlaybackInstance objects from MPDLogLine objects (mpd log data). Reads this log
-    data to determine which songs were played, what times each playback began, and how long each playback
-    lasted.
+    Takes the list of MPDLogLine objects (given to the class via constructor) and creates a list
+    of SongPlaybackInstance objects from them by reading each log line, determining which log lines
+    indicate a song playback, and for what song and how long these playbacks ocurred. 
 
-    Params:
-        mpdLogLines: the list of MPDLogLine objects to find playback instances from (must be in
-            sorted order by timestamp, ordered least recent to most recent)
+    Returns the list of SongPlaybackInstance objects collected from the mpd logs.
     '''
-    def __init__(self, mpdLogLines):
-        # Validate input data
-        if (not mpdLogLines) or (not isinstance(mpdLogLines, list)):
-            raise TypeError("Class attribute 'mpdLogLines' must be a non-empty list of MPDLogLine objects")
+    allPlaybackInstances = []
 
-        for mpdLogLine in mpdLogLines:
-            if (not isinstance(mpdLogLine, mlu.mpd.logs.MPDLogLine)):
-                raise TypeError("Invalid class attribute 'mpdLogLines': one or more list values are not instances of MPDLogLine class")
+    # go through each item in logline array:
+    #       check/identify if current line is a 'playback' line (song played, song started/resumed, etc): if so:
+    #           take note of the song filepath
+    #           take note of the timestamp of the play start
+    #           check the next consecutive line (logline coming right after it) to see what happened next
+    #             repeat this until we find a line to see if song was stopped, client exit, played another song, etc
+    #           based on this, calculate the play duration by taking the difference of the timestamps b/w play start
+    #             logline and the logline that indicates when play ended
+    # Have loop go to the next line - we will do the above again next time we hit the next consecutive 'playback' line
 
-        self._mpdLogLines = mpdLogLines
-        
-        # The MPDLogLines list may have a final playback instance line, but 
-        # no more log lines to tell when playback ended: this situation is called an
-        # ambiguous final playback line - this variable preserves/captures that playback line so that
-        # it can be preserved in the MPD log file once everything has been read
-        self.preservedAmbiguousFinalPlaybackLine = None
+    # Go through each line in the list of log lines
+    for (index, currentLine) in enumerate(self._mpdLogLines):
+        # If the current log line is one that indicates a song was played back, get the data
+        # required to make a PlaybackInstance from the line and then create the PlaybackInstance
+        if (self._MPDLogLineIsPlaybackStarted(currentLine)):
+            
+            songFilepath = self._getSongFilepathFromMPDLogLine(currentLine)
+            playbackStartTime = currentLine.timestamp
 
+            # determine playback duration: find out when the song actually stopped by looking ahead at the
+            # next log line(s) in the list (the list is ordered by time, least to most recent)
+            # We keep checking the next lines until we find a line type that indicates that the song's 
+            # playback must have stopped
+            playbackStopLogLine = None
+            playbackDuration = 0
+            logLinesCursorIndex = index
+            while (not playbackStopLogLine):
+                logLinesCursorIndex += 1
 
-    def collectPlaybackInstances(self):
-        '''
-        Takes the list of MPDLogLine objects (given to the class via constructor) and creates a list
-        of SongPlaybackInstance objects from them by reading each log line, determining which log lines
-        indicate a song playback, and for what song and how long these playbacks ocurred. 
+                # Get the next line in the list of LogLines
+                try:
+                    nextLine = self._mpdLogLines[logLinesCursorIndex]
 
-        Returns the list of SongPlaybackInstance objects collected from the mpd logs.
-        '''
-        allPlaybackInstances = []
+                    # Look for a line that comes after the playback start line that indicates the song playback ended: 
+                    # - indicates another song started playing
+                    # - indicates that the MPD client was disconnected/closed
+                    if (self._MPDLogLineIsPlaybackStarted(nextLine) or self._MPDLogLineIsMPDClosed(nextLine)):
+                        playbackStopLogLine = nextLine
 
-        # go through each item in logline array:
-        #       check/identify if current line is a 'playback' line (song played, song started/resumed, etc): if so:
-        #           take note of the song filepath
-        #           take note of the timestamp of the play start
-        #           check the next consecutive line (logline coming right after it) to see what happened next
-        #             repeat this until we find a line to see if song was stopped, client exit, played another song, etc
-        #           based on this, calculate the play duration by taking the difference of the timestamps b/w play start
-        #             logline and the logline that indicates when play ended
-        # Have loop go to the next line - we will do the above again next time we hit the next consecutive 'playback' line
+                    # Use the timestamp of this playback stopped line to find the playback duration
+                    # Get the playback duration from the difference b/w playback stop and start times
+                    playbackStopTime = playbackStopLogLine.timestamp
+                    playbackDuration = playbackStopTime - playbackStartTime
 
-        # Go through each line in the list of log lines
-        for (index, currentLine) in enumerate(self._mpdLogLines):
-            # If the current log line is one that indicates a song was played back, get the data
-            # required to make a PlaybackInstance from the line and then create the PlaybackInstance
-            if (self._MPDLogLineIsPlaybackStarted(currentLine)):
-                
-                songFilepath = self._getSongFilepathFromMPDLogLine(currentLine)
-                playbackStartTime = currentLine.timestamp
+                # If the list is out of bounds, we are at the end of the list, and we have no way to know what the play duration is, so
+                # leave playbackDuration at 0, which represents this ambiguity - this song playback will be preserved in the log file,
+                # and we will not make a PlaybackInstance for it right now (we assume that the next round of log lines will have a stop playback indicator)
+                # Also break from the loop, since no playback stop line was found
+                except IndexError:
+                    self.preservedAmbiguousFinalPlaybackLine = currentLine
+                    break
 
-                # determine playback duration: find out when the song actually stopped by looking ahead at the
-                # next log line(s) in the list (the list is ordered by time, least to most recent)
-                # We keep checking the next lines until we find a line type that indicates that the song's 
-                # playback must have stopped
-                playbackStopLogLine = None
-                playbackDuration = 0
-                logLinesCursorIndex = index
-                while (not playbackStopLogLine):
-                    logLinesCursorIndex += 1
+            # Create the playbackInstance object from the values we found for this playback and add it to the list
+            # (if the playback duration was found - if not, don't make a playback instance for the last playback)
+            if (playbackDuration != 0):
+                allPlaybackInstances.append(
+                    mlu.playback.SongPlaybackInstance(
+                        songFilepath=songFilepath, 
+                        playbackStartTime=playbackStartTime, 
+                        playbackDuration=playbackDuration
+                    ) 
+                )
 
-                    # Get the next line in the list of LogLines
-                    try:
-                        nextLine = self._mpdLogLines[logLinesCursorIndex]
-
-                        # Look for a line that comes after the playback start line that indicates the song playback ended: 
-                        # - indicates another song started playing
-                        # - indicates that the MPD client was disconnected/closed
-                        if (self._MPDLogLineIsPlaybackStarted(nextLine) or self._MPDLogLineIsMPDClosed(nextLine)):
-                            playbackStopLogLine = nextLine
-
-                        # Use the timestamp of this playback stopped line to find the playback duration
-                        # Get the playback duration from the difference b/w playback stop and start times
-                        playbackStopTime = playbackStopLogLine.timestamp
-                        playbackDuration = playbackStopTime - playbackStartTime
-
-                    # If the list is out of bounds, we are at the end of the list, and we have no way to know what the play duration is, so
-                    # leave playbackDuration at 0, which represents this ambiguity - this song playback will be preserved in the log file,
-                    # and we will not make a PlaybackInstance for it right now (we assume that the next round of log lines will have a stop playback indicator)
-                    # Also break from the loop, since no playback stop line was found
-                    except IndexError:
-                        self.preservedAmbiguousFinalPlaybackLine = currentLine
-                        break
-
-                # Create the playbackInstance object from the values we found for this playback and add it to the list
-                # (if the playback duration was found - if not, don't make a playback instance for the last playback)
-                if (playbackDuration != 0):
-                    allPlaybackInstances.append(
-                        mlu.playback.SongPlaybackInstance(
-                            songFilepath=songFilepath, 
-                            playbackStartTime=playbackStartTime, 
-                            playbackDuration=playbackDuration
-                        ) 
-                    )
-
-        return allPlaybackInstances
+    return allPlaybackInstances
 
     def _MPDLogLineIsPlaybackStarted(self, logLine):
         '''

@@ -1,3 +1,6 @@
+# NOTE: FILE IS BROKEN, NEEDS FIX
+
+
 """
 mpd_playstats_test.py
 

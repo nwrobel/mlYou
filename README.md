@@ -66,7 +66,7 @@ python .\convert-playlist.py <OldMusicRootPath> <NewMusicRootPath> <SourcePlayli
 - cd to the `scripts` dir of the mlYou project folder
 - Run from the terminal:
 ```
-python .\update_ratestat_tags_from_vote_playlists.py
+python .\update-ratestat-tags-from-vote-playlists.py
 ```
 
 Based on your settings defined in the mlYou settings file, the script will find your vote playlists

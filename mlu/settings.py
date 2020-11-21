@@ -6,28 +6,49 @@ Module containing the definition for setting values for MLU (project-wide consta
 
 from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.file
+import com.nwrobel.mypycommons.system
+
+# ====================== DEFINE USER SETTINGS HERE FOR YOUR OS ==============================
+def getUserSettingsWindows():
+    return {
+        'musicLibraryRootDir': "Z:\\Music Library\\Content",
+        'votePlaylistsDir': "Z:\\Music Library\\!mpd-saved-playlists",
+        'mpdLogFilepath': "D:\\Temp\\mpd-master.log"
+    }
+
+def getUserSettingsLinux(): 
+    return {
+        'musicLibraryRootDir': "/datastore/nick/Music Library/Content",
+        'votePlaylistsDir': "/datastore/nick/Music Library/!mpd-saved-playlists",
+        'mpdLogFilepath': "/var/log/mpd-master.log"
+    }  
+# ============= END OF USER SETTINGS DEFINITIONS ================
 
 def getProjectRootDir():
     thisScriptDir = mypycommons.file.getThisScriptCurrentDirectory()
     projectRootDir = mypycommons.file.JoinPaths(thisScriptDir, '..')
     return projectRootDir
 
-class MLUSettings:
+class MLUSettings:  
+    # User setting values -------------------------------------------------------  
+    if (mypycommons.system.thisMachineIsWindowsOS()):
+        userSettings = getUserSettingsWindows()
+    else:
+        userSettings = getUserSettingsLinux()
+        
+    # Root of where the library music files are found
+    musicLibraryRootDir = userSettings['musicLibraryRootDir']
+
+    # Dir of where the vote playlists can be found
+    votePlaylistsDir = userSettings['votePlaylistsDir']
+
+    # Filepath to the MPD log file
+    mpdLogFilepath = userSettings['mpdLogFilepath']
+
+    # Derived setting values ---------------------------------------------------
     projectRootDir = getProjectRootDir()
     logDir = mypycommons.file.JoinPaths(projectRootDir, '~logs')
     cacheDir = mypycommons.file.JoinPaths(projectRootDir, '~cache')
-    
-    # Root of where the library music files are found
-    #musicLibraryRootDir = "Z:\\Music Library\\Content"
-    musicLibraryRootDir = "/datastore/nick/Music Library/Content"
-
-    # Dir of where the vote playlists can be found
-    #votePlaylistsDir = "Z:\\Music Library\\!mpd-saved-playlists"
-    votePlaylistsDir = "/datastore/nick/Music Library/!mpd-saved-playlists"
-
-    # Filepath to the MPD log file
-    mpdLogFilepath = "/var/log/mpd-master.log"
-
 
     # Dirs of where various types of cache files are stored
     tagBackupsDir = mypycommons.file.JoinPaths(cacheDir, 'audio-tag-backups')
@@ -44,14 +65,13 @@ class MLUSettings:
     testDataGenAudioFilesDir = mypycommons.file.JoinPaths(testDataGenTempDir, 'test-audio-files')
     testDataGenVotePlaylistsDir = mypycommons.file.JoinPaths(testDataGenTempDir, 'test-vote-playlists')
 
-    # Create empty directories if any of the ones defined above don't exist
+    # Create empty directories ------------------------------------------------------
     if (not mypycommons.file.directoryExists(logDir)):
         mypycommons.file.createDirectory(logDir)
 
     if (not mypycommons.file.directoryExists(cacheDir)):
         mypycommons.file.createDirectory(cacheDir)
 
-    # -----------
     if (not mypycommons.file.directoryExists(testDataGenTempDir)):
         mypycommons.file.createDirectory(testDataGenTempDir)
 

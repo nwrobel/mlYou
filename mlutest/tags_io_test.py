@@ -1,3 +1,5 @@
+# NOTE: FILE IS BROKEN, NEEDS FIX
+
 import unittest
 
 # Do setup processing so that this script can import all the needed modules from the "mlu" package.
@@ -88,10 +90,10 @@ class TestTagsIOModule(unittest.TestCase):
 
     @classmethod
     def tearDownClass(self):
-        super(TestTagsIOModule, self).tearDownClass
+        # super(TestTagsIOModule, self).tearDownClass
         
-        cacheDir = mlu.common.file.getMLUCacheDirectory()
-        mlu.common.file.DeleteDirectory(cacheDir)
+        # cacheDir = mlu.common.file.getMLUCacheDirectory()
+        # mlu.common.file.DeleteDirectory(cacheDir)
 
     def testAudioFileTagIOHandlerConstructor(self):
         '''

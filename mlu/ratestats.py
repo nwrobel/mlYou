@@ -22,6 +22,13 @@ class AudioFileVoteData:
         self.filepath = filepath
         self.votes = votes
 
+class UpdateRatingTagResult:
+    def __init__(self, audioFilepath, wasUpdated, oldRating, newRating):
+        self.audioFilepath = audioFilepath,
+        self.wasUpdated = wasUpdated
+        self.oldRating = oldRating
+        self.newRating = newRating
+
 
 def updateRatestatTagsFromVoteData(audioFileVoteData):
     '''
@@ -47,8 +54,9 @@ def updateRatestatTagsFromVoteData(audioFileVoteData):
 
 def updateRatingTag(audioFilepath):
     '''
-    Updates the rating tag value for an audio file by calculating the average of all the existing
-    vote values in the file's 'votes' tag.
+    If needed, updates the rating tag value for an audio file by calculating the average of all the existing
+    vote values in the file's 'votes' tag. Returns true if an update was needed and performed (rating
+    corrected).
     '''
     tagHandler = mlu.tags.io.AudioFileTagIOHandler(audioFilepath)
     currentTags = tagHandler.getTags()
@@ -57,16 +65,24 @@ def updateRatingTag(audioFilepath):
     ratingCurrent = currentTags.rating
     ratingUpdated = _calculateRatingTagValue(votesCurrent)
 
+    wasUpdated = False
     if (ratingCurrent != ratingUpdated):
         newTags = currentTags
         newTags.rating = ratingUpdated
         tagHandler.setTags(newTags)
 
         logger.info("Rating tag updated with new value: File={}, OldRating={}, NewRating={}".format(audioFilepath, ratingCurrent, ratingUpdated))
+        wasUpdated = True
 
     else:
-        logger.info("Rating tag not updated, no change needed: File={}".format(audioFilepath))
+        logger.debug("Rating tag not updated, no change needed: File={}".format(audioFilepath))
 
+    return UpdateRatingTagResult (
+        audioFilepath=audioFilepath,
+        wasUpdated=wasUpdated,
+        oldRating=ratingCurrent,
+        newRating=ratingUpdated
+    )
 
 def getAudioFileVoteDataFromRatePlaylists(votePlaylistsDir):
     '''

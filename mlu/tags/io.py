@@ -25,6 +25,13 @@ import mlu.tags.validation
 
 SUPPORTED_AUDIO_TYPES = ['flac', 'mp3', 'm4a']
 
+def getAudioFileDuration(audioFilepath):
+    mutagenInterface = mutagen.File(audioFilepath)
+    durationSeconds = mutagenInterface.info.length
+    return durationSeconds
+
+    
+
 class AudioFileTags:
     '''
     Data structure holding the values for a single audio file of all the tags supported by MLU.
