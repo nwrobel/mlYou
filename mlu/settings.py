@@ -59,11 +59,13 @@ class MLUSettings:
     # Dirs of where various test data is stored: static test files
     testDataStaticDir = 'Z:\\Development\\Test Data\\mlYou'
     testDataStaticAudioFilesDir = mypycommons.file.JoinPaths(testDataStaticDir, 'test-audio-files')
+    testDataStaticAudioFilesTagsFile = mypycommons.file.JoinPaths(testDataStaticDir, 'test-audio-files-tags.json')
 
     # Dirs of where various test data is stored: generated temp test files
     testDataGenTempDir = mypycommons.file.JoinPaths(cacheDir, '_test-data-generated')
     testDataGenAudioFilesDir = mypycommons.file.JoinPaths(testDataGenTempDir, 'test-audio-files')
     testDataGenVotePlaylistsDir = mypycommons.file.JoinPaths(testDataGenTempDir, 'test-vote-playlists')
+    testDataGenArchivedVotePlaylistsDir = mypycommons.file.JoinPaths(testDataGenTempDir, 'test-vote-playlists-archived')
 
     # Create empty directories ------------------------------------------------------
     if (not mypycommons.file.directoryExists(logDir)):
@@ -80,6 +82,9 @@ class MLUSettings:
 
     if (not mypycommons.file.directoryExists(testDataGenVotePlaylistsDir)):
         mypycommons.file.createDirectory(testDataGenVotePlaylistsDir)
+
+    if (not mypycommons.file.directoryExists(testDataGenArchivedVotePlaylistsDir)):
+        mypycommons.file.createDirectory(testDataGenArchivedVotePlaylistsDir)
 
     if (not mypycommons.file.directoryExists(votePlaylistsArchiveDir)):
         mypycommons.file.createDirectory(votePlaylistsArchiveDir)

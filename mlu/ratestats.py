@@ -160,9 +160,12 @@ def copyVotePlaylistsToTemp(votePlaylistsSourceDir, votePlaylistsTempDir):
     sourceVotePlaylists = _getVotePlaylistFilepaths(votePlaylistsSourceDir)
     mypycommons.file.CopyFilesToDirectory(sourceVotePlaylists, votePlaylistsTempDir)
 
+def _getPossibleVoteValues():
+    return np.linspace(0.5,10,20)
+
 def _getVotePlaylistFilepaths(playlistsDir):
     playlistFilepaths = []
-    possibleVoteValues = np.linspace(0.5,10,20)
+    possibleVoteValues = _getPossibleVoteValues()
     for currentVoteValue in possibleVoteValues:
         currentVoteValuePlaylistName = "{}.m3u".format(str(currentVoteValue))
         currentVoteValuePlaylistPath =  mypycommons.file.JoinPaths(playlistsDir, currentVoteValuePlaylistName)

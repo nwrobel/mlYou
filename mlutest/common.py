@@ -6,8 +6,8 @@ mlutest package. They deal with setting up and teardown of test cases and creati
 data.
 """
 
-import mlutest.envsetup
-mlutest.envsetup.PreparePythonProjectEnvironment()
+import envsetup
+envsetup.PreparePythonProjectEnvironment()
 
 from random import randrange
 from random import choice

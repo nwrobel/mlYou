@@ -1,4 +1,9 @@
-# NOTE: FILE IS BROKEN, NEEDS FIX
+'''
+Tests for mlu.tags.io
+
+Date last passed: 12/20/20
+
+'''
 
 import unittest
 
@@ -7,6 +12,14 @@ import unittest
 # instead in the 'scripts' folder.
 import envsetup
 envsetup.PreparePythonProjectEnvironment()
+
+from mlu.settings import MLUSettings
+
+from com.nwrobel import mypycommons
+import com.nwrobel.mypycommons.file
+import com.nwrobel.mypycommons.logger
+
+mypycommons.logger.initSharedLogger(logDir=MLUSettings.logDir)
 
 import mlutest.common
 import mlu.tags.io
@@ -29,10 +42,9 @@ class TestData:
     These audio files are predefined, static files which have had their tags set through some 
     external methods (not set using MLU), and the tags.json file defines these tags for the files.
     '''
-    def __init__(self, testAudioFileDir):
+    def __init__(self, testAudioFilesDir, testAudioTagsFile):
 
-        testAudioFilesTagDataFilepath = mlu.common.file.JoinPaths(testAudioFileDir, 'tags.json')
-        testAudioFilesTagData = mlu.common.file.getDictFromJsonFile(testAudioFilesTagDataFilepath)
+        testAudioFilesTagData = mypycommons.file.readJsonFile(testAudioTagsFile)
 
         flacTestFilesData = [tagData['testfiles'] for tagData in testAudioFilesTagData if tagData['filetype'] == 'flac'][0]
         mp3TestFilesData = [tagData['testfiles'] for tagData in testAudioFilesTagData if tagData['filetype'] == 'mp3'][0]
@@ -44,21 +56,21 @@ class TestData:
 
         for flacTestFile in flacTestFilesData:
             testAudioFile = TestAudioFile(
-                filepath=mlu.common.file.JoinPaths(testAudioFileDir, flacTestFile['filename']),
+                filepath=mypycommons.file.JoinPaths(testAudioFilesDir, flacTestFile['filename']),
                 tagValues=flacTestFile['tagValues']
             )
             self.testAudioFilesFLAC.append(testAudioFile)
 
         for mp3TestFile in mp3TestFilesData:
             testAudioFile = TestAudioFile(
-                filepath=mlu.common.file.JoinPaths(testAudioFileDir, mp3TestFile['filename']),
+                filepath=mypycommons.file.JoinPaths(testAudioFilesDir, mp3TestFile['filename']),
                 tagValues=mp3TestFile['tagValues']
             )
             self.testAudioFilesMp3.append(testAudioFile)
 
         for m4aTestFile in m4aTestFilesData:
             testAudioFile = TestAudioFile(
-                filepath=mlu.common.file.JoinPaths(testAudioFileDir, m4aTestFile['filename']),
+                filepath=mypycommons.file.JoinPaths(testAudioFilesDir, m4aTestFile['filename']),
                 tagValues=m4aTestFile['tagValues']
             )
             self.testAudioFilesM4A.append(testAudioFile)
@@ -79,21 +91,23 @@ class TestTagsIOModule(unittest.TestCase):
         '''
         super(TestTagsIOModule, self).setUpClass
 
-        testResDir = mlu.common.file.getTestResourceFilesDirectory()
-        testAudioFilesResDir = mlu.common.file.JoinPaths(testResDir, 'test-audio-filetypes')
-        cacheDir = mlu.common.file.getMLUCacheDirectory()
+        self.testDataTempDir = MLUSettings.testDataGenTempDir
 
-        testDataFiles = mlu.common.file.GetAllFilesDepth1(rootPath=testAudioFilesResDir)
-        mlu.common.file.CopyFilesToDirectory(srcFiles=testDataFiles, destDir=cacheDir)
+        # copy the test audio files from the static test files dir to the temp cache test files dir
+        # also copy the tags.json file
+        testAudioFilesSrc = mypycommons.file.GetAllFilesRecursive(MLUSettings.testDataStaticAudioFilesDir)
+        mypycommons.file.CopyFilesToDirectory(srcFiles=testAudioFilesSrc, destDir=MLUSettings.testDataGenAudioFilesDir)
+        self.testAudioFilepaths = mypycommons.file.GetAllFilesRecursive(MLUSettings.testDataGenAudioFilesDir)
 
-        self.testData = TestData(testAudioFileDir=cacheDir)
+        self.testAudioTagsFile = MLUSettings.testDataStaticAudioFilesTagsFile
+        
+        self.testData = TestData(testAudioFilesDir=MLUSettings.testDataGenAudioFilesDir,testAudioTagsFile=self.testAudioTagsFile)
+
 
     @classmethod
-    def tearDownClass(self):
-        # super(TestTagsIOModule, self).tearDownClass
-        
-        # cacheDir = mlu.common.file.getMLUCacheDirectory()
-        # mlu.common.file.DeleteDirectory(cacheDir)
+    def tearDownClass(self):  
+        super(TestTagsIOModule, self).tearDownClass      
+        mypycommons.file.DeleteDirectory(self.testDataTempDir)
 
     def testAudioFileTagIOHandlerConstructor(self):
         '''
@@ -219,3 +233,5 @@ class TestTagsIOModule(unittest.TestCase):
         # Use the read test function to ensure the tags are now set to the new tag values 
         self._checkAudioFileTagIOHandlerRead(audioFileTagIOHandler, expectedTagValues=newTagValues)
 
+if __name__ == '__main__':
+    unittest.main()
