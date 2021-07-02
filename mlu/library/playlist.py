@@ -7,6 +7,12 @@ Module containing functionality related to working with audio playlists.
 from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.file
 
+def createPlaylist(playlistFilepath, audioFilepaths):
+    '''
+    Creates a new playlist file from the given list of audio filepaths.
+    '''
+    mypycommons.file.writeToFile(filepath=playlistFilepath, content=audioFilepaths)
+
 def RemoveTrailingSlash(path):
     while (path[-1] == '/' or path[-1] == '\\'):
         path = path[:-1] # remove last char. from string

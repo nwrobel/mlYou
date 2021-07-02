@@ -22,6 +22,7 @@ from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.logger
 import com.nwrobel.mypycommons.file
 import com.nwrobel.mypycommons.time
+import com.nwrobel.mypycommons.display
 
 mypycommons.logger.initSharedLogger(logDir=MLUSettings.logDir)
 mypycommons.logger.setSharedLoggerConsoleOutputLogLevel("info")
@@ -105,21 +106,17 @@ if __name__ == "__main__":
     logger.info("{} songs had an incorrect RATING fixed successfully".format(len(updatedAudioFilesResults)))
     logger.info("{} songs files failed to have the RATING fixed".format(len(erroredAudioFiles)))
 
+    logger.info("Writing RATING tag updates summary file")
+    summaryFilepath = _getRatingTagUpdatesSummaryFilepath()
+    _writeRatingTagUpdatesSummaryFile(updatedAudioFilesResults, summaryFilepath)
+    logger.info("Summary file written successfully: File='{}'".format(summaryFilepath))
+
     if (not erroredAudioFiles):
         logger.info("Process completed successfully: all songs RATING tags verified")
-        logger.info("Writing RATING tag updates summary file")
-
-        summaryFilepath = _getRatingTagUpdatesSummaryFilepath()
-        _writeRatingTagUpdatesSummaryFile(updatedAudioFilesResults, summaryFilepath)
-        logger.info("Summary file written successfully: File='{}'".format(summaryFilepath))
 
     else:
         erroredAudioFilesFmt = "\n".join(erroredAudioFiles)
         logger.info("Failed to fix RATING tag for the following files:\n{}".format(erroredAudioFilesFmt))
-        
-        logger.info("Process completed with failures: undoing all tag changes to the music library (reverting to checkpoint)")
-        mlu.tags.backup.restoreMusicLibraryAudioTagsFromBackup(tagsBackupFilepath)
-
-        logger.info("Tags backup restored successfully: all changes were undone - run this script again to retry")
+        logger.info("Process completed with failures - these must be checked/fixed manually")
 
     logger.info('Script complete')

@@ -13,6 +13,8 @@ def getUserSettingsWindows():
     return {
         'musicLibraryRootDir': "Z:\\Music Library\\Content",
         'votePlaylistsDir': "Z:\\Music Library\\!mpd-saved-playlists",
+        'ratePlaylistsPublishedDir': 'Z:\\Music Library\\Content\\!playlists-published-to-mpd\\Rating',
+        'ratePlaylistCreateRules': [(0, 4), (5, 6), (7, 8), (9, 10), (8, 10), (7, 10), (7, 7), (8, 8), (9, 9), (10, 10)],
         'mpdLogFilepath': "D:\\Temp\\mpd-master-test.log"
     }
 
@@ -20,6 +22,8 @@ def getUserSettingsLinux():
     return {
         'musicLibraryRootDir': "/datastore/nick/Music Library/Content",
         'votePlaylistsDir': "/datastore/nick/Music Library/!mpd-saved-playlists",
+        'ratePlaylistsPublishedDir': '/datastore/nick/Music Library/Content/!playlists-published-to-mpd/Rating',
+        'ratePlaylistCreateRules': [(0, 4), (5, 6), (7, 8), (9, 10), (8, 10), (7, 10), (7, 7), (8, 8), (9, 9), (10, 10)],
         'mpdLogFilepath': "/var/log/mpd-master.log"
     }  
 # ============= END OF USER SETTINGS DEFINITIONS ================
@@ -41,6 +45,13 @@ class MLUSettings:
 
     # Dir of where the vote playlists can be found
     votePlaylistsDir = userSettings['votePlaylistsDir']
+
+    # Dir of where rating playlists should be published
+    ratePlaylistsPublishedDir = userSettings['ratePlaylistsPublishedDir']
+
+    # Rules dictating which playlist should be made, with each representing 
+    # the start-end range of possible ratings a song on that playlist can have
+    ratePlaylistCreateRules = userSettings['ratePlaylistCreateRules']
 
     # Filepath to the MPD log file
     mpdLogFilepath = userSettings['mpdLogFilepath']

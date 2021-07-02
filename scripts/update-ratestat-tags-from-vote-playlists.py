@@ -23,6 +23,8 @@ import com.nwrobel.mypycommons.file
 import com.nwrobel.mypycommons.time
 
 mypycommons.logger.initSharedLogger(logDir=MLUSettings.logDir)
+mypycommons.logger.setSharedLoggerConsoleOutputLogLevel("info")
+mypycommons.logger.setSharedLoggerFileOutputLogLevel("info")
 logger = mypycommons.logger.getSharedLogger()
 
 # import project-related modules
@@ -79,7 +81,7 @@ def _writeRatestatTagUpdatesSummaryFile(audioFileVoteDataList, summaryFilepath):
 if __name__ == "__main__":
 
     logger.info("Performing full backup (checkpoint) of all music library audio files tags")
-    tagsBackupFilepath = mlu.tags.backup.backupMusicLibraryAudioTags()
+    #tagsBackupFilepath = mlu.tags.backup.backupMusicLibraryAudioTags()
 
     logger.info("Copying vote playlist files to temp location in ~cache")
     mlu.ratestats.copyVotePlaylistsToTemp(votePlaylistsSourceDir=MLUSettings.votePlaylistsDir, votePlaylistsTempDir=MLUSettings.tempDir)
@@ -95,7 +97,7 @@ if __name__ == "__main__":
         try:
             mlu.ratestats.updateRatestatTagsFromVoteData(audioFileVoteData)
         except:
-            logger.exception("updateRatestatTagsFromVoteData operation failed: File='{}'".format(audioFileVoteData.filepath))
+            logger.exception("updateRatestatTagsFromVoteData operation failed: File='{}', Votes={}".format(audioFileVoteData.filepath, audioFileVoteData.votes))
             erroredAudioFilepaths.append(audioFileVoteData.filepath)
 
     logger.info("Votes processing complete")
@@ -104,26 +106,23 @@ if __name__ == "__main__":
 
     if (not erroredAudioFilepaths):
         logger.info("Process completed successfully: all ratestat tags updated with new votes")
-        logger.info("Writing ratestat tag updates summary file")
-
-        summaryFilepath = _getRatestatTagUpdatesSummaryFilepath()
-        _writeRatestatTagUpdatesSummaryFile(audioFileVoteDataList, summaryFilepath)
-        logger.info("Summary file written successfully: File='{}'".format(summaryFilepath))
-
-        logger.info('Archiving the old vote playlists which were just processed')
-        mlu.ratestats.archiveVotePlaylists(playlistsDir=MLUSettings.tempDir, archiveDir=MLUSettings.votePlaylistsArchiveDir)
-
-        logger.info('Emptying already counted votes from vote playlists')
-        mlu.ratestats.resetVotePlaylists(votePlaylistsSourceDir=MLUSettings.votePlaylistsDir, votePlaylistsTempDir=MLUSettings.tempDir)
 
     else:
         erroredAudioFilepathsFmt = "\n".join(erroredAudioFilepaths)
         logger.info("Failed to update ratestat tag values with new votes for the following files:\n{}".format(erroredAudioFilepathsFmt))
-        
-        logger.info("Process completed with failures: undoing all tag changes to the music library (reverting to checkpoint)")
-        mlu.tags.backup.restoreMusicLibraryAudioTagsFromBackup(tagsBackupFilepath)
+        logger.info("Process completed with failures: - these must be fixed manually")
 
-        logger.info("Tags backup restored successfully: all changes were undone - run this script again to retry")
+    logger.info("Writing ratestat tag updates summary file")
+
+    summaryFilepath = _getRatestatTagUpdatesSummaryFilepath()
+    _writeRatestatTagUpdatesSummaryFile(audioFileVoteDataList, summaryFilepath)
+    logger.info("Summary file written successfully: File='{}'".format(summaryFilepath))
+
+    logger.info('Archiving the old vote playlists which were just processed')
+    mlu.ratestats.archiveVotePlaylists(playlistsDir=MLUSettings.tempDir, archiveDir=MLUSettings.votePlaylistsArchiveDir)
+
+    logger.info('Emptying already counted votes from vote playlists')
+    mlu.ratestats.resetVotePlaylists(votePlaylistsSourceDir=MLUSettings.votePlaylistsDir, votePlaylistsTempDir=MLUSettings.tempDir)
 
     mypycommons.file.DeleteDirectory(MLUSettings.tempDir)
     logger.info('Script complete')
