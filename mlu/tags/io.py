@@ -10,27 +10,23 @@ the MLU project. These supported tags are the properties of the AudioFileTags ob
 
 # TODO: set up validation of tag values using the mlu.tags.validation module
 
+import datetime
 import mutagen
 import logging
+from pathlib import Path
 from mutagen import mp3
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import ID3, TXXX
 from mutagen.mp4 import MP4
+from mutagen.mp3 import BitrateMode
 
 from com.nwrobel import mypycommons
-#import com.nwrobel.mypycommons.logger
 import com.nwrobel.mypycommons.file
+import com.nwrobel.mypycommons.time
 
 logger = logging.getLogger("mluGlobalLogger")
 
 SUPPORTED_AUDIO_TYPES = ['flac', 'mp3', 'm4a']
-
-# def getAudioFileDurationAsTimestamp(audioFilepath):
-#     mutagenInterface = mutagen.File(audioFilepath)
-#     durationSeconds = mutagenInterface.info.length
-#     durationTimestamp = mypycommons.time.convertSecondsToTimestamp(durationSeconds)
-
-#     return durationTimestamp
 
 class AudioFileTags:
     '''
@@ -112,25 +108,27 @@ class AudioFileProperties:
         fileDateModified,
         duration,
         format,
-        encoding,
         bitRate,
         sampleRate,
-        bitDepth,
         numChannels,
-        encodingTool,
-        replayGain
+        replayGain,
+        bitDepth,
+        encoder,
+        bitRateMode,
+        codec
     ):
         self.fileSize = fileSize
         self.fileDateModified = fileDateModified
         self.duration = duration
         self.format = format
-        self.encoding = encoding
         self.bitRate = bitRate
         self.sampleRate = sampleRate
-        self.bitDepth = bitDepth
         self.numChannels = numChannels
-        self.encodingTool = encodingTool
         self.replayGain = replayGain
+        self.bitDepth = bitDepth
+        self.encoder = encoder
+        self.bitRateMode = bitRateMode
+        self.codec = codec
 
 class AudioFileMetadataHandler:
     '''
@@ -154,7 +152,7 @@ class AudioFileMetadataHandler:
         self._audioFileType = mypycommons.file.getFileExtension(self.audioFilepath).replace('.', '')
 
         # Check that the given audio file type is supported
-        if (self._audioFileType not in SUPPORTED_AUDIO_TYPES):
+        if (self._audioFileType.lower() not in SUPPORTED_AUDIO_TYPES):
             raise Exception("Cannot open file '{}': Audio file format is not supported".format(self.audioFilepath))
 
     def getTags(self):
@@ -205,7 +203,16 @@ class AudioFileMetadataHandler:
                 self._setTagsForM4AFile(audioFileTags)
 
     def getProperties(self):
-        pass
+        if (self._audioFileType == 'flac'):
+            audioFileProperties = self._getPropertiesForFLACFile()
+
+        elif (self._audioFileType == 'mp3'):
+            audioFileProperties = self._getPropertiesForMp3File()
+
+        elif (self._audioFileType == 'm4a'):
+            audioFileProperties = self._getPropertiesForM4AFile()
+
+        return audioFileProperties
 
     def getEmbeddedArtwork(self):
         if (self._audioFileType == 'flac'):
@@ -262,6 +269,121 @@ class AudioFileMetadataHandler:
 
         except:
             return []
+
+    def _getPropertiesForFLACFile(self):
+        mutagenInterface = mutagen.File(self.audioFilepath)
+
+        fileSize = _getFileSizeBytes(self.audioFilepath)
+        fileDateModified = mypycommons.time.formatTimestampForDisplay(_getFileDateModifiedTimestamp(self.audioFilepath))
+        duration = mutagenInterface.info.length
+        format = 'FLAC'
+        bitRate = _bitsToKilobits(mutagenInterface.info.bitrate)
+        bitDepth = mutagenInterface.info.bits_per_sample
+        numChannels = mutagenInterface.info.channels
+        sampleRate = mutagenInterface.info.sample_rate
+        replayGain = {
+            'albumGain': self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'replaygain_album_gain'),
+            'albumPeak': self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'replaygain_album_peak'),
+            'trackGain': self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'replaygain_track_gain'),
+            'trackPeak': self._getTagValueFromMutagenInterfaceFLAC(mutagenInterface, 'replaygain_track_peak')
+        }
+
+        audioProperties = AudioFileProperties(
+            fileSize=fileSize,
+            fileDateModified=fileDateModified,
+            duration=duration,
+            format=format,
+            bitRate=bitRate,
+            sampleRate=sampleRate,
+            numChannels=numChannels,
+            replayGain=replayGain,
+            bitDepth=bitDepth,
+            encoder='',
+            bitRateMode='',
+            codec=''
+        )
+        return audioProperties
+
+    def _getPropertiesForMp3File(self):
+        mutagenInterface = mutagen.File(self.audioFilepath)
+
+        fileSize = _getFileSizeBytes(self.audioFilepath)
+        fileDateModified = mypycommons.time.formatTimestampForDisplay(_getFileDateModifiedTimestamp(self.audioFilepath))
+        duration = mutagenInterface.info.length
+        format = 'MP3'
+
+        bitRateModeType = mutagenInterface.info.bitrate_mode
+        if (bitRateModeType == BitrateMode.CBR):
+            bitRateMode = 'CBR'
+        elif (bitRateModeType == BitrateMode.VBR):
+            bitRateMode = 'VBR'
+        elif (bitRateModeType == BitrateMode.ABR):
+            bitRateMode = 'ABR'
+        else:
+            bitRateMode = ''
+
+        encoder = "{} ({})".format(mutagenInterface.info.encoder_info, mutagenInterface.info.encoder_settings)
+        bitRate = _bitsToKilobits(mutagenInterface.info.bitrate)
+        numChannels = mutagenInterface.info.channels
+        sampleRate = mutagenInterface.info.sample_rate
+        replayGain = {
+            'albumGain': self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:replaygain_album_gain'),
+            'albumPeak': self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:replaygain_album_peak'),
+            'trackGain': self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:replaygain_track_gain'),
+            'trackPeak': self._getTagValueFromMutagenInterfaceMp3(mutagenInterface, 'TXXX:replaygain_track_peak')
+        }
+
+        audioProperties = AudioFileProperties(
+            fileSize=fileSize,
+            fileDateModified=fileDateModified,
+            duration=duration,
+            format=format,
+            bitRate=bitRate,
+            sampleRate=sampleRate,
+            numChannels=numChannels,
+            replayGain=replayGain,
+            bitDepth='',
+            encoder=encoder,
+            bitRateMode=bitRateMode,
+            codec=''
+        )
+        return audioProperties
+
+    def _getPropertiesForM4AFile(self):
+        mutagenInterface = MP4(self.audioFilepath)
+
+        fileSize = _getFileSizeBytes(self.audioFilepath)
+        fileDateModified = mypycommons.time.formatTimestampForDisplay(_getFileDateModifiedTimestamp(self.audioFilepath))
+        duration = mutagenInterface.info.length
+        format = 'M4A'
+        codec = mutagenInterface.info.codec_description
+        bitRate = _bitsToKilobits(mutagenInterface.info.bitrate)
+        bitDepth = mutagenInterface.info.bits_per_sample
+        numChannels = mutagenInterface.info.channels
+        sampleRate = mutagenInterface.info.sample_rate
+        replayGain = {
+            'albumGain': self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:replaygain_album_gain'),
+            'albumPeak': self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:replaygain_album_peak'),
+            'trackGain': self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:replaygain_track_gain'),
+            'trackPeak': self._getTagValueFromMutagenInterfaceM4A(mutagenInterface, '----:com.apple.iTunes:replaygain_track_peak')
+        }
+
+        audioProperties = AudioFileProperties(
+            fileSize=fileSize,
+            fileDateModified=fileDateModified,
+            duration=duration,
+            format=format,
+            bitRate=bitRate,
+            sampleRate=sampleRate,
+            numChannels=numChannels,
+            replayGain=replayGain,
+            bitDepth=bitDepth,
+            encoder='',
+            bitRateMode='',
+            codec=codec
+        )
+        return audioProperties
+
 
     def _getTagsForFLACFile(self):
         '''
@@ -322,9 +444,11 @@ class AudioFileMetadataHandler:
         ]
 
         mutagenTagKeys = mutagenInterface.tags.keys()
+        relevantTagKeys = self._removeUnneededTagKeysFromFLACTagKeysList(mutagenTagKeys)
+
         otherTagNames = []
-        for tagKey in mutagenTagKeys:
-            if (key.lower() not in tagFieldKeysFlac):
+        for tagKey in relevantTagKeys:
+            if (tagKey.lower() not in tagFieldKeysFlac):
                 otherTagNames.append(tagKey)
 
         for tagNameKey in otherTagNames:
@@ -359,6 +483,22 @@ class AudioFileMetadataHandler:
         )
 
         return audioFileTags
+
+    def _removeUnneededTagKeysFromFLACTagKeysList(self, flacKeys):
+        keysToRemove = [
+            'replaygain_album_gain',
+            'replaygain_album_peak',
+            'replaygain_track_gain',
+            'replaygain_track_peak'
+        ]
+
+        for removeKey in keysToRemove:
+            try:
+                flacKeys.remove(removeKey)
+            except:
+                pass
+
+        return flacKeys
      
     def _getTagsForMp3File(self):
         '''
@@ -476,7 +616,11 @@ class AudioFileMetadataHandler:
 
     def _removeUnneededTagKeysFromMp3TagKeysList(self, mp3TagKeys):
         ignoreKeysMp3 = [
-            'COMM:ID3v1 Comment:eng'
+            'COMM:ID3v1 Comment:eng',
+            'TXXX:replaygain_album_gain',
+            'TXXX:replaygain_album_peak',
+            'TXXX:replaygain_track_gain',
+            'TXXX:replaygain_track_peak'
         ]
 
         relevantKeys = []
@@ -618,10 +762,19 @@ class AudioFileMetadataHandler:
         return audioFileTags
 
     def _removeUnneededTagKeysFromM4ATagKeysList(self, m4aKeys):
-        try:
-            m4aKeys.remove('covr')
-        except:
-            pass
+        keysToRemove = [
+            'covr',
+            '----:com.apple.iTunes:replaygain_album_gain',
+            '----:com.apple.iTunes:replaygain_album_peak',
+            '----:com.apple.iTunes:replaygain_track_gain',
+            '----:com.apple.iTunes:replaygain_track_peak'
+        ]
+
+        for removeKey in keysToRemove:
+            try:
+                m4aKeys.remove(removeKey)
+            except:
+                pass
 
         return m4aKeys
 
@@ -763,3 +916,17 @@ class AudioFileMetadataHandler:
         mutagenInterface['----:com.apple.iTunes:RATING'] = (audioFileTags.rating).encode('utf-8')
 
         mutagenInterface.save()
+
+def _secondsToHMSTimestamp(seconds):
+    # use strftime
+    return str(datetime.timedelta(seconds=seconds))
+
+def _bitsToKilobits(bits):
+    kilobits = round(bits / 1000)
+    return kilobits
+
+def _getFileSizeBytes(filepath):
+    return Path(filepath).stat().st_size
+
+def _getFileDateModifiedTimestamp(filepath):
+    return Path(filepath).stat().st_mtime
