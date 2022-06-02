@@ -1,7 +1,5 @@
 '''
-Created on Mar 17, 2019
-
-@author: nick.admin
+envsetup.py
 
 This file contains initialization code, which is used by scripts in the folder to setup project
 variables and paths so that this project's modules can be used.
