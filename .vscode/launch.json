@@ -4,8 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
-    
         {
             "name": "Python: Current File (Integrated Terminal)",
             "type": "python",
@@ -19,67 +17,6 @@
             "request": "launch",
             "program": "${file}",
             "console": "externalTerminal"
-        },
-        {
-            "name": "Ratestats vote playlist update script",
-            "type": "python",
-            "request": "launch",
-            "program": "scripts\\update-ratestat-tags-from-vote-playlists.py",
-            "args": [],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Rating tag update for library script",
-            "type": "python",
-            "request": "launch",
-            "program": "scripts\\update-rating-tags-for-library.py",
-            "args": [],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Convert Playlist Script",
-            "type": "python",
-            "request": "launch",
-            "program": "scripts\\convert-playlist.py",
-            "args": ["Z:\\Music Library\\Playlist Workbench\\Genre", "Z:\\Music Library\\Content\\!mpd-published-playlists\\Genre","Z:\\", "/datastore/nick/"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Fix MPD logs Script",
-            "type": "python",
-            "request": "launch",
-            "program": "scripts\\fix-mpd-logs-missing-yr.py",
-            "args": ["D:\\Temp\\mpd-logs\\mpd-2018-02-08 23.log", "2018"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Merge MPD logs Script",
-            "type": "python",
-            "request": "launch",
-            "program": "scripts\\merge-mpd-logs.py",
-            "args": [
-                "D:\\Temp\\mpd-logs\\mpd.master.finalfinal.log", 
-                "--logs", 
-                "D:\\Temp\\mpd-logs\\mpd.master.final3.log",
-                "D:\\Temp\\mpd-logs\\mpd-master.log"
-            ],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Playstats tags update from MPD log script",
-            "type": "python",
-            "request": "launch",
-            "program": "scripts\\update-playstat-tags-from-mpd-log.py",
-            "args": [],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Generate rating playlists script",
-            "type": "python",
-            "request": "launch",
-            "program": "scripts\\generate-rating-playlists.py",
-            "args": [],
-            "console": "integratedTerminal"
-        },
+        }
     ]
 }

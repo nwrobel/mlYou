@@ -1,13 +1,14 @@
-# Python project deployment script for Windows OSs - Powershell script
+# Python project deployment script for Windows OSs - Powershell
+#
+# Version: 2021.12.18.0
 #
 # After cloning the project repo from Github and saving it in the directory of choice, run this script
-# to setup the project so it can be used. 
+# to setup the Python project so it can be used. 
 #
 # DEPENDENCIES
 # This script should always be located in the project root (most parent) folder.
 # requirements.txt should also be present in project root
 #
-# Please refer to the README.md for additional info
 #
 
 
@@ -61,7 +62,7 @@ function Deploy-PythonProject {
         Write-Host "Attempting to use virtualenv.exe at $venvExeCustomPath" -ForegroundColor Cyan
 
         # Check that the path is valid and that this new virtualenv.exe uses correct python version
-=        if (Test-Path -Path $venvExeCustomPath) {
+        if (Test-Path -Path $venvExeCustomPath) {
             if (Test-VenvPythonVersionIsCorrect -VenvExePath $venvExeCustomPath) {
                 Install-PythonPackages -VenvDir $pythonVenvDir -PipReqsFilepath $pipRequirementsFilepath -VenvExePath $venvExeCustomPath
             
@@ -72,8 +73,7 @@ function Deploy-PythonProject {
         } else {
             throw "Error: Specified virtualenv executable file not found: $venvExeCustomPath"
         }
-    }
-    
+    }   
 }
 
 function Test-VenvPythonVersionIsCorrect {
