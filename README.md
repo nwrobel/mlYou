@@ -53,9 +53,9 @@ Currently, the modules mainly help you read audio file tag data and file propert
 - Preserve your playback history!
 - Populates/updates the following tag values directly on your played audio files. 
 
---- PLAY_COUNT
---- DATE_LAST_PLAYED
---- DATE_ALL_PLAYS
+-- PLAY_COUNT
+-- DATE_LAST_PLAYED
+-- DATE_ALL_PLAYS
 
 These tags can then be viewed in foobar2000 (or other music player that reads custom tag values) and used to create autoplaylists.
 
