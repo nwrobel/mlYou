@@ -15,7 +15,7 @@ setuptools.setup(
     url="https://github.com/nwrobel/mlYou",
     packages=setuptools.find_packages(),
     install_requires=[
-        'git+https://github.com/nwrobel/my-python-commons#egg=my-python-commons-nwrobel',
+        'my-python-commons-nwrobel @ git+https://github.com/nwrobel/my-python-commons#egg=my-python-commons-nwrobel',
         'mutagen',
         'prettytable'
     ], # use to define external packages to install as well as dependencies to this package
