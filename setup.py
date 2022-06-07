@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="nwrobel-mlYou",
-    version="2022.6.2.2",
+    version="2022.6.7.1",
     author="Nick Wrobel",
     author_email="nick@nwrobel.com",
     description="Package containing various modules and scripts dealing with audio files and music libraries",
