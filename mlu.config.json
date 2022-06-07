@@ -1,6 +1,6 @@
 {
     "audioLibraryRootDirectory": "Z:\\Music Library\\Content",
-    "mpdLogFilepath": "D:\\Temp\\mlu-test\\mpd-master [2018-02-05 15.49.00] to [2020-11-20 23.58.48].log",
+    "mpdLogFilepath": "D:\\Temp\\mlu-test\\mpd-master-test.log",
     "mpdLogBackupDirectory": "D:\\Temp\\mlu-test\\mpd-log-backups-test",
     "votePlaylistsRootDirectory": ""
 }

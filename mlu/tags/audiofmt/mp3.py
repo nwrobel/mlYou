@@ -13,6 +13,7 @@ from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.file
 import com.nwrobel.mypycommons.time
 import com.nwrobel.mypycommons.convert
+import com.nwrobel.mypycommons.string
 
 from mlu.tags import values
 
@@ -253,7 +254,10 @@ class AudioFormatHandlerMP3:
 
     def _getTagValueFromMutagenInterface(self, mutagenInterface, mutagenKey):
         try:
-            mutagenValue = mutagenInterface[mutagenKey].text
+            if (mypycommons.string.stringStartsWith(mutagenKey, 'WXXX:')):
+                mutagenValue = mutagenInterface[mutagenKey].url
+            else:
+                mutagenValue = mutagenInterface[mutagenKey].text
 
             if (len(mutagenValue) == 1):
                 tagValue = mutagenValue[0]
