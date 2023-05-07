@@ -7,48 +7,75 @@ Module containing the definition for setting values for MLU (project-wide consta
 from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.file
 
-def getProjectRootDirectory():
-    thisScriptDir = mypycommons.file.getThisScriptCurrentDirectory()
-    projectRootDir = mypycommons.file.joinPaths(thisScriptDir, '..')
-    return projectRootDir
-
 class MLUUserConfig:
-    audioLibraryRootDirectory = ''
-    mpdLogFilepath = ''
-    mpdLogBackupDirectory = ''
-    votePlaylistsRootDirectory = ''
-
-    @classmethod
-    def loadUserConfigFromConfigFile(self):
-        configFilepath = mypycommons.file.joinPaths(getProjectRootDirectory(), 'mlu.config.json')
-        configData = mypycommons.file.readJsonFile(configFilepath)
-
-        self.audioLibraryRootDirectory = configData['audioLibraryRootDirectory']
-        self.mpdLogFilepath = configData['mpdLogFilepath']
-        self.mpdLogBackupDirectory = configData['mpdLogBackupDirectory']
-        self.votePlaylistsRootDirectory = configData['votePlaylistsRootDirectory']
+    def __init__(self):
+        self.audioLibraryRootDir = ''
+        self.mpdLogFilepath = ''
+        self.mpdLogBackupDir = ''
+        self.votePlaylistsDir = ''
+        self.votePlaylistsArchiveDir = ''
 
 class MLUSettings:
-    MLUUserConfig.loadUserConfigFromConfigFile()
-    userConfig = MLUUserConfig
+    def __new__(cls):
+        """ creates a singleton object, if it is not created,
+        or else returns the previous singleton object"""
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(MLUSettings, cls).__new__(cls)
+        return cls.instance
 
-    projectRootDirectory = getProjectRootDirectory()
-    logDirectory = mypycommons.file.joinPaths(projectRootDirectory, '~logs')
-    cacheDirectory = mypycommons.file.joinPaths(projectRootDirectory, '~cache')
+    def __init__(self):
+        self.userConfig = None
+        self.projectRootDir = ''
+        self.logDir = ''
+        self.cacheDir = ''
+        self.tempDir = ''
+        self.testDataDir = ''
+        self.loggerName = "mlu-script"
 
-    # Dirs of where various types of cache files are stored
-    tempDirectory = mypycommons.file.joinPaths(cacheDirectory, 'temp')
+        self._loadSettings()
+        self._createDirectories()
 
-    # Test data
-    testDataDir = mypycommons.file.joinPaths(projectRootDirectory, 'test/data')
+    def cleanupTempDir(self):
+        ''' 
+        Removes the project's temp dir, which can contain old cache files
+        ''' 
+        if (mypycommons.file.pathExists(self.tempDir)):
+            mypycommons.file.deletePath(self.tempDir)
 
-    # Create empty directories
-    if (not mypycommons.file.pathExists(logDirectory)):
-        mypycommons.file.createDirectory(logDirectory)
+    def _loadSettings(self):
+        self.userConfig = self._getUserConfig()
 
-    if (not mypycommons.file.pathExists(cacheDirectory)):
-        mypycommons.file.createDirectory(cacheDirectory)
+        self.projectRootDir = self._getProjectRootDirectory()
+        self.logDir = mypycommons.file.joinPaths(self.projectRootDir, '~logs')
+        self.cacheDir = mypycommons.file.joinPaths(self.projectRootDir, '~cache')
+        self.tempDir = mypycommons.file.joinPaths(self.cacheDir, 'temp')
+        self.testDataDir = mypycommons.file.joinPaths(self.projectRootDir, 'test/data')    
 
-    if (not mypycommons.file.pathExists(tempDirectory)):
-        mypycommons.file.createDirectory(tempDirectory)
+    def _createDirectories(self):
+        if (not mypycommons.file.pathExists(self.logDir)):
+            mypycommons.file.createDirectory(self.logDir)
+
+        if (not mypycommons.file.pathExists(self.cacheDir)):
+            mypycommons.file.createDirectory(self.cacheDir)
+
+        if (not mypycommons.file.pathExists(self.tempDir)):
+            mypycommons.file.createDirectory(self.tempDir)
+
+    def _getUserConfig(self):
+        configFilepath = mypycommons.file.joinPaths(self._getProjectRootDirectory(), 'mlu.config.json')
+        configData = mypycommons.file.readJsonFile(configFilepath)
+
+        userConfig = MLUUserConfig()
+        userConfig.audioLibraryRootDir = configData['audioLibraryRootDir']
+        userConfig.mpdLogFilepath = configData['mpdLogFilepath']
+        userConfig.mpdLogBackupDir = configData['mpdLogBackupDir']
+        userConfig.votePlaylistsDir = configData['votePlaylistsDir']
+        userConfig.votePlaylistsArchiveDir = configData['votePlaylistsArchiveDir']
+
+        return userConfig
+
+    def _getProjectRootDirectory(self):
+        thisScriptDir = mypycommons.file.getThisScriptCurrentDirectory()
+        projectRootDir = mypycommons.file.joinPaths(thisScriptDir, '..')
+        return projectRootDir
 

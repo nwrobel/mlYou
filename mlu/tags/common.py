@@ -4,14 +4,20 @@ mlu.tags.common
 Module for functionality that is needed/shared between various other mlu.tags modules.
 '''
 
-def formatValuesListToAudioTagValue(valuesList):
+def formatValuesListToAudioTag(valuesList):
+    '''
+    Formats list of data elements into a comma separated string that can be written into audio tag.
+    '''
     if (not valuesList):
         return ''
         
     listStr = ';'.join(map(str, valuesList))
     return str(listStr)
 
-def formatAudioTagValueToValuesList(audioTagStr, valuesAsType=str):
+def formatAudioTagToValuesList(audioTagStr, valuesAsType=str):
+    '''
+    Formats audio tag into a list of values.
+    '''
     if (not audioTagStr):
         return []
     

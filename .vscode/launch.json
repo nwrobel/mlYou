@@ -12,11 +12,44 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Python: Current File (External Terminal)",
+            "name": "Convert Playlists",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
-            "console": "externalTerminal"
-        }
+            "program": "scripts\\change-playlist-items-root-path.py",
+            "args": ["Z:\\Music Library\\Playlist Workbench", "Z:\\Music Library\\Playlist Workbench\\test","Z:\\", "/datastore/nick/"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Convert Playlists - test",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\change-playlist-items-root-path.py",
+            "args": ["D:\\Temp\\mlu-test\\playlists-in", "D:\\Temp\\mlu-test\\playlists-out","Z:\\", "/datastore/nick/"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Playlist File Sorter - Scan",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\playlist-file-sorter.py",
+            "args": ["D:\\Temp\\Playlists-Sorted-master", "--scan"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Playlist File Sorter - Sort",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\playlist-file-sorter.py",
+            "args": ["D:\\Temp\\exported-playlists-unsorted", "--sort", "--output-dir", "D:\\Temp\\Playlists-Sorted-out"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Ratestats updater - Test",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\update-ratestat-tags-from-vote-playlists.py",
+            "args": [],
+            "console": "integratedTerminal"
+        },
     ]
 }
