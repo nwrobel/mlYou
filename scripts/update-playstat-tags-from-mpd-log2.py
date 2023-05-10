@@ -1,13 +1,6 @@
 '''
-update-ratestat-tags-from-vote-playlists.py
-
-This script uses the votes playlists (1-10) to add the new votes to and update the ratestat tags of 
-audio files in the music library. 
 
 '''
-
-from com.nwrobel import mypycommons
-import com.nwrobel.mypycommons.logger
 
 # Do setup processing so that this script can import all the needed modules from the "mlu" package.
 # This is necessary because these scripts are not located in the root directory of the project, but
@@ -15,8 +8,11 @@ import com.nwrobel.mypycommons.logger
 import envsetup
 envsetup.PreparePythonProjectEnvironment()
 
+from com.nwrobel import mypycommons
+import com.nwrobel.mypycommons.logger
+
 from mlu.settings import MLUSettings
-from mlu.tags.ratestats import RatestatTagsUpdater
+from mlu.tags.playstats2 import RatestatTagsUpdater
 
 if __name__ == "__main__":
     settings = MLUSettings()

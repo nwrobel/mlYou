@@ -21,14 +21,7 @@ import mlu.tags.playstats
 from mlu.tags.io import AudioFileFormatNotSupportedError, AudioFileNonExistentError
 import mlu.utilities
 
-def _getThisScriptCacheDirectory():
-    dirName = "update-playstat-tags-from-mpd-log"
-    scriptCacheDir = mypycommons.file.joinPaths(MLUSettings.cacheDirectory, dirName)
 
-    if (not mypycommons.file.pathExists(scriptCacheDir)):
-        mypycommons.file.createDirectory(scriptCacheDir)
-
-    return scriptCacheDir
 
 def _getNewPlaybackParseResultsDirectory():
     dirName = '{} playback-parse-results'.format(mypycommons.time.getCurrentTimestampForFilename())
@@ -49,13 +42,7 @@ def _getAudioFilePlaybackInstancesFromJsonFile(jsonFilepath):
         )
     return playbackInstancesList
 
-def _savePlaybacksOutputFile(filepath, audioFilePlaybackInstancesList):
-    dictList = []
-    for playbackInstance in audioFilePlaybackInstancesList:
-        dictList.append(playbackInstance.getDictForJsonFileOutput())
 
-    with open(filepath, 'w') as fp:
-        json.dump(dictList, fp, indent=4)
 
 def _savePlaybacksHistorySummaryOutputFile(filepath, audioFilePlaybackInstancesList):
     playbackList = mlu.tags.playstats.convertAudioFilePlaybackInstancesListToPlaybackList(audioFilePlaybackInstancesList)

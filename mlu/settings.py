@@ -11,17 +11,17 @@ class MLUUserConfig:
     def __init__(self):
         self.audioLibraryRootDir = ''
         self.mpdLogFilepath = ''
-        self.mpdLogBackupDir = ''
+        self.mpdLogArchiveDir = ''
         self.votePlaylistsDir = ''
         self.votePlaylistsArchiveDir = ''
 
 class MLUSettings:
-    def __new__(cls):
-        """ creates a singleton object, if it is not created,
-        or else returns the previous singleton object"""
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(MLUSettings, cls).__new__(cls)
-        return cls.instance
+    # def __new__(cls):
+    #     """ creates a singleton object, if it is not created,
+    #     or else returns the previous singleton object"""
+    #     if not hasattr(cls, 'instance'):
+    #         cls.instance = super(MLUSettings, cls).__new__(cls)
+    #     return cls.instance
 
     def __init__(self):
         self.userConfig = None
@@ -68,7 +68,7 @@ class MLUSettings:
         userConfig = MLUUserConfig()
         userConfig.audioLibraryRootDir = configData['audioLibraryRootDir']
         userConfig.mpdLogFilepath = configData['mpdLogFilepath']
-        userConfig.mpdLogBackupDir = configData['mpdLogBackupDir']
+        userConfig.mpdLogArchiveDir = configData['mpdLogArchiveDir']
         userConfig.votePlaylistsDir = configData['votePlaylistsDir']
         userConfig.votePlaylistsArchiveDir = configData['votePlaylistsArchiveDir']
 

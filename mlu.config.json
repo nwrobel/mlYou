@@ -1,7 +1,7 @@
 {
     "audioLibraryRootDir": "Z:\\Music Library\\Content",
     "mpdLogFilepath": "D:\\Temp\\mlu-test\\mpd-master.log",
-    "mpdLogBackupDir": "D:\\Temp\\mlu-test\\mpd-log-backups-test",
+    "mpdLogArchiveDir": "D:\\Temp\\mlu-test\\mpd-log-backups-test",
     "votePlaylistsDir": "D:\\Temp\\mlu-test\\test-vote-playlists-src",
     "votePlaylistsArchiveDir": "D:\\Temp\\mlu-test\\test-vote-playlists-archive"
 }

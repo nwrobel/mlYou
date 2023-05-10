@@ -51,5 +51,13 @@
             "args": [],
             "console": "integratedTerminal"
         },
+        {
+            "name": "MPD Playstats updater - Test",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\update-playstat-tags-from-mpd-log3.py",
+            "args": [],
+            "console": "integratedTerminal"
+        },
     ]
 }
