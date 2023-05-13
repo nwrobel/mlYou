@@ -1,6 +1,6 @@
 '''
 '''
-import datetime
+from datetime import datetime
 from typing import List
 
 from com.nwrobel import mypycommons
@@ -17,16 +17,17 @@ class MpdLogLine:
       timestamp: time for when this log line occurred/was written, as an epoch timestamp (float or int)
       originalText: the full line text as originally read from the file
    '''
-   def __init__(self, text: str, epochTimestamp: float, originalText: str) -> None:
+   def __init__(self, text: str, dateTime: datetime, originalText: str) -> None:
         # perform validation on input data
         if (not text):
             raise ValueError("logFilepath not passed")
-
-        if (not mypycommons.time.isValidTimestamp(epochTimestamp)):
-            raise ValueError("epochTimestamp '{}' is invalid".format(timestamp))
+        if (not originalText):
+            raise ValueError("originalText not passed")
+        if (dateTime is None):
+            raise ValueError("dateTime not passed")
 
         self.text = text
-        self.epochTimestamp = epochTimestamp
+        self.dateTime = dateTime
         self.originalText = originalText
 
 class MpdLog:
@@ -72,17 +73,19 @@ class MpdLog:
         The list is then sorted by the timestamp of each line (earliest first) and returned.
         '''
         rawLogFileLines = self._getRawLines()
-        allMPDLogLines = []
+        allMpdLogLines = []
 
         for logLine in rawLogFileLines:
             # Try using the start year first
-            lineTimestamp = self._getTimestampFromRawLogLine(logLine)
+            lineDatetime = self._getDatetimeFromRawLogLine(logLine)
             lineText = self._getTextFromRawLogLine(logLine)
 
-            allMPDLogLines.append(MpdLogLine(epochTimestamp=lineTimestamp, text=lineText, originalText=logLine))
+            allMpdLogLines.append(
+                MpdLogLine(dateTime=lineDatetime, text=lineText, originalText=logLine)
+            )
 
         # Sort the loglines array
-        sortedLines = self._sortMPDLogLinesByTimestamp(allMPDLogLines)
+        sortedLines = self._sortLogLinesByDatetime(allMpdLogLines)
         return sortedLines
 
     def _getRawLines(self) -> List[str]:
@@ -90,21 +93,19 @@ class MpdLog:
         rawLogFileLines = [logLine.replace('\n', '') for logLine in rawLogFileLines]
         return rawLogFileLines
 
-    def _getTimestampFromRawLogLine(self, logLine: str) -> float:
+    def _getDatetimeFromRawLogLine(self, logLine: str) -> float:
         '''
         Gets epoch timestamp from the raw log line of a log file - for the new, MPD logfiles that use syslog
         and timestamps have the year
         '''
         lineTimeData = logLine[0:26]
-        lineDatetime = datetime.datetime.strptime(lineTimeData, "%Y-%m-%dT%H:%M:%S.%f")
-        epochTimestamp = lineDatetime.timestamp()
-
-        return epochTimestamp
+        lineDatetime = datetime.strptime(lineTimeData, "%Y-%m-%dT%H:%M:%S.%f")
+        return lineDatetime
 
     def _getTextFromRawLogLine(self, logLine: str) -> str:
         lineText = logLine[33:]
         return lineText
 
-    def _sortMPDLogLinesByTimestamp(self, mpdLogLines: List[MpdLogLine]) -> List[MpdLogLine]:
-        mpdLogLines.sort(key=lambda line: line.epochTimestamp)
+    def _sortLogLinesByDatetime(self, mpdLogLines: List[MpdLogLine]) -> List[MpdLogLine]:
+        mpdLogLines.sort(key=lambda line: line.dateTime)
         return mpdLogLines

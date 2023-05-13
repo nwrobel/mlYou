@@ -5,11 +5,12 @@ Module containing class which reads data for a single FLAC audio file.
 '''
 
 import mutagen
+from datetime import timedelta
 
 from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.file
 import com.nwrobel.mypycommons.time
-import com.nwrobel.mypycommons.convert
+import com.nwrobel.mypycommons.utils
 
 from mlu.tags import values
 
@@ -41,9 +42,9 @@ class AudioFormatHandlerFLAC:
 
         fileSize = mypycommons.file.getFileSizeBytes(self.audioFilepath)
         fileDateModified = mypycommons.time.formatTimestampForDisplay(mypycommons.file.getFileDateModifiedTimestamp(self.audioFilepath))
-        duration = mutagenInterface.info.length
+        duration = timedelta(seconds=mutagenInterface.info.length)
         format = 'FLAC'
-        bitRate = mypycommons.convert.bitsToKilobits(mutagenInterface.info.bitrate)
+        bitRate = mypycommons.utils.convertBitsToKilobits(mutagenInterface.info.bitrate)
         bitDepth = mutagenInterface.info.bits_per_sample
         numChannels = mutagenInterface.info.channels
         sampleRate = mutagenInterface.info.sample_rate

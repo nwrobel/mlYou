@@ -8,11 +8,12 @@ import mutagen
 from mutagen.mp3 import BitrateMode
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import ID3, TXXX
+from datetime import timedelta
 
 from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.file
 import com.nwrobel.mypycommons.time
-import com.nwrobel.mypycommons.convert
+import com.nwrobel.mypycommons.utils
 import com.nwrobel.mypycommons.string
 
 from mlu.tags import values
@@ -49,7 +50,7 @@ class AudioFormatHandlerMP3:
 
         fileSize = mypycommons.file.getFileSizeBytes(self.audioFilepath)
         fileDateModified = mypycommons.time.formatTimestampForDisplay(mypycommons.file.getFileDateModifiedTimestamp(self.audioFilepath))
-        duration = mutagenInterface.info.length
+        duration = timedelta(seconds=mutagenInterface.info.length)
         format = 'MP3'
 
         bitRateModeType = mutagenInterface.info.bitrate_mode
@@ -63,7 +64,7 @@ class AudioFormatHandlerMP3:
             bitRateMode = ''
 
         encoder = "{} ({})".format(mutagenInterface.info.encoder_info, mutagenInterface.info.encoder_settings)
-        bitRate = mypycommons.convert.bitsToKilobits(mutagenInterface.info.bitrate)
+        bitRate = mypycommons.utils.convertBitsToKilobits(mutagenInterface.info.bitrate)
         numChannels = mutagenInterface.info.channels
         sampleRate = mutagenInterface.info.sample_rate
         replayGain = {
@@ -254,7 +255,7 @@ class AudioFormatHandlerMP3:
 
     def _getTagValueFromMutagenInterface(self, mutagenInterface, mutagenKey):
         try:
-            if (mypycommons.string.stringStartsWith(mutagenKey, 'WXXX:')):
+            if (mypycommons.utils.stringStartsWith(mutagenKey, 'WXXX:')):
                 mutagenValue = mutagenInterface[mutagenKey].url
             else:
                 mutagenValue = mutagenInterface[mutagenKey].text

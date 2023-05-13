@@ -6,12 +6,16 @@ from dependency_injector.wiring import Provide, inject
 
 from com.nwrobel import mypycommons
 from com.nwrobel.mypycommons.logger import CommonLogger, LogLevel
+import com.nwrobel.mypycommons.file
 
 # Do setup processing so that this script can import all the needed modules from the "mlu" package.
 # This is necessary because these scripts are not located in the root directory of the project, but
 # instead in the 'scripts' folder.
 import envsetup
 envsetup.PreparePythonProjectEnvironment()
+
+import mlu.tags.io
+
 
 from mlu.mpd.log import MpdLog
 from mlu.mpd.plays import MpdPlaybackProvider
@@ -30,7 +34,7 @@ class Container(containers.DeclarativeContainer):
         CommonLogger,
         loggerName=mluSettings().loggerName,
         logDir=mluSettings().logDir,
-        logFilename=__name__
+        logFilename="{}.log".format(mypycommons.file.getFilename(__file__))
     )
 
     mpdLog = providers.Singleton(
@@ -68,3 +72,4 @@ if __name__ == "__main__":
 
     mluSettings.cleanupTempDir()
     logger.info('Script complete')
+

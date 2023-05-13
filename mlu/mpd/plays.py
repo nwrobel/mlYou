@@ -8,7 +8,7 @@ import com.nwrobel.mypycommons.time
 from com.nwrobel.mypycommons.logger import CommonLogger
 
 from mlu.mpd.log import MpdLog, MpdLogLine
-from mlu.tags.playstats import Playback
+from mlu.tags.playstats.common import Playback
 
 class MpdPlaybackProvider:
     ''' 
@@ -27,6 +27,8 @@ class MpdPlaybackProvider:
     
     def getPlaybacks(self) -> List[Playback]:
         '''
+        If the last filtered log line is a 'played' line, it is not counted, and it will be kept
+        during the MPD log reset processing done outside this module
         '''
         linesWithJunkRemoved = self._getJunkFilteredMpdLogLines()
 
@@ -48,7 +50,7 @@ class MpdPlaybackProvider:
             if (self._mpdLogLineIsPlaybackStarted(currentLine)):
                 
                 audioFilepath = self._getFilepathFromMpdLogLine(currentLine)
-                playbackStartTime = currentLine.epochTimestamp
+                playbackStartTime = currentLine.dateTime
 
                 # determine playback duration: find out when the song actually stopped by looking ahead at the
                 # next log line in the list (the list is ordered by time, least to most recent)
@@ -57,8 +59,8 @@ class MpdPlaybackProvider:
                     nextLine = linesWithJunkRemoved[index + 1]
 
                     # Get the playback duration from the difference b/w playback stop and start times
-                    playbackStopTime = nextLine.epochTimestamp
-                    playbackDuration = playbackStopTime - playbackStartTime
+                    playbackStopTime = nextLine.dateTime
+                    playbackTimedelta = playbackStopTime - playbackStartTime
 
                 # If the list is out of bounds, we are at the end of the list, and we have no way to know what the play duration is,
                 # so we don't add this song to the list of playbacks - this song playback line will be preserved in the log file
@@ -66,11 +68,10 @@ class MpdPlaybackProvider:
                 except IndexError:
                     atLastLogLine = True
 
-                # Create the playbackInstance object from the values we found for this playback and add it to the list
+                # Create the Playback object from the values we found for this playback and add it to the list
                 # (if the playback duration was found - if not, don't make a playback instance for the last playback)
                 if (not atLastLogLine):
-                    playbackDateTime = mypycommons.time.formatTimestampForDisplay(playbackStartTime)
-                    playbackInstance = Playback(audioFilepath, playbackDateTime, playbackDuration)
+                    playbackInstance = Playback(audioFilepath, playbackStartTime, playbackTimedelta)
                     playbackList.append(playbackInstance)
 
         return playbackList
@@ -89,7 +90,7 @@ class MpdPlaybackProvider:
     def _getJunkFilteredMpdLogLines(self) -> List[MpdLogLine]:
         ''' 
         '''
-        linesWithJunkRemoved = [logLine for logLine in self.mpdLogLines if (not self._mpdLogLineIsJunk(logLine))]
+        linesWithJunkRemoved = [logLine for logLine in self._mpdLogLines if (not self._mpdLogLineIsJunk(logLine))]
         return linesWithJunkRemoved
 
     def _mpdLogLineIsJunk(self, mpdLogLine: MpdLogLine) -> bool:

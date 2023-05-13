@@ -1,4 +1,5 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
+from datetime import timedelta, datetime
 
 from com.nwrobel import mypycommons
 from com.nwrobel.mypycommons.logger import CommonLogger
@@ -7,41 +8,15 @@ import com.nwrobel.mypycommons.archive
 import com.nwrobel.mypycommons.time
 
 import mlu.tags.io
+import mlu.utilities
+import mlu.tags.playstats.common 
+from mlu.tags.playstats.common import Playback, AudioFilePlaybackList
 from mlu.mpd.plays import MpdPlaybackProvider
 from mlu.settings import MLUSettings
 
-class Playback:
-    def __init__(self, audioFilepath, playbackDateTime, playbackDurationSeconds=None):
-        self.audioFilepath = audioFilepath
-        self.playbackDateTime = playbackDateTime
-        self.playbackDurationSeconds = playbackDurationSeconds
-
-    def getDictForJsonFileOutput(self):
-        return { 
-            'audioFilepath': self.audioFilepath, 
-            'playbackDateTime': self.playbackDateTime
-        }
-
-class AudioFilePlaybackList:
-    def __init__(self, audioFilepath: str, playbackDateTimes: List[str]) -> None:
-        self.audioFilepath = audioFilepath
-
-        # Sort the playback times, with oldest first
-        playbackDateTimes.sort()
-        self.playbackDateTimes = playbackDateTimes
-
-    def getDictForJsonFileOutput(self):
-        return {
-            'audioFilepath': self.audioFilepath,
-            'playbackDateTimes': self.playbackDateTimes
-        }
-
-class AudioFileDuration:
-    def __init__(self, audioFilepath: str, duration: float) -> None:
-        self.audioFilepath = audioFilepath
-        self.duration = duration
-
 class PlaystatTagUpdaterForMpd:
+    ''' 
+    '''
     def __init__(self, mpdPlaybackProvider: MpdPlaybackProvider, mluSettings: MLUSettings, commonLogger: CommonLogger) -> None:
         if (mpdPlaybackProvider is None):
             raise TypeError("mpdPlaybackProvider not passed")
@@ -51,91 +26,80 @@ class PlaystatTagUpdaterForMpd:
             raise TypeError("commonLogger not passed")
 
         self._playbacks = mpdPlaybackProvider.getPlaybacks()
+        self._uniqueAudioFiles = mlu.tags.playstats.common.getUniqueAudioFilesFromPlaybacks(self._playbacks)
         self._settings = mluSettings
         self._processCacheDir = self._getProcessCacheDir()
         self._logger = commonLogger.getLogger()
 
     def processMpdLogFile(self) -> None:
-        # Get the data
+        ''' 
+        '''
+        self._logger.info("Testing all found audio files for validity")
+        audioFileErrors = mlu.utilities.testAudioFilesForErrors(self._uniqueAudioFiles)
+
         self._logger.info("Parsing MPD log file for playback data")
-        finalPlaybacks = self._getFilteredPlaybacks()
-        playbackInstancesLists = self._convertPlaybacksToAudioFilePlaybackLists(finalPlaybacks)
+        finalPlaybacks, excludedPlaybacks = self._filterPlaybacks()
 
-        audioFiles = [playbackInstancesList.audioFilepath for playbackInstancesList in playbackInstancesLists]
-        audioFileErrors = mlu.utilities.testAudioFilesForErrors(audioFiles)
+        playbackListsFinal = self._convertPlaybacksToAudioFilePlaybackLists(finalPlaybacks)
+        playbackListsExcluded = self._convertPlaybacksToAudioFilePlaybackLists(excludedPlaybacks)
 
-        # Write the playbacks json data file - contains the playback data about to be written to tags
-        self._logger.info("Writing playbacks data json output file")
-        playbacksOutputFilename = '{} playbacks-data.json'.format(mypycommons.time.getCurrentTimestampForFilename())
-        playbacksOutputFilepath = mypycommons.file.joinPaths(self._processCacheDir, playbacksOutputFilename)
-        self._savePlaybacksOutputFile(playbacksOutputFilepath, playbackInstancesLists)
+        self._logger.info("Writing playbacks data json output files")
+        filenameTimestamp = mypycommons.time.getCurrentTimestampForFilename()
+        self._savePlaybacksOutputFile(playbackListsFinal, filenameTimestamp)
+        self._savePlaybacksExcludesFile(playbackListsExcluded, filenameTimestamp)
 
-    def _getFilteredPlaybacks(self) -> List[Playback]:
+
+    def _filterPlaybacks(self) -> Tuple[List[Playback], List[Playback]]:
         '''
         Remove any playbacks in which less than 20% of the song was played.
         '''
-        filteredPlaybackList = []
+        filteredPlaybacks = []
+        excludedPlaybacks = []
 
-        # Optimization added:
-        # Keep a list of dicts for audioFile durations, to avoid looking up the duration for the same audio file twice
-        audioFileDurationList = []
+        for audioFile in self._uniqueAudioFiles:
+            thisFileDuration = self._getAudioFileDuration(audioFile)
+            thisFilePlaybacks = self._getPlaybacksForAudioFile(self._playbacks, audioFile)
 
-        for playback in self._playbacks:
-            thisAudioFileDuration = [
-                duration for audioFileDuration in audioFileDurationList if (playback.audioFilepath == audioFileDuration.audioFilepath)
-            ]
-            
-            audioFileDuration = None
-            if (thisAudioFileDuration):
-                audioFileDuration = thisAudioFileDuration[0].duration
-            else:
-                audioFileDuration = self._getAudioFileDuration(playback.audioFilepath)
-                audioFileDurationList.append(AudioFileDuration(playback.audioFilepath, audioFileDuration))
-            
-            # If the audio file duration was not found (had an exception), add it to list of kept playbacks anyway
-            # The error will be made clear later when attempting to write tags to it  
-            if (audioFileDuration):
-                percentOfAudioPlayed = 0
-                if (playback.playbackDurationSeconds >= audioFileDuration):
-                    percentOfAudioPlayed = 100
-                else:
-                    percentOfAudioPlayed = (playback.playbackDurationSeconds / audioFileDuration) * 100
+            for playback in thisFilePlaybacks:
+                percentOfAudioPlayed = (playback.duration.total_seconds() / thisFileDuration.total_seconds()) * 100
 
                 if (percentOfAudioPlayed >= 20):
-                    filteredPlaybackList.append(playback)
-            
-            else:
-                filteredPlaybackList.append(playback)
+                    filteredPlaybacks.append(playback)
+                else:
+                    excludedPlaybacks.append(playback)
 
-        return filteredPlaybackList
+        return (filteredPlaybacks, excludedPlaybacks)
 
-    def _getAudioFileDuration(self, audioFilepath: str) -> Optional[float]:
-        try:
-            handler = mlu.tags.io.AudioFileMetadataHandler(audioFilepath)
-            properties = handler.getProperties()
 
-            return properties.duration
 
-        except (AudioFileFormatNotSupportedError, AudioFileNonExistentError):
-            return None
+    def _getAudioFileDuration(self, audioFilepath: str) -> timedelta:
+        ''' 
+        '''
+        handler = mlu.tags.io.AudioFileMetadataHandler(audioFilepath)
+        properties = handler.getProperties()
+
+        return properties.duration
 
     def _convertPlaybacksToAudioFilePlaybackLists(self, playbacks: List[Playback]) -> List[AudioFilePlaybackList]:
         '''
         '''
         audioFilePlaybackLists = []
 
-        uniqueAudioFiles = set([playback.audioFilepath for playback in playbacks])
-        for audioFile in uniqueAudioFiles:
+        for audioFile in self._uniqueAudioFiles:
             thisFilePlaybacks = self._getPlaybacksForAudioFile(playbacks, audioFile)
-            playbackTimes = [playback.playbackDateTime for playback in thisFilePlaybacks]
-            audioFilePlaybackLists.append(AudioFilePlaybackList(audioFile, playbackTimes))
+            if (thisFilePlaybacks):
+                audioFilePlaybackLists.append(AudioFilePlaybackList(thisFilePlaybacks))
 
         return audioFilePlaybackLists
 
     def _getPlaybacksForAudioFile(self, allPlaybacks: List[Playback], audioFilepath: str) -> List[Playback]:
+        ''' 
+        '''        
         return [playback for playback in allPlaybacks if (playback.audioFilepath == audioFilepath)]
 
     def _getProcessCacheDir(self) -> str:
+        ''' 
+        '''
         dirName = "update-playstat-tags-from-mpd-log"
         scriptCacheDir = mypycommons.file.joinPaths(self._settings.cacheDir, dirName)
 
@@ -144,14 +108,33 @@ class PlaystatTagUpdaterForMpd:
 
         return scriptCacheDir
 
-    def _savePlaybacksOutputFile(self, filepath: str, audioFilePlaybackLists: List[AudioFilePlaybackList]) -> None:
+    def _savePlaybacksOutputFile(self, audioFilePlaybackLists: List[AudioFilePlaybackList], filenameTimestamp: str) -> None:
+        ''' 
+        '''
+        outputFilename = '[{}] playbacks-data.json'.format(filenameTimestamp)
+        outputFilepath = mypycommons.file.joinPaths(self._processCacheDir, outputFilename)
+
         dictList = []
         for playbackList in audioFilePlaybackLists:
-            dictList.append(playbackList.getDictForJsonFileOutput())
+            dictList.append(playbackList.getDictForJsonDataFile())
 
-        mypycommons.file.writeJsonFile(filepath, dictList)
+        mypycommons.file.writeJsonFile(outputFilepath, dictList)
+
+    def _savePlaybacksExcludesFile(self, audioFilePlaybackLists: List[AudioFilePlaybackList], filenameTimestamp: str) -> None:
+        ''' 
+        '''
+        outputFilename = '[{}] playbacks-excluded.json'.format(filenameTimestamp)
+        outputFilepath = mypycommons.file.joinPaths(self._processCacheDir, outputFilename)
+
+        dictList = []
+        for playbackList in audioFilePlaybackLists:
+            dictList.append(playbackList.getDictForJsonExcludesFile())
+
+        mypycommons.file.writeJsonFile(outputFilepath, dictList)
 
     def _archiveMpdLogFile(self) -> None:
+        ''' 
+        '''
         mpdLogArchiveFilename = '[{}] {}.archive.7z'.format(
             mypycommons.time.getCurrentTimestampForFilename(), 
             mypycommons.file.getFilename(self.settings.userConfig.mpdLogFilepath)

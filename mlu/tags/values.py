@@ -7,6 +7,7 @@ Modified: 2021-12-17
 
 Module containing the data structures used to hold audio file tags and properties values.
 '''
+from datetime import timedelta
 
 class AudioFileTags:
     '''
@@ -97,7 +98,7 @@ class AudioFileProperties:
         self,
         fileSize,
         fileDateModified,
-        duration,
+        duration: timedelta,
         format,
         bitRate,
         sampleRate,

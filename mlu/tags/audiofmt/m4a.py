@@ -6,11 +6,12 @@ Module containing class which reads data for a single m4a audio file.
 
 import mutagen
 from mutagen.mp4 import MP4
+from datetime import timedelta
 
 from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.file
 import com.nwrobel.mypycommons.time
-import com.nwrobel.mypycommons.convert
+import com.nwrobel.mypycommons.utils
 
 from mlu.tags import values
 
@@ -47,10 +48,10 @@ class AudioFormatHandlerM4A:
 
         fileSize = mypycommons.file.getFileSizeBytes(self.audioFilepath)
         fileDateModified = mypycommons.time.formatTimestampForDisplay(mypycommons.file.getFileDateModifiedTimestamp(self.audioFilepath))
-        duration = mutagenInterface.info.length
+        duration = timedelta(seconds=mutagenInterface.info.length)
         format = 'M4A'
         codec = mutagenInterface.info.codec_description
-        bitRate = mypycommons.convert.bitsToKilobits(mutagenInterface.info.bitrate)
+        bitRate = mypycommons.utils.convertBitsToKilobits(mutagenInterface.info.bitrate)
         bitDepth = mutagenInterface.info.bits_per_sample
         numChannels = mutagenInterface.info.channels
         sampleRate = mutagenInterface.info.sample_rate
