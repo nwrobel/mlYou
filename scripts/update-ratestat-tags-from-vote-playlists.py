@@ -5,6 +5,7 @@ This script uses the votes playlists (1-10) to add the new votes to and update t
 audio files in the music library. 
 
 '''
+import argparse
 
 from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.logger
@@ -19,8 +20,19 @@ from mlu.settings import MLUSettings
 from mlu.tags.ratestats import RatestatTagsUpdater
 
 if __name__ == "__main__":
-    settings = MLUSettings()
-    loggerWrapper = mypycommons.logger.CommonLogger(loggerName=settings.loggerName, logDir=settings.logDir, logFilename=__name__)
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--config-file", 
+        help="config file name located in root dir",
+        default="mlu.config.json",
+        type=str,
+        dest='configFile'
+    )
+    args = parser.parse_args()
+
+    settings = MLUSettings(configFilename=args.configFile)
+
+    loggerWrapper = mypycommons.logger.CommonLogger(loggerName=settings.loggerName, logDir=settings.logDir, logFilename="update-ratestat-tags-from-vote-playlists.py.log")
     logger = loggerWrapper.getLogger()
 
     ratestatsProcessor = RatestatTagsUpdater(mluSettings=settings, commonLogger=loggerWrapper)

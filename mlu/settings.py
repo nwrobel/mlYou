@@ -23,7 +23,7 @@ class MLUSettings:
     #         cls.instance = super(MLUSettings, cls).__new__(cls)
     #     return cls.instance
 
-    def __init__(self):
+    def __init__(self, configFilename: str):
         self.userConfig = None
         self.projectRootDir = ''
         self.logDir = ''
@@ -32,7 +32,7 @@ class MLUSettings:
         self.testDataDir = ''
         self.loggerName = "mlu-script"
 
-        self._loadSettings()
+        self._loadSettings(configFilename)
         self._createDirectories()
 
     def cleanupTempDir(self):
@@ -42,8 +42,8 @@ class MLUSettings:
         if (mypycommons.file.pathExists(self.tempDir)):
             mypycommons.file.deletePath(self.tempDir)
 
-    def _loadSettings(self):
-        self.userConfig = self._getUserConfig()
+    def _loadSettings(self, configFilename: str):
+        self.userConfig = self._getUserConfig(configFilename)
 
         self.projectRootDir = self._getProjectRootDirectory()
         self.logDir = mypycommons.file.joinPaths(self.projectRootDir, '~logs')
@@ -61,8 +61,8 @@ class MLUSettings:
         if (not mypycommons.file.pathExists(self.tempDir)):
             mypycommons.file.createDirectory(self.tempDir)
 
-    def _getUserConfig(self):
-        configFilepath = mypycommons.file.joinPaths(self._getProjectRootDirectory(), 'mlu.config.json')
+    def _getUserConfig(self, configFilename: str):
+        configFilepath = mypycommons.file.joinPaths(self._getProjectRootDirectory(), configFilename)
         configData = mypycommons.file.readJsonFile(configFilepath)
 
         userConfig = MLUUserConfig()

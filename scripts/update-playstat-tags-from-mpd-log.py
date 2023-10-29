@@ -23,14 +23,7 @@ import mlu.utilities
 
 
 
-def _getNewPlaybackParseResultsDirectory():
-    dirName = '{} playback-parse-results'.format(mypycommons.time.getCurrentTimestampForFilename())
-    dirFilepath = mypycommons.file.joinPaths(_getThisScriptCacheDirectory(), dirName)
 
-    if (not mypycommons.file.pathExists(dirFilepath)):
-        mypycommons.file.createDirectory(dirFilepath)
-
-    return dirFilepath
 
 def _getAudioFilePlaybackInstancesFromJsonFile(jsonFilepath):
     playbackInstancesList = []

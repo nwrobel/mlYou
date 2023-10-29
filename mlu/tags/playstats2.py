@@ -28,7 +28,7 @@ class PlaystatTagUpdaterForMpd:
         self._playbacks = mpdPlaybackProvider.getPlaybacks()
         self._uniqueAudioFiles = mlu.tags.playstats.common.getUniqueAudioFilesFromPlaybacks(self._playbacks)
         self._settings = mluSettings
-        self._processCacheDir = self._getProcessCacheDir()
+        self._processOutputDir = self._getProcessOutputDir()
         self._logger = commonLogger.getLogger()
 
     def processMpdLogFile(self) -> None:
@@ -47,6 +47,25 @@ class PlaystatTagUpdaterForMpd:
         filenameTimestamp = mypycommons.time.getCurrentTimestampForFilename()
         self._savePlaybacksOutputFile(playbackListsFinal, filenameTimestamp)
         self._savePlaybacksExcludesFile(playbackListsExcluded, filenameTimestamp)
+
+    def writeSummaryFiles(self) -> None:
+        ''' 
+        '''
+
+        logger.info("Writing summary files ")
+        summaryDir = self._getNewSummaryFileDir()
+
+        outputFilename = '{} playbacks-history-summary.txt'.format(mypycommons.time.getCurrentTimestampForFilename())
+        outputFilepath = mypycommons.file.joinPaths(playbackParseResultsDir, outputFilename)
+        _savePlaybacksHistorySummaryOutputFile(outputFilepath, audioFilePlaybackInstancesList)
+
+        outputFilename = '{} playbacks-totals-summary.txt'.format(mypycommons.time.getCurrentTimestampForFilename())
+        outputFilepath = mypycommons.file.joinPaths(playbackParseResultsDir, outputFilename)
+        _savePlaybacksTotalsSummaryOutputFile(outputFilepath, audioFilePlaybackInstancesList)
+
+        outputFilename = '{} playbacks-errors-summary.txt'.format(mypycommons.time.getCurrentTimestampForFilename())
+        outputFilepath = mypycommons.file.joinPaths(playbackParseResultsDir, outputFilename)
+        _savePlaybacksErrorsSummaryOutputFile(outputFilepath, audioFileErrors)
 
 
     def _filterPlaybacks(self) -> Tuple[List[Playback], List[Playback]]:
@@ -69,8 +88,6 @@ class PlaystatTagUpdaterForMpd:
                     excludedPlaybacks.append(playback)
 
         return (filteredPlaybacks, excludedPlaybacks)
-
-
 
     def _getAudioFileDuration(self, audioFilepath: str) -> timedelta:
         ''' 
@@ -97,7 +114,7 @@ class PlaystatTagUpdaterForMpd:
         '''        
         return [playback for playback in allPlaybacks if (playback.audioFilepath == audioFilepath)]
 
-    def _getProcessCacheDir(self) -> str:
+    def _getProcessOutputDir(self) -> str:
         ''' 
         '''
         dirName = "update-playstat-tags-from-mpd-log"
@@ -107,6 +124,24 @@ class PlaystatTagUpdaterForMpd:
             mypycommons.file.createDirectory(scriptCacheDir)
 
         return scriptCacheDir
+
+    def _getNewSummaryFileDir(self) -> str:
+        dirName = '[{}] playback-data-summary'.format(mypycommons.time.getCurrentTimestampForFilename())
+        dirFilepath = mypycommons.file.joinPaths(self._processOutputDir, dirName)
+
+        if (not mypycommons.file.pathExists(dirFilepath)):
+            mypycommons.file.createDirectory(dirFilepath)
+
+        return dirFilepath
+
+    def _getLatestPlaybackDataFile(self) -> str:
+        dataFilepaths = mypycommons.file.getFilesByExtension(self._processOutputDir, '.')
+        dirFilepath = mypycommons.file.joinPaths(self._processOutputDir, dirName)
+
+        if (not mypycommons.file.pathExists(dirFilepath)):
+            mypycommons.file.createDirectory(dirFilepath)
+
+        return dirFilepath  
 
     def _savePlaybacksOutputFile(self, audioFilePlaybackLists: List[AudioFilePlaybackList], filenameTimestamp: str) -> None:
         ''' 

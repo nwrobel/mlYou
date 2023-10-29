@@ -16,7 +16,7 @@
             "type": "python",
             "request": "launch",
             "program": "scripts\\change-playlist-items-root-path.py",
-            "args": ["Z:\\Music Library\\Playlist Workbench", "Z:\\Music Library\\Playlist Workbench\\test","Z:\\", "/datastore/nick/"],
+            "args": ["Z:\\Music Library\\Playlist Workbench\\export", "Z:\\Music Library\\Playlist Workbench\\mpd-ready","Z:\\", "/datastore/nick/"],
             "console": "integratedTerminal"
         },
         {
@@ -44,11 +44,19 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Ratestats updater - Test",
+            "name": "Ratestats updater",
             "type": "python",
             "request": "launch",
             "program": "scripts\\update-ratestat-tags-from-vote-playlists.py",
             "args": [],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Ratestats updater - TEST",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\update-ratestat-tags-from-vote-playlists.py",
+            "args": ["--config-file", "mlu.TEST.config.json"],
             "console": "integratedTerminal"
         },
         {

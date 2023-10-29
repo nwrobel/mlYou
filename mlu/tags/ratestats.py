@@ -77,7 +77,7 @@ class RatestatTagsUpdater:
         self.logger.info('Archiving the processed vote playlists')
         self._archiveVotePlaylists()
 
-        self.logger.info('Removing processed playlist entries from source vote playlist files')
+        self.logger.info('Resetting source vote playlist files')
         self._resetVotePlaylists()
 
     def _copyVotePlaylistsToTemp(self):
