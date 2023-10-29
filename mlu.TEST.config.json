@@ -3,5 +3,7 @@
     "mpdLogFilepath": "D:\\Temp\\mlu-test\\test-mpd-logs\\mpd-test.log",
     "mpdLogArchiveDir": "D:\\Temp\\mlu-test\\test-mpd-logs-archive",
     "votePlaylistsDir": "D:\\Temp\\mlu-test\\test-vote-playlists-dir",
-    "votePlaylistsArchiveDir": "D:\\Temp\\mlu-test\\test-vote-playlists-archive"
+    "votePlaylistsArchiveDir": "D:\\Temp\\mlu-test\\test-vote-playlists-archive",
+    "convertPlaylistsInputDir": "D:\\Temp\\mlu-test\\test-convert-playlists-input",
+    "convertPlaylistsOutputDir": "D:\\Temp\\mlu-test\\test-convert-playlists-output"
 }

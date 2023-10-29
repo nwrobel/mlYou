@@ -32,6 +32,8 @@ from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.logger
 import com.nwrobel.mypycommons.file
 
+from mlu.settings import MLUSettings
+
 # --------------------------------------------------------------------------------------------------
 # Helper functions
 #
@@ -57,14 +59,6 @@ def _fixPathSlashDirectionToMatchRootPath(rootPath, inputPath):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("sourcePlaylistDir", 
-                        help="absolute filepath of the folder containing the playlist files to convert",
-                        type=str)
-
-    parser.add_argument("outputPlaylistDir", 
-                        help="absolute filepath of the folder the converted playlists should be output to",
-                        type=str)
-
     parser.add_argument("oldRoot", 
                         help="absolute filepath of the old music library root folder, to be replaced in each song entry in the playlists",
                         type=str)
@@ -73,19 +67,25 @@ if __name__ == "__main__":
                         help="absolute filepath of the new music library root folder, which will replace the old root for each song entry in the playlists",
                         type=str)
 
+    parser.add_argument("--config-file", 
+        help="config file name located in root dir",
+        default="mlu.config.json",
+        type=str,
+        dest='configFile'
+    )
     args = parser.parse_args()
 
+    settings = MLUSettings(configFilename=args.configFile)
+    sourcePlaylistDir = settings.userConfig.convertPlaylistsInputDir
+    outputPlaylistDir = settings.userConfig.convertPlaylistsOutputDir
 
-    if (not mypycommons.file.pathExists(args.sourcePlaylistDir)):
-        raise ValueError("The given playlist source folder is invalid or cannot be found")
-    
-    playlistFilePaths = mypycommons.file.getFilesByExtension(args.sourcePlaylistDir, [".m3u", ".m3u8"])
+    playlistFilePaths = mypycommons.file.getFilesByExtension(sourcePlaylistDir, [".m3u", ".m3u8"])
     numPlaylists = len(playlistFilePaths)
 
-    print("Found {} playlists in source directory '{}'".format(numPlaylists, args.sourcePlaylistDir))
+    print("Found {} playlists in source directory '{}'".format(numPlaylists, sourcePlaylistDir))
         
-    if (mypycommons.file.pathExists(args.outputPlaylistDir)):
-        print("WARNING: Output directory already exists - all files currently within this directory WILL BE DELETED:\n", args.outputPlaylistDir)    
+    if (mypycommons.file.pathExists(outputPlaylistDir)):
+        print("WARNING: Output directory already exists - all files currently within this directory WILL BE DELETED:\n", outputPlaylistDir)    
         confirmation = None    
         while (confirmation != 'y' and confirmation != 'n'):
             confirmation = input("Are you sure you want to continue? [Y/N]").lower()
@@ -100,10 +100,10 @@ if __name__ == "__main__":
             else:
                 print("Invalid choice: please enter y or n")
                 
-        mypycommons.file.deletePath(args.outputPlaylistDir)
+        mypycommons.file.deletePath(outputPlaylistDir)
         time.sleep(2)
     
-    mypycommons.file.createDirectory(args.outputPlaylistDir)
+    mypycommons.file.createDirectory(outputPlaylistDir)
 
     oldRoot = mypycommons.file.removeTrailingSlashFromPath(args.oldRoot)
     newRoot = mypycommons.file.removeTrailingSlashFromPath(args.newRoot)
@@ -117,14 +117,14 @@ if __name__ == "__main__":
         # Each output playlist will have a .m3u8 extension by default, even if original was .m3u
         # This ensures support for UTF-8 encoding always will be used
         outputPlaylistFileName = mypycommons.file.getFileBaseName(originalPlaylistFilePath) + ".m3u8"
-        outputPlaylistFilePath = mypycommons.file.joinPaths(args.outputPlaylistDir, outputPlaylistFileName)
+        outputPlaylistFilePath = mypycommons.file.joinPaths(outputPlaylistDir, outputPlaylistFileName)
         
         # Read in all lines from the original playlist
         # Use utf8-sig (common in Windows files), which also reads utf8
         originalLines = mypycommons.file.readFile(originalPlaylistFilePath, encoding='utf-8-sig')
 
         # Remove the '#' that is sometimes added to playlists when exported from Foobar2000
-        if (originalLines[0] == "#\n"):
+        if (originalLines and originalLines[0] == "#\n"):
             originalLines.pop(0)
 
         # Convert each line and add the result to the list of new playlist lines

@@ -14,6 +14,8 @@ class MLUUserConfig:
         self.mpdLogArchiveDir = ''
         self.votePlaylistsDir = ''
         self.votePlaylistsArchiveDir = ''
+        self.convertPlaylistsInputDir = ''
+        self.convertPlaylistsOutputDir = ''
 
 class MLUSettings:
     # def __new__(cls):
@@ -71,6 +73,8 @@ class MLUSettings:
         userConfig.mpdLogArchiveDir = configData['mpdLogArchiveDir']
         userConfig.votePlaylistsDir = configData['votePlaylistsDir']
         userConfig.votePlaylistsArchiveDir = configData['votePlaylistsArchiveDir']
+        userConfig.convertPlaylistsInputDir = configData['convertPlaylistsInputDir']
+        userConfig.convertPlaylistsOutputDir = configData['convertPlaylistsOutputDir']
 
         return userConfig
 

@@ -16,15 +16,15 @@
             "type": "python",
             "request": "launch",
             "program": "scripts\\change-playlist-items-root-path.py",
-            "args": ["Z:\\Music Library\\Playlist Workbench\\export", "Z:\\Music Library\\Playlist Workbench\\mpd-ready","Z:\\", "/datastore/nick/"],
+            "args": ["/datastore/nick/", "Z:\\"],
             "console": "integratedTerminal"
         },
         {
-            "name": "Convert Playlists - test",
+            "name": "Convert Playlists - TEST",
             "type": "python",
             "request": "launch",
             "program": "scripts\\change-playlist-items-root-path.py",
-            "args": ["D:\\Temp\\mlu-test\\playlists-in", "D:\\Temp\\mlu-test\\playlists-out","Z:\\", "/datastore/nick/"],
+            "args": ["/datastore/nick/", "Z:\\", "--config-file", "mlu.TEST.config.json"],
             "console": "integratedTerminal"
         },
         {
