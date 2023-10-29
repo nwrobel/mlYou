@@ -132,9 +132,9 @@ class AudioFormatHandlerFLAC:
             if (tagKey.lower() not in tagFieldKeysFlac):
                 otherTagNames.append(tagKey.lower())
 
-        for tagNameKey in otherTagNames:
-            tagValue = self._getTagValueFromMutagenInterface(mutagenInterface, tagNameKey)
-            otherTags[tagNameKey] = tagValue
+        # for tagNameKey in otherTagNames:
+        #     tagValue = self._getTagValueFromMutagenInterface(mutagenInterface, tagNameKey)
+        #     otherTags[tagNameKey] = tagValue
 
         audioFileTags = values.AudioFileTags(
             title=title,

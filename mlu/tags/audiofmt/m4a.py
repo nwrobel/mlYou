@@ -162,10 +162,10 @@ class AudioFormatHandlerM4A:
             if (tagKey not in tagFieldKeysM4A):
                 otherTagKeys.append(tagKey)
 
-        for tagKey in otherTagKeys:
-            tagValue = self._getTagValueFromMutagenInterface(mutagenInterface, tagKey)
-            tagNameFormatted = self._formatM4AKeyToTagName(tagKey)
-            otherTags[tagNameFormatted] = tagValue
+        # for tagKey in otherTagKeys:
+        #     tagValue = self._getTagValueFromMutagenInterface(mutagenInterface, tagKey)
+        #     tagNameFormatted = self._formatM4AKeyToTagName(tagKey)
+        #     otherTags[tagNameFormatted] = tagValue
 
         audioFileTags = values.AudioFileTags(
             title=title,

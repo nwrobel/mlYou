@@ -95,11 +95,21 @@ class RatestatTagsUpdater:
         playlistFilepaths = []
         possibleVoteValues = self._getPossibleVoteValues()
         for currentVoteValue in possibleVoteValues:
-            currentVoteValuePlaylistName = "{}.m3u".format(str(currentVoteValue))
-            currentVoteValuePlaylistPath =  mypycommons.file.joinPaths(votePlaylistsSrcDir, currentVoteValuePlaylistName)
+            # Fix to allow use of either m3u or m3u8 extension
+            currentVoteValuePlaylistPath = self._getVotePlaylistFilepath(votePlaylistsSrcDir, currentVoteValue)
             playlistFilepaths.append(currentVoteValuePlaylistPath)
 
         return playlistFilepaths
+
+    def _getVotePlaylistFilepath(self, votePlaylistsSrcDir, currentVoteValue):      
+        playlistName = "{}.m3u".format(str(currentVoteValue))
+        playlistFilepath =  mypycommons.file.joinPaths(votePlaylistsSrcDir, playlistName)
+
+        if (not mypycommons.file.pathExists(playlistFilepath)):
+            playlistName = "{}.m3u8".format(str(currentVoteValue))
+            playlistFilepath =  mypycommons.file.joinPaths(votePlaylistsSrcDir, playlistName)
+
+        return playlistFilepath
 
     def _getPossibleVoteValues(self) -> List[float]:
         '''
@@ -228,23 +238,9 @@ class RatestatTagsUpdater:
         Resets the source vote playlist files by removing the playlist entries that were already
         processed
         '''
-        processedVotePlaylistsFilepaths = self._getVotePlaylistFilepaths(self.settings.tempDir)    
-        processedVotePlaylistsFilepathCounts = {}
-
-        for votePlaylist in processedVotePlaylistsFilepaths:
-            votePlaylistName = mypycommons.file.getFilename(votePlaylist)
-            playlistFilepathCount = len(mlu.library.playlist.getAllPlaylistLines(votePlaylist))
-            processedVotePlaylistsFilepathCounts[votePlaylistName] = playlistFilepathCount
-
         sourceVotePlaylistsFilepaths = self._getVotePlaylistFilepaths(self.settings.userConfig.votePlaylistsDir) 
-
-        # Remove from the start of each of the original vote playlists the number of lines that were 
-        # processed in the playlists from the temp dir earlier - essentially we remove the lines that
-        # have been processed already, leaving behind any new playlist lines that may have been created
-        # in the time between when the playlists were first copied to temp and now  
+  
         for votePlaylist in sourceVotePlaylistsFilepaths:
-            votePlaylistName = mypycommons.file.getFilename(votePlaylist)
-            removeFirstNLines = processedVotePlaylistsFilepathCounts[votePlaylistName]
-            if (removeFirstNLines > 0):
-                mypycommons.file.removeFirstNLinesFromTextFile(votePlaylist, removeFirstNLines)
+            mypycommons.file.clearFileContents(votePlaylist)
+
 

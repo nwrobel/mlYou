@@ -165,10 +165,10 @@ class AudioFormatHandlerMP3:
             if (tagKey not in tagFieldKeysMp3):
                 otherTagKeys.append(tagKey)
 
-        for tagKey in otherTagKeys:
-            tagValue = self._getTagValueFromMutagenInterface(mutagenInterface, tagKey)
-            tagNameFormatted = self._formatMp3KeyToTagName(tagKey)
-            otherTags[tagNameFormatted] = tagValue
+        # for tagKey in otherTagKeys:
+        #     tagValue = self._getTagValueFromMutagenInterface(mutagenInterface, tagKey)
+        #     tagNameFormatted = self._formatMp3KeyToTagName(tagKey)
+        #     otherTags[tagNameFormatted] = tagValue
 
         audioFileTags = values.AudioFileTags(
             title=title,
@@ -267,7 +267,9 @@ class AudioFormatHandlerMP3:
             else:
                 tagValue = ''
 
-        except KeyError:
+        # failure to read tag result in blank values
+        # TODO: add logging here
+        except Exception:
             tagValue = ''
 
         return str(tagValue) 
