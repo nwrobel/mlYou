@@ -160,22 +160,18 @@ class RatestatTagsUpdater:
         tagHandler = mlu.tags.io.AudioFileMetadataHandler(audioFileVoteData.filepath)
         currentTags = tagHandler.getTags()
 
-        votesCurrent = mlu.tags.common.formatAudioTagToValuesList(currentTags.votes, valuesAsType=float) 
-        votesUpdated = votesCurrent + audioFileVoteData.votes
-        votesUpdatedTagValue = mlu.tags.common.formatValuesListToAudioTag(votesUpdated)
-
         newTags = currentTags
-        newTags.votes = votesUpdatedTagValue
-        newTags.rating = self._calculateRatingTagValue(votesUpdated)
+        newTags.rating = self._getRatingTagValue(audioFileVoteData.votes)
+
         tagHandler.setTags(newTags)
 
-        self.logger.info("Updated ratestat tags to the following values: File={}, AllVotes={}, NewRating={}".format(audioFileVoteData.filepath, newTags.votes, newTags.rating))
+        self.logger.info("Updated ratestat tags to the following values: File={}, NewRating={}".format(audioFileVoteData.filepath, newTags.rating))
 
-    def _calculateRatingTagValue(self, currentVotes: List[float]) -> str:
-        if (currentVotes):
-            rating = sum(currentVotes) / len(currentVotes)
+    def _getRatingTagValue(self, votes: List[float]) -> str:
+        if (votes):
+            rating = sum(votes) / len(votes)
             rating = float(rating)
-            ratingTagValue = '{0:.1f}'.format(round(rating, 2))
+            ratingTagValue = '{0:.1f}'.format(round(rating, 2)) # ex) 0.5, 9.3, 5.0
         else:
             ratingTagValue = ''
 
@@ -186,12 +182,11 @@ class RatestatTagsUpdater:
         Writes out a log file containing a table in pretty format with the ratestat tags updates.
         '''
         tagUpdatesTable = PrettyTable()
-        tagUpdatesTable.field_names = ["Title", "Artist", "Votes Added", "New Rating", "New Votes List"]
+        tagUpdatesTable.field_names = ["Title", "Artist", "Votes Added", "New Rating"]
         tagUpdatesTable.align["Title"] = "l"
         tagUpdatesTable.align["Artist"] = "l"
         tagUpdatesTable.align["Votes Added"] = "r"
         tagUpdatesTable.align["New Rating"] = "r"
-        tagUpdatesTable.align["New Votes List"] = "r"
 
         for audioFileVotesData in audioFileVoteDataList:
             tagHandler = mlu.tags.io.AudioFileMetadataHandler(audioFileVotesData.filepath)
@@ -203,8 +198,7 @@ class RatestatTagsUpdater:
                 currentTags.title, 
                 currentTags.artist, 
                 votesAdded,
-                currentTags.rating,
-                currentTags.votes
+                currentTags.rating
             ])
 
         mypycommons.file.writeToFile(filepath=self.summaryFilepath, content=tagUpdatesTable.get_string())
