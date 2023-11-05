@@ -2,8 +2,69 @@
     "audioLibraryRootDir": "D:\\Temp\\mlu-test\\test-music-lib",
     "mpdLogFilepath": "D:\\Temp\\mlu-test\\test-mpd-logs\\mpd-test.log",
     "mpdLogArchiveDir": "D:\\Temp\\mlu-test\\test-mpd-logs-archive",
-    "votePlaylistsDir": "D:\\Temp\\mlu-test\\test-vote-playlists-dir",
-    "votePlaylistsArchiveDir": "D:\\Temp\\mlu-test\\test-vote-playlists-archive",
     "convertPlaylistsInputDir": "D:\\Temp\\mlu-test\\test-convert-playlists-input",
-    "convertPlaylistsOutputDir": "D:\\Temp\\mlu-test\\test-convert-playlists-output"
+    "convertPlaylistsOutputDir": "D:\\Temp\\mlu-test\\test-convert-playlists-output",
+
+    "votePlaylistConfig": {
+        "votePlaylistInputDir": "D:\\Temp\\mlu-test\\test-vote-playlists-dir",
+        "votePlaylistArchiveDir": "D:\\Temp\\mlu-test\\test-vote-playlists-archive",
+        "votePlaylistFiles": [
+            {
+                "filename": "1.0.m3u",
+                "value": 1.0
+            },
+            {
+                "filename": "2.0.m3u",
+                "value": 2.0
+            },
+            {
+                "filename": "3.0.m3u",
+                "value": 3.0
+            },
+            {
+                "filename": "4.0.m3u",
+                "value": 4.0
+            },
+            {
+                "filename": "5.0.m3u",
+                "value": 5.0
+            },
+            {
+                "filename": "6.0.m3u",
+                "value": 6.0
+            },
+            {
+                "filename": "6.5.m3u",
+                "value": 6.5
+            },
+            {
+                "filename": "7.0.m3u",
+                "value": 7.0
+            },
+            {
+                "filename": "7.5.m3u",
+                "value": 7.5
+            },
+            {
+                "filename": "8.0.m3u",
+                "value": 8.0
+            },
+            {
+                "filename": "8.5.m3u",
+                "value": 8.5
+            },
+            {
+                "filename": "9.0.m3u",
+                "value": 9.0
+            },
+            {
+                "filename": "9.5.m3u",
+                "value": 9.5
+            },
+            {
+                "filename": "10.0.m3u",
+                "value": 10.0
+            }
+        ]
+    }
 }

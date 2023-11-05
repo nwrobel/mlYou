@@ -4,18 +4,41 @@ mlu.common.settings
 Module containing the definition for setting values for MLU (project-wide constants).
 '''
 
+from typing import List
+
 from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.file
+
+class MLUVotePlaylistFileConfigItem:
+    def __init__(self, filename: str, value: float):
+        self.filename = filename
+        self.value = value
+
+class MLUVotePlaylistConfig:
+    # def __init__(self, votePlaylistInputDir: str, votePlaylistArchiveDir: str, votePlaylistFiles: List[MLUVotePlaylistFileConfigItem]):
+    #     self.votePlaylistInputDir = votePlaylistInputDir
+    #     self.votePlaylistArchiveDir = votePlaylistArchiveDir
+    #     self.votePlaylistFiles = votePlaylistFiles
+
+    def __init__(self, jsonConfig: dict):
+        self.votePlaylistInputDir = jsonConfig['votePlaylistInputDir']
+        self.votePlaylistArchiveDir = jsonConfig['votePlaylistArchiveDir']
+        self.votePlaylistFiles = []
+
+        for votePlaylistFileJsonCfg in jsonConfig['votePlaylistFiles']:
+            self.votePlaylistFiles.append(
+                MLUVotePlaylistFileConfigItem(votePlaylistFileJsonCfg['filename'], votePlaylistFileJsonCfg['value'])
+            )
+
 
 class MLUUserConfig:
     def __init__(self):
         self.audioLibraryRootDir = ''
         self.mpdLogFilepath = ''
         self.mpdLogArchiveDir = ''
-        self.votePlaylistsDir = ''
-        self.votePlaylistsArchiveDir = ''
         self.convertPlaylistsInputDir = ''
         self.convertPlaylistsOutputDir = ''
+        self.votePlaylistConfig = None
 
 class MLUSettings:
     # def __new__(cls):
@@ -71,10 +94,10 @@ class MLUSettings:
         userConfig.audioLibraryRootDir = configData['audioLibraryRootDir']
         userConfig.mpdLogFilepath = configData['mpdLogFilepath']
         userConfig.mpdLogArchiveDir = configData['mpdLogArchiveDir']
-        userConfig.votePlaylistsDir = configData['votePlaylistsDir']
-        userConfig.votePlaylistsArchiveDir = configData['votePlaylistsArchiveDir']
         userConfig.convertPlaylistsInputDir = configData['convertPlaylistsInputDir']
         userConfig.convertPlaylistsOutputDir = configData['convertPlaylistsOutputDir']
+
+        userConfig.votePlaylistConfig = MLUVotePlaylistConfig(configData['votePlaylistConfig'])
 
         return userConfig
 
