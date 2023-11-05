@@ -41,8 +41,6 @@ class RatestatTagsUpdater:
         Process the vote playlists directory by using the vote data within to update ratestat
         (votes and rating) tags for the voted on audio files.
         ''' 
-        # self.logger.info("Copying vote playlist files to project temp dir")
-        # self._copyVotePlaylistsToTemp()
 
         self.logger.info("Loading audio file votes data from all vote playlists")
         audioFileVoteDataList = self._getAudioFileVoteDataFromVotePlaylists()
@@ -80,22 +78,11 @@ class RatestatTagsUpdater:
         self.logger.info('Resetting source vote playlist files')
         self._resetVotePlaylists()
 
-    # def _copyVotePlaylistsToTemp(self):
-    #     '''
-    #     Copies the input vote playlists to the project's temp dir
-    #     '''
-    #     sourceVotePlaylists = self._getVotePlaylistFilepaths(self.settings.userConfig.votePlaylistConfig.votePlaylistInputDir)
-    #     for playlistFile in sourceVotePlaylists:
-    #         mypycommons.file.copyToDirectory(playlistFile, self.settings.tempDir)
-
-
-
     def _getAudioFileVoteDataFromVotePlaylists(self) -> List[AudioFileVoteData]:
         '''
         Get the AudioFileVoteData list from the vote playlists (loading the votes for files)
         '''
         audioFileVoteDataList = []
-        #votePlaylists = self._getVotePlaylistFilepaths()
 
         for votePlaylistFileConfig in self.settings.userConfig.votePlaylistConfig.votePlaylistFiles:
             votePlaylistFilepath = mypycommons.file.joinPaths(self.settings.userConfig.votePlaylistConfig.votePlaylistInputDir, votePlaylistFileConfig.filename)

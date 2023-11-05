@@ -15,11 +15,6 @@ class MLUVotePlaylistFileConfigItem:
         self.value = value
 
 class MLUVotePlaylistConfig:
-    # def __init__(self, votePlaylistInputDir: str, votePlaylistArchiveDir: str, votePlaylistFiles: List[MLUVotePlaylistFileConfigItem]):
-    #     self.votePlaylistInputDir = votePlaylistInputDir
-    #     self.votePlaylistArchiveDir = votePlaylistArchiveDir
-    #     self.votePlaylistFiles = votePlaylistFiles
-
     def __init__(self, jsonConfig: dict):
         self.votePlaylistInputDir = jsonConfig['votePlaylistInputDir']
         self.votePlaylistArchiveDir = jsonConfig['votePlaylistArchiveDir']
@@ -41,13 +36,6 @@ class MLUUserConfig:
         self.votePlaylistConfig = None
 
 class MLUSettings:
-    # def __new__(cls):
-    #     """ creates a singleton object, if it is not created,
-    #     or else returns the previous singleton object"""
-    #     if not hasattr(cls, 'instance'):
-    #         cls.instance = super(MLUSettings, cls).__new__(cls)
-    #     return cls.instance
-
     def __init__(self, configFilename: str):
         self.userConfig = None
         self.projectRootDir = ''
