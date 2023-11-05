@@ -12,11 +12,19 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Convert Playlists",
+            "name": "Convert Playlists - Linux to Windows",
             "type": "python",
             "request": "launch",
             "program": "scripts\\change-playlist-items-root-path.py",
-            "args": ["/datastore/nick/", "Z:\\"],
+            "args": ["/datastore/nick/", "Z:\\", "--extension", "m3u8"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Convert Playlists - Windows to Linux",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\change-playlist-items-root-path.py",
+            "args": ["Z:\\", "/datastore/nick/", "--extension", "m3u"],
             "console": "integratedTerminal"
         },
         {
@@ -24,7 +32,7 @@
             "type": "python",
             "request": "launch",
             "program": "scripts\\change-playlist-items-root-path.py",
-            "args": ["/datastore/nick/", "Z:\\", "--config-file", "mlu.TEST.config.json"],
+            "args": ["/datastore/nick/", "Z:\\", "--config-file", "mlu.TEST.config.json", "--extension", "m3u8"],
             "console": "integratedTerminal"
         },
         {
@@ -66,6 +74,14 @@
             "program": "scripts\\update-playstat-tags-from-mpd-log3.py",
             "args": [],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "Powershell Automation",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${file}",
+            "args": [],
+            "cwd": "${file}"
         },
     ]
 }

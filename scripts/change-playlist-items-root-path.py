@@ -67,6 +67,13 @@ if __name__ == "__main__":
                         help="absolute filepath of the new music library root folder, which will replace the old root for each song entry in the playlists",
                         type=str)
 
+    parser.add_argument("--extension", 
+        help="new file extension to use for output files (do not include dot)",
+        default="m3u",
+        type=str,
+        dest='newExtension'
+    )
+
     parser.add_argument("--config-file", 
         help="config file name located in root dir",
         default="mlu.config.json",
@@ -85,21 +92,7 @@ if __name__ == "__main__":
     print("Found {} playlists in source directory '{}'".format(numPlaylists, sourcePlaylistDir))
         
     if (mypycommons.file.pathExists(outputPlaylistDir)):
-        print("WARNING: Output directory already exists - all files currently within this directory WILL BE DELETED:\n", outputPlaylistDir)    
-        confirmation = None    
-        while (confirmation != 'y' and confirmation != 'n'):
-            confirmation = input("Are you sure you want to continue? [Y/N]").lower()
-            
-            if (confirmation == 'y'):
-                print("User confirmed, continuing process")
-
-            elif (confirmation == 'n'):
-                print("User chose to exit, leaving function")
-                sys.exit(0)
-
-            else:
-                print("Invalid choice: please enter y or n")
-                
+        print("Output directory already exists - deleting all files currently within this directory:\n", outputPlaylistDir)                
         mypycommons.file.deletePath(outputPlaylistDir)
         time.sleep(2)
     
@@ -114,9 +107,8 @@ if __name__ == "__main__":
     for originalPlaylistFilePath in playlistFilePaths:
         print("Converting playlist: {}".format(originalPlaylistFilePath))
 
-        # Each output playlist will have a .m3u8 extension by default, even if original was .m3u
-        # This ensures support for UTF-8 encoding always will be used
-        outputPlaylistFileName = mypycommons.file.getFileBaseName(originalPlaylistFilePath) + ".m3u8"
+        # Each output playlist will have a extension as configured
+        outputPlaylistFileName = mypycommons.file.getFileBaseName(originalPlaylistFilePath) + ".{}".format(args.newExtension)
         outputPlaylistFilePath = mypycommons.file.joinPaths(outputPlaylistDir, outputPlaylistFileName)
         
         # Read in all lines from the original playlist
