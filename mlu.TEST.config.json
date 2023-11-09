@@ -5,6 +5,8 @@
     "convertPlaylistsInputDir": "D:\\Temp\\mlu-test\\test-convert-playlists-input",
     "convertPlaylistsOutputDir": "D:\\Temp\\mlu-test\\test-convert-playlists-output",
 
+    "logDir": "Z:\\Development\\Data\\Test\\mlu\\logs",
+
     "votePlaylistConfig": {
         "votePlaylistInputDir": "D:\\Temp\\mlu-test\\test-vote-playlists-dir",
         "votePlaylistArchiveDir": "D:\\Temp\\mlu-test\\test-vote-playlists-archive",

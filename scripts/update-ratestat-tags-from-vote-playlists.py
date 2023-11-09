@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     settings = MLUSettings(configFilename=args.configFile)
 
-    loggerWrapper = mypycommons.logger.CommonLogger(loggerName=settings.loggerName, logDir=settings.logDir, logFilename="update-ratestat-tags-from-vote-playlists.py.log")
+    loggerWrapper = mypycommons.logger.CommonLogger(loggerName=settings.loggerName, logDir=settings.userConfig.logDir, logFilename="update-ratestat-tags-from-vote-playlists.py.log")
     logger = loggerWrapper.getLogger()
 
     ratestatsProcessor = RatestatTagsUpdater(mluSettings=settings, commonLogger=loggerWrapper)

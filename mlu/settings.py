@@ -33,13 +33,14 @@ class MLUUserConfig:
         self.mpdLogArchiveDir = ''
         self.convertPlaylistsInputDir = ''
         self.convertPlaylistsOutputDir = ''
+        self.logDir = ''
         self.votePlaylistConfig = None
 
 class MLUSettings:
     def __init__(self, configFilename: str):
         self.userConfig = None
         self.projectRootDir = ''
-        self.logDir = ''
+        self.defaultLogDir = ''
         self.cacheDir = ''
         self.tempDir = ''
         self.testDataDir = ''
@@ -56,17 +57,20 @@ class MLUSettings:
             mypycommons.file.deletePath(self.tempDir)
 
     def _loadSettings(self, configFilename: str):
-        self.userConfig = self._getUserConfig(configFilename)
-
         self.projectRootDir = self._getProjectRootDirectory()
-        self.logDir = mypycommons.file.joinPaths(self.projectRootDir, '~logs')
+        self.defaultLogDir = mypycommons.file.joinPaths(self.projectRootDir, '~logs')
         self.cacheDir = mypycommons.file.joinPaths(self.projectRootDir, '~cache')
         self.tempDir = mypycommons.file.joinPaths(self.cacheDir, 'temp')
-        self.testDataDir = mypycommons.file.joinPaths(self.projectRootDir, 'test/data')    
+        self.testDataDir = mypycommons.file.joinPaths(self.projectRootDir, 'test/data') 
+
+        self.userConfig = self._getUserConfig(configFilename)
 
     def _createDirectories(self):
-        if (not mypycommons.file.pathExists(self.logDir)):
-            mypycommons.file.createDirectory(self.logDir)
+        if (not mypycommons.file.pathExists(self.defaultLogDir)):
+            mypycommons.file.createDirectory(self.defaultLogDir)
+
+        if (self.userConfig.logDir and not mypycommons.file.pathExists(self.userConfig.logDir)):
+            mypycommons.file.createDirectory(self.userConfig.logDir)
 
         if (not mypycommons.file.pathExists(self.cacheDir)):
             mypycommons.file.createDirectory(self.cacheDir)
@@ -84,6 +88,12 @@ class MLUSettings:
         userConfig.mpdLogArchiveDir = configData['mpdLogArchiveDir']
         userConfig.convertPlaylistsInputDir = configData['convertPlaylistsInputDir']
         userConfig.convertPlaylistsOutputDir = configData['convertPlaylistsOutputDir']
+        
+        logDir = configData['logDir']
+        if (logDir):
+            userConfig.logDir = logDir
+        else:
+            userConfig.logDir = self.defaultLogDir 
 
         userConfig.votePlaylistConfig = MLUVotePlaylistConfig(configData['votePlaylistConfig'])
 

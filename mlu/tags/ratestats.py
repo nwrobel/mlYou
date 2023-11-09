@@ -171,7 +171,7 @@ class RatestatTagsUpdater:
         backupFilename = "[{}] RatestatTagsUpdater_tag-updates-summary.txt".format(
             mypycommons.time.getCurrentTimestampForFilename()
         )
-        filepath = mypycommons.file.joinPaths(self.settings.logDir, backupFilename)
+        filepath = mypycommons.file.joinPaths(self.settings.userConfig.logDir, backupFilename)
         return filepath
 
     def _archiveVotePlaylists(self):
