@@ -6,11 +6,11 @@
     "convertPlaylistsOutputDir": "D:\\Temp\\mlu-test\\test-convert-playlists-output",
 
     "logDir": "Z:\\Development\\Data\\Test\\mlu\\logs",
-    "playlistsDir": "D:\\Temp\\mlu-test\\playlists",
+    "playlistsDir": "D:\\Temp\\mlu-test\\mpd-playlists-test",
 
     "votePlaylistConfig": {
-        "votePlaylistInputDir": "D:\\Temp\\mlu-test\\test-vote-playlists-dir",
-        "votePlaylistArchiveDir": "D:\\Temp\\mlu-test\\test-vote-playlists-archive",
+        "votePlaylistInputDir": "D:\\Temp\\mlu-test\\vote-playlists-input",
+        "votePlaylistArchiveDir": "D:\\Temp\\mlu-test\\vote-playlists-archive",
         "votePlaylistFiles": [
             {
                 "filename": "1.0.m3u",

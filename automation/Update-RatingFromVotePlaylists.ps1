@@ -1,8 +1,6 @@
 $ConfigFilename = "mlu.TEST.config.json"
 
 function Main {
-    $votePlaylistRealDir = "Z:\Music Library\!mpd-saved-playlists"
-
     $projectDir = (Get-Item -Path $PSScriptRoot).Parent.FullName
     $configFilepath = Join-Path $projectDir -ChildPath $ConfigFilename
     $configs = Get-Configs -ConfigFile $configFilepath
@@ -11,7 +9,7 @@ function Main {
     Get-ChildItem $configs.convertPlaylistsInputDir | Remove-Item -Verbose -Confirm
 
     Write-Host "Copying existing vote playlists into convert playlist input dir"
-    $votePlaylistsSrc = Get-VotePlaylistFiles -VotePlaylistDir $votePlaylistRealDir -ConfigFile $configFilepath
+    $votePlaylistsSrc = Get-VotePlaylistFiles -VotePlaylistDir $configs.playlistsDir -ConfigFile $configFilepath
     $votePlaylistsSrc | Copy-Item -Destination $configs.convertPlaylistsInputDir
 
     ConvertPlaylists
@@ -22,7 +20,7 @@ function Main {
     ProcessVotePlaylists
 
     Write-Host "Copying (overwrite) reset vote playlists into real dir"
-    Get-ChildItem $configs.votePlaylistConfig.votePlaylistInputDir | Copy-Item -Destination $votePlaylistRealDir -Verbose -Confirm -Force
+    Get-ChildItem $configs.votePlaylistConfig.votePlaylistInputDir | Copy-Item -Destination $configs.playlistsDir -Verbose -Confirm -Force
 
     Write-Host "Cleaning files"
     Get-ChildItem $configs.convertPlaylistsInputDir | Remove-Item -Verbose -Confirm
@@ -41,7 +39,7 @@ function ConvertPlaylists {
 
     # Locate the convert-playlists.py script from here in this directory
     $projectDir = (Get-Item -Path $PSScriptRoot).Parent.FullName
-    $activateFilepath = Join-Path $projectDir -ChildPath 'py-venv-windows\Scripts\activate'
+    $activateFilepath = Join-Path $projectDir -ChildPath 'py-venv-windows\Scripts\activate.ps1'
     $scriptPath = Join-Path -Path $projectDir -ChildPath 'scripts\change-playlist-items-root-path.py'
 
     # start the virtualenv
@@ -58,7 +56,7 @@ function ProcessVotePlaylists {
 
     # Locate the convert-playlists.py script from here in this directory
     $projectDir = (Get-Item -Path $PSScriptRoot).Parent.FullName
-    $activateFilepath = Join-Path $projectDir -ChildPath 'py-venv-windows\Scripts\activate'
+    $activateFilepath = Join-Path $projectDir -ChildPath 'py-venv-windows\Scripts\activate.ps1'
     $scriptPath = Join-Path -Path $projectDir -ChildPath 'scripts\update-ratestat-tags-from-vote-playlists.py'
 
     # start the virtualenv
