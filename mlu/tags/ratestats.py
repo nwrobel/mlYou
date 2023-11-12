@@ -36,6 +36,15 @@ class RatestatTagsUpdater:
         self.logger = commonLogger.getLogger()
         self.summaryFilepath = self._getSummaryFilepath()
 
+        self._validateVotePlaylists()
+
+    def _validateVotePlaylists(self):
+        for votePlaylistFileConfig in self.settings.userConfig.votePlaylistConfig.votePlaylistFiles:
+            votePlaylistFilepath = mypycommons.file.joinPaths(self.settings.userConfig.votePlaylistConfig.votePlaylistInputDir, votePlaylistFileConfig.filename)
+
+            if (not mypycommons.file.pathExists(votePlaylistFilepath)):
+                raise FileNotFoundError("Configured vote playlist file not found: {}".format(votePlaylistFilepath))
+
     def processVotePlaylists(self):
         ''' 
         Process the vote playlists directory by using the vote data within to update ratestat
@@ -45,9 +54,15 @@ class RatestatTagsUpdater:
         self.logger.info("Loading audio file votes data from all vote playlists")
         audioFileVoteDataList = self._getAudioFileVoteDataFromVotePlaylists()
 
-        self.logger.info("Vote playlists data loaded successfully")
-        self.logger.info("Writing new ratestats tag data to audio files")
+        if (audioFileVoteDataList):
+            self.logger.info("Found new votes data: Writing rating to audio files")
+            self._processAudioFileVoteDataList(audioFileVoteDataList)
+        else:
+            self.logger.info("No new votes data found: no audio files changed")
 
+        self.logger.info("Votes processing complete")
+
+    def _processAudioFileVoteDataList(self, audioFileVoteDataList):
         erroredAudioFilepaths = []
         for audioFileVoteData in audioFileVoteDataList:
             try:
@@ -56,17 +71,16 @@ class RatestatTagsUpdater:
                 self.logger.exception("updateRatestatTagsFromVoteData operation failed: File='{}', NewVotes={}".format(audioFileVoteData.filepath, audioFileVoteData.votes))
                 erroredAudioFilepaths.append(audioFileVoteData.filepath)
 
-        self.logger.info("Votes processing complete")
-        self.logger.info("{} audio files were processed".format(len(audioFileVoteDataList)))
-        self.logger.info("{} audio files failed update".format(len(erroredAudioFilepaths)))
-
         if (not erroredAudioFilepaths):
             self.logger.info("Process completed successfully: all ratestat tags updated with new votes")
 
         else:
             erroredAudioFilepathsFmt = "\n".join(erroredAudioFilepaths)
             self.logger.info("Failed to update ratestat tag values with new votes for the following files:\n{}".format(erroredAudioFilepathsFmt))
-            self.logger.info("Process completed with failures: - these must be fixed manually")
+            self.logger.info("Process completed with failures: these must be fixed manually")
+
+        self.logger.info("{} audio files were processed".format(len(audioFileVoteDataList)))
+        self.logger.info("{} audio files failed update".format(len(erroredAudioFilepaths)))
 
         self.logger.info("Writing ratestat tag updates summary file")
         self._writeSummaryFile(audioFileVoteDataList)

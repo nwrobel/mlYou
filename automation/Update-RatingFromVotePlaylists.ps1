@@ -1,4 +1,7 @@
-$ConfigFilename = "mlu.TEST.config.json"
+# To schedule with task scheduler, run powershell as program with args:
+# -WindowStyle minimized -File "C:\nick-local-data\local-dev-my\mlu\automation\Update-RatingFromVotePlaylists.ps1"
+
+$ConfigFilename = "mlu.config.json"
 
 function Main {
     $projectDir = (Get-Item -Path $PSScriptRoot).Parent.FullName
@@ -6,7 +9,7 @@ function Main {
     $configs = Get-Configs -ConfigFile $configFilepath
 
     Write-Host "Deleting existing files from convert playlist input dir"
-    Get-ChildItem $configs.convertPlaylistsInputDir | Remove-Item -Verbose -Confirm
+    Get-ChildItem $configs.convertPlaylistsInputDir | Remove-Item -Verbose
 
     Write-Host "Copying existing vote playlists into convert playlist input dir"
     $votePlaylistsSrc = Get-VotePlaylistFiles -VotePlaylistDir $configs.playlistsDir -ConfigFile $configFilepath
@@ -20,12 +23,12 @@ function Main {
     ProcessVotePlaylists
 
     Write-Host "Copying (overwrite) reset vote playlists into real dir"
-    Get-ChildItem $configs.votePlaylistConfig.votePlaylistInputDir | Copy-Item -Destination $configs.playlistsDir -Verbose -Confirm -Force
+    Get-ChildItem $configs.votePlaylistConfig.votePlaylistInputDir | Copy-Item -Destination $configs.playlistsDir -Verbose -Force
 
     Write-Host "Cleaning files"
-    Get-ChildItem $configs.convertPlaylistsInputDir | Remove-Item -Verbose -Confirm
-    Get-ChildItem $configs.convertPlaylistsOutputDir | Remove-Item -Verbose -Confirm
-    Get-ChildItem $configs.votePlaylistConfig.votePlaylistInputDir | Remove-Item -Verbose -Confirm
+    Get-ChildItem $configs.convertPlaylistsInputDir | Remove-Item -Verbose
+    Get-ChildItem $configs.convertPlaylistsOutputDir | Remove-Item -Verbose
+    Get-ChildItem $configs.votePlaylistConfig.votePlaylistInputDir | Remove-Item -Verbose
 
 }
 

@@ -7,7 +7,7 @@
     "convertPlaylistsOutputDir": "Z:\\Development\\Data\\Prod\\mlu\\convert-playlists-output",
 
     "logDir": "Z:\\Development\\Data\\Prod\\mlu\\logs",
-    "playlistsDir": "",
+    "playlistsDir": "Z:\\Music Library\\!mpd-saved-playlists",
     
     "votePlaylistConfig": {
         "votePlaylistInputDir": "Z:\\Development\\Data\\Prod\\mlu\\vote-playlists-input",
