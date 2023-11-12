@@ -34,6 +34,7 @@ class MLUUserConfig:
         self.convertPlaylistsInputDir = ''
         self.convertPlaylistsOutputDir = ''
         self.logDir = ''
+        self.playlistsDir = ''
         self.votePlaylistConfig = None
 
 class MLUSettings:
@@ -96,6 +97,7 @@ class MLUSettings:
         userConfig.mpdLogArchiveDir = configData['mpdLogArchiveDir']
         userConfig.convertPlaylistsInputDir = configData['convertPlaylistsInputDir']
         userConfig.convertPlaylistsOutputDir = configData['convertPlaylistsOutputDir']
+        userConfig.playlistsDir = configData['playlistsDir']
         
         logDir = configData['logDir']
         if (logDir):
