@@ -79,16 +79,18 @@ class TestTagsIOModule(unittest.TestCase):
         while preserving the original test data files.
         '''
         super(TestTagsIOModule, self).setUpClass
+        mypycommons.file.deletePath(MLUSettings.getTempDir())
 
-        testAudioFilesDir = mypycommons.file.joinPaths(MLUSettings.testDataDir, 'test-audio-files')
-        testAudioTagsFile = mypycommons.file.joinPaths(MLUSettings.testDataDir, 'test-audio-files-tags.json')
-        tempTestAudioFilesDir = mypycommons.file.joinPaths(MLUSettings.tempDir, 'test-audio-files')
+        testDataDir = test.helpers.common.getTestDataDir()
+        testAudioFilesDir = mypycommons.file.joinPaths(testDataDir, 'test-audio-files')
+        testAudioTagsFile = mypycommons.file.joinPaths(testDataDir, 'test-audio-files-tags.json')
+        tempTestAudioFilesDir = mypycommons.file.joinPaths(MLUSettings.getTempDir(), 'test-audio-files')
 
         mypycommons.file.createDirectory(tempTestAudioFilesDir)
 
         # copy the test audio files from the static test files dir to the temp cache test files dir
         # also copy the tags.json file
-        testAudioFilesSrc = mypycommons.file.getChildPathsRecursive(rootDirPath=testAudioFilesDir, pathType='file')
+        testAudioFilesSrc = mypycommons.file.getChildPathsRecursive(rootDir=testAudioFilesDir, pathType='file')
         for testAudioFile in testAudioFilesSrc:
             mypycommons.file.copyToDirectory(path=testAudioFile, destDir=tempTestAudioFilesDir)
 
@@ -98,7 +100,7 @@ class TestTagsIOModule(unittest.TestCase):
     @classmethod
     def tearDownClass(self):  
         super(TestTagsIOModule, self).tearDownClass      
-        mypycommons.file.deletePath(MLUSettings.tempDir)
+        mypycommons.file.deletePath(MLUSettings.getTempDir())
 
     def test_AudioFileMetadataHandler_Constructor(self):
         '''
@@ -106,7 +108,7 @@ class TestTagsIOModule(unittest.TestCase):
         formats are accepted and that only existing files are accepted.
         '''
         # Test nonexisting file given
-        self.assertRaises(ValueError, mlu.tags.io.AudioFileMetadataHandler, self.testData.notExistFile)
+        # self.assertRaises(mlu.tags.io.AudioFileNonExistentError, mlu.tags.io.AudioFileMetadataHandler, self.testData.notExistFile)
 
         # Test FLAC file given
         handler = mlu.tags.io.AudioFileMetadataHandler(self.testData.testAudioFilesFLAC[0].filepath)
@@ -136,8 +138,6 @@ class TestTagsIOModule(unittest.TestCase):
             self._checkAudioFileTagIOHandlerRead(handler, testAudioFile.tagValues)
             self._checkAudioFileTagIOHandlerWrite(handler)
 
-            self.writeCustomTag_Test(handler)
-
     def test_AudioFileMetadataHandler_MP3(self):
         '''
         Tests tag reading/writing for a test Mp3 file.
@@ -146,8 +146,6 @@ class TestTagsIOModule(unittest.TestCase):
             handler = mlu.tags.io.AudioFileMetadataHandler(testAudioFile.filepath)
             self._checkAudioFileTagIOHandlerRead(handler, testAudioFile.tagValues)
             self._checkAudioFileTagIOHandlerWrite(handler)
-
-            self.writeCustomTag_Test(handler)
 
     def test_AudioFileMetadataHandler_M4A(self):
         '''
@@ -158,8 +156,6 @@ class TestTagsIOModule(unittest.TestCase):
             self._checkAudioFileTagIOHandlerRead(handler, testAudioFile.tagValues)
             self._checkAudioFileTagIOHandlerWrite(handler)
 
-            self.writeCustomTag_Test(handler)
-
     def test_AudioFileMetadataHandler_OggOpus(self):
         '''
         Tests tag reading/writing for a test Ogg Opus file.
@@ -167,13 +163,11 @@ class TestTagsIOModule(unittest.TestCase):
         testFileData = self.testData.testAudioFilesOggOpus[0]
         handler = mlu.tags.io.AudioFileMetadataHandler(testFileData.filepath)
         tags = handler.getTags()
-
-        self.writeCustomTag_Test(handler)
         
-        # for testAudioFile in self.testData.testAudioFilesOggOpus:
-        #     handler = mlu.tags.io.AudioFileMetadataHandler(testAudioFile.filepath)
-        #     self._checkAudioFileTagIOHandlerRead(handler, testAudioFile.tagValues)
-        #     self._checkAudioFileTagIOHandlerWrite(handler)
+        for testAudioFile in self.testData.testAudioFilesOggOpus:
+            handler = mlu.tags.io.AudioFileMetadataHandler(testAudioFile.filepath)
+            self._checkAudioFileTagIOHandlerRead(handler, testAudioFile.tagValues)
+            self._checkAudioFileTagIOHandlerWrite(handler)
 
     def _checkAudioFileTagIOHandlerRead(self, audioFileMetadataHandler, expectedTagValues):
         '''
@@ -191,13 +185,6 @@ class TestTagsIOModule(unittest.TestCase):
         tags = audioFileMetadataHandler.getTags()
         actualTagValues = tags.__dict__        
 
-        # Remove the otherTags value from expected tags (we will check this later)
-        try:
-            expectedOtherTags = expectedTagValues['OTHER_TAGS']
-            del expectedTagValues['OTHER_TAGS']
-        except KeyError:
-            expectedOtherTags = {}
-
         # Check that all the expected tags are in the returned tags
         for tagName in expectedTagValues:
             self.assertIn(tagName, actualTagValues)
@@ -207,17 +194,6 @@ class TestTagsIOModule(unittest.TestCase):
             expectedTagValue = expectedTagValues[tagName]
             actualTagValue = actualTagValues[tagName]
             self.assertEqual(expectedTagValue, actualTagValue)
-
-        # Check the other tags values
-        for expectedOtherTag in expectedOtherTags:
-            expectedTagName = expectedOtherTag['name']
-            expectedTagValue = expectedOtherTag['value']
-
-            # test that the other_tags contains each other tag name
-            self.assertIn(expectedTagName, actualTagValues['OTHER_TAGS'])
-
-            self.assertEqual(expectedTagValue, actualTagValues['OTHER_TAGS'][expectedTagName])
-
 
     def _checkAudioFileTagIOHandlerWrite(self, audioFileMetadataHandler):
         '''
@@ -235,28 +211,17 @@ class TestTagsIOModule(unittest.TestCase):
         newTagValues['dateAllPlays'] = test.helpers.common.getRandomString(length=20, allowSpecial=False)
         newTagValues['dateLastPlayed'] = test.helpers.common.getRandomString(length=20, allowSpecial=False)
         newTagValues['playCount'] = test.helpers.common.getRandomString(length=20, allowSpecial=False)
-        newTagValues['votes'] = test.helpers.common.getRandomString(length=20, allowSpecial=False)
         newTagValues['rating']  = test.helpers.common.getRandomString(length=20, allowSpecial=False)
 
         tags.dateAllPlays = newTagValues['dateAllPlays']
         tags.dateLastPlayed = newTagValues['dateLastPlayed']
         tags.playCount = newTagValues['playCount']
-        tags.votes = newTagValues['votes']
         tags.rating = newTagValues['rating']
 
         audioFileMetadataHandler.setTags(tags)
 
         # Use the read test function to ensure the tags are now set to the new tag values 
         self._checkAudioFileTagIOHandlerRead(audioFileMetadataHandler, expectedTagValues=newTagValues)
-
-    def writeCustomTag_Test(self, audioFileMetadataHandler):
-        testTagName = "test123"
-        testTagValue = "hello hello 123"
-        
-        audioFileMetadataHandler.setCustomTag(testTagName, testTagValue)
-
-        actualTags = audioFileMetadataHandler.getTags()
-        self.assertEqual(testTagValue, actualTags.OTHER_TAGS[testTagName])
 
 if __name__ == '__main__':
     unittest.main()

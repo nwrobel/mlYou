@@ -37,6 +37,14 @@ class MLUUserConfig:
         self.votePlaylistConfig = None
 
 class MLUSettings:
+    @staticmethod
+    def getTempDir():
+        thisScriptDir = mypycommons.file.getThisScriptCurrentDirectory()
+        projectRootDir = mypycommons.file.joinPaths(thisScriptDir, '..')
+        cacheDir = mypycommons.file.joinPaths(projectRootDir, '~cache')
+        tempDir = mypycommons.file.joinPaths(cacheDir, 'temp')  
+        return tempDir    
+
     def __init__(self, configFilename: str):
         self.userConfig = None
         self.projectRootDir = ''
@@ -102,5 +110,5 @@ class MLUSettings:
     def _getProjectRootDirectory(self):
         thisScriptDir = mypycommons.file.getThisScriptCurrentDirectory()
         projectRootDir = mypycommons.file.joinPaths(thisScriptDir, '..')
-        return projectRootDir
+        return projectRootDir 
 

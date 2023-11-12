@@ -16,7 +16,11 @@ from string import ascii_uppercase, ascii_lowercase, digits
 
 from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.time
+import com.nwrobel.mypycommons.file
 
+def getTestDataDir():
+    thisScriptDir = mypycommons.file.getThisScriptCurrentDirectory()
+    return mypycommons.file.joinPaths(thisScriptDir, '../data')
 
 def getRandomTimestamp():
     """

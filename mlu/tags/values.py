@@ -28,15 +28,11 @@ class AudioFileTags:
         totalDiscs,
         bpm,
         key,
-        lyrics,
-        comment,
         dateAdded,
         dateAllPlays, 
         dateLastPlayed, 
         playCount, 
-        votes, 
-        rating,
-        OTHER_TAGS
+        rating
     ):
         self.title = title
         self.artist = artist
@@ -51,15 +47,11 @@ class AudioFileTags:
         self.totalDiscs = totalDiscs
         self.bpm = bpm
         self.key = key
-        self.lyrics = lyrics
-        self.comment = comment
         self.dateAdded = dateAdded
         self.dateAllPlays = dateAllPlays
         self.dateLastPlayed = dateLastPlayed
         self.playCount = playCount
-        self.votes = votes
         self.rating = rating
-        self.OTHER_TAGS = OTHER_TAGS
 
     def equals(self, otherAudioFileTags):
         tagsAreEqual = (
@@ -76,15 +68,11 @@ class AudioFileTags:
             self.totalDiscs == otherAudioFileTags.totalDiscs and
             self.bpm == otherAudioFileTags.bpm and
             self.key == otherAudioFileTags.key and
-            self.lyrics == otherAudioFileTags.lyrics and
-            self.comment == otherAudioFileTags.comment and
             self.dateAdded == otherAudioFileTags.dateAdded and
             self.dateAllPlays == otherAudioFileTags.dateAllPlays and
             self.dateLastPlayed == otherAudioFileTags.dateLastPlayed and
             self.playCount == otherAudioFileTags.playCount and
-            self.votes == otherAudioFileTags.votes and
-            self.rating == otherAudioFileTags.rating and
-            self.OTHER_TAGS == otherAudioFileTags.OTHER_TAGS
+            self.rating == otherAudioFileTags.rating
         )
 
         return tagsAreEqual
@@ -94,30 +82,5 @@ class AudioFileProperties:
     Data structure holding the values for a single audio file of all the file properties supported 
     by MLU.
     '''
-    def __init__(
-        self,
-        fileSize,
-        fileDateModified,
-        duration: timedelta,
-        format,
-        bitRate,
-        sampleRate,
-        numChannels,
-        replayGain,
-        bitDepth,
-        encoder,
-        bitRateMode,
-        codec
-    ):
-        self.fileSize = fileSize
-        self.fileDateModified = fileDateModified
+    def __init__(self, duration: timedelta):
         self.duration = duration
-        self.format = format
-        self.bitRate = bitRate
-        self.sampleRate = sampleRate
-        self.numChannels = numChannels
-        self.replayGain = replayGain
-        self.bitDepth = bitDepth
-        self.encoder = encoder
-        self.bitRateMode = bitRateMode
-        self.codec = codec

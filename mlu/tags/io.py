@@ -105,17 +105,6 @@ class AudioFileMetadataHandler:
         '''
         return self._audioFmtHandler.getProperties()
 
-    def getEmbeddedArtwork(self):
-        '''
-        Returns the embedded artwork binary data of the audio file
-        '''
-        return self._audioFmtHandler.getEmbeddedArtwork()
-
-    def setCustomTag(self, tagName, value):
-        '''
-        Sets the value of a given custom (nonstandard) tag for the audio file. 
-        '''
-        self._audioFmtHandler.setCustomTag(tagName, value)
 
 
     
