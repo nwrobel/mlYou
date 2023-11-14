@@ -88,7 +88,7 @@ class MLUSettings:
             mypycommons.file.createDirectory(self.tempDir)
 
     def _getUserConfig(self, configFilename: str):
-        configFilepath = mypycommons.file.joinPaths(self._getProjectRootDirectory(), configFilename)
+        configFilepath = mypycommons.file.joinPaths(self._getProjectRootDirectory(), 'config/{}'.format(configFilename))
         configData = mypycommons.file.readJsonFile(configFilepath)
 
         userConfig = MLUUserConfig()

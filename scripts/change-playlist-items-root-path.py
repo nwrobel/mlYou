@@ -39,7 +39,7 @@ from mlu.settings import MLUSettings
 #
 def _fixPathSlashDirectionToMatchRootPath(rootPath, inputPath):
     '''
-    path: Z:/Music/Content/1 Tool - Undertow.flac
+    inputPath: Z:/Music/Content/1 Tool - Undertow.flac
     rootPath: Z:
     fixedPath: Z:\Music\Content\0.1 Tool - Undertow.flac
     '''
