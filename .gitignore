@@ -3,3 +3,5 @@ py-venv-windows
 ~logs
 ~cache
 __pycache__
+config/*
+!config/mlu.config.json
