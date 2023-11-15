@@ -36,22 +36,6 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Playlist File Sorter - Scan",
-            "type": "python",
-            "request": "launch",
-            "program": "scripts\\playlist-file-sorter.py",
-            "args": ["D:\\Temp\\Playlists-Sorted-master", "--scan"],
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "Playlist File Sorter - Sort",
-            "type": "python",
-            "request": "launch",
-            "program": "scripts\\playlist-file-sorter.py",
-            "args": ["D:\\Temp\\exported-playlists-unsorted", "--sort", "--output-dir", "D:\\Temp\\Playlists-Sorted-out"],
-            "console": "integratedTerminal"
-        },
-        {
             "name": "Ratestats updater",
             "type": "python",
             "request": "launch",

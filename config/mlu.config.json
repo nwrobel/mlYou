@@ -1,15 +1,17 @@
 {
     "audioLibraryRootDir": "Z:\\Music Library\\Content",
-    "mpdLogFilepath": "",
-    "mpdLogArchiveDir": "",
-
-    "convertPlaylistsInputDir": "Z:\\Development\\Data\\Prod\\mlu\\convert-playlists-input",
-    "convertPlaylistsOutputDir": "Z:\\Development\\Data\\Prod\\mlu\\convert-playlists-output",
-
+    "autoplaylistsOutputDir": "Z:\\Music Library\\!mpd-saved-playlists",
     "logDir": "Z:\\Development\\Data\\Prod\\mlu\\logs",
-    "playlistsDir": "Z:\\Music Library\\!mpd-saved-playlists",
-    
-    "votePlaylistConfig": {
+
+    "mpd": {
+        "logFilepath": "",
+        "logArchiveDir": ""
+    },
+    "convertPlaylists": {
+        "inputDir": "Z:\\Development\\Data\\Prod\\mlu\\convert-playlists-input",
+        "outputDir": "Z:\\Development\\Data\\Prod\\mlu\\convert-playlists-output"
+    },
+    "rating": {
         "votePlaylistInputDir": "Z:\\Development\\Data\\Prod\\mlu\\vote-playlists-input",
         "votePlaylistArchiveDir": "Z:\\Development\\Data\\Prod\\mlu\\vote-playlists-archive",
         "votePlaylistFiles": [

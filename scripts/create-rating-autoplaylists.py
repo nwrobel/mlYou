@@ -35,16 +35,18 @@ if __name__ == "__main__":
     loggerWrapper = mypycommons.logger.CommonLogger(loggerName=settings.loggerName, logDir=settings.userConfig.logDir, logFilename="create-rating-autoplaylists.py.log")
     logger = loggerWrapper.getLogger()
 
+    autoplaylistsOutputDir = settings.userConfig.autoplaylistsOutputDir
+
     playlistFilename = "Rating 7-10 (desc).m3u"
-    playlistFilepath = mypycommons.file.joinPaths(settings.userConfig.playlistsDir, playlistFilename)
+    playlistFilepath = mypycommons.file.joinPaths(autoplaylistsOutputDir, playlistFilename)
     items = mlu.library.playlist.createRatingAutoplaylist(settings.userConfig.audioLibraryRootDir, playlistFilepath, 7, 10)
 
     playlistFilename = "Rating 8-10 (desc).m3u"
-    playlistFilepath = mypycommons.file.joinPaths(settings.userConfig.playlistsDir, playlistFilename)
+    playlistFilepath = mypycommons.file.joinPaths(autoplaylistsOutputDir, playlistFilename)
     items = mlu.library.playlist.createRatingAutoplaylist(settings.userConfig.audioLibraryRootDir, playlistFilepath, 8, 10)
 
     playlistFilename = "Rating 9-10 (desc).m3u"
-    playlistFilepath = mypycommons.file.joinPaths(settings.userConfig.playlistsDir, playlistFilename)
+    playlistFilepath = mypycommons.file.joinPaths(autoplaylistsOutputDir, playlistFilename)
     items = mlu.library.playlist.createRatingAutoplaylist(settings.userConfig.audioLibraryRootDir, playlistFilepath, 9, 10)    
 
     settings.cleanupTempDir()

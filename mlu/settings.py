@@ -14,7 +14,7 @@ class MLUVotePlaylistFileConfigItem:
         self.filename = filename
         self.value = value
 
-class MLUVotePlaylistConfig:
+class MLURatingConfig:
     def __init__(self, jsonConfig: dict):
         self.votePlaylistInputDir = jsonConfig['votePlaylistInputDir']
         self.votePlaylistArchiveDir = jsonConfig['votePlaylistArchiveDir']
@@ -25,17 +25,24 @@ class MLUVotePlaylistConfig:
                 MLUVotePlaylistFileConfigItem(votePlaylistFileJsonCfg['filename'], votePlaylistFileJsonCfg['value'])
             )
 
+class MLUConvertPlaylistsConfig:
+    def __init__(self, jsonConfig: dict):
+        self.inputDir = jsonConfig['inputDir']
+        self.outputDir = jsonConfig['outputDir']
 
 class MLUUserConfig:
-    def __init__(self):
-        self.audioLibraryRootDir = ''
-        self.mpdLogFilepath = ''
-        self.mpdLogArchiveDir = ''
-        self.convertPlaylistsInputDir = ''
-        self.convertPlaylistsOutputDir = ''
-        self.logDir = ''
-        self.playlistsDir = ''
-        self.votePlaylistConfig = None
+    def __init__(self, jsonConfig: dict):
+        self.audioLibraryRootDir = jsonConfig['audioLibraryRootDir']
+        self.autoplaylistsOutputDir = jsonConfig['autoplaylistsOutputDir']
+        
+        logDir = jsonConfig['logDir']
+        if (logDir):
+            self.logDir = logDir
+        else:
+            self.logDir = self.defaultLogDir 
+
+        self.convertPlaylistsConfig = MLUConvertPlaylistsConfig(jsonConfig['convertPlaylists'])
+        self.ratingConfig = MLURatingConfig(jsonConfig['rating'])
 
 class MLUSettings:
     @staticmethod
@@ -91,22 +98,7 @@ class MLUSettings:
         configFilepath = mypycommons.file.joinPaths(self._getProjectRootDirectory(), 'config/{}'.format(configFilename))
         configData = mypycommons.file.readJsonFile(configFilepath)
 
-        userConfig = MLUUserConfig()
-        userConfig.audioLibraryRootDir = configData['audioLibraryRootDir']
-        userConfig.mpdLogFilepath = configData['mpdLogFilepath']
-        userConfig.mpdLogArchiveDir = configData['mpdLogArchiveDir']
-        userConfig.convertPlaylistsInputDir = configData['convertPlaylistsInputDir']
-        userConfig.convertPlaylistsOutputDir = configData['convertPlaylistsOutputDir']
-        userConfig.playlistsDir = configData['playlistsDir']
-        
-        logDir = configData['logDir']
-        if (logDir):
-            userConfig.logDir = logDir
-        else:
-            userConfig.logDir = self.defaultLogDir 
-
-        userConfig.votePlaylistConfig = MLUVotePlaylistConfig(configData['votePlaylistConfig'])
-
+        userConfig = MLUUserConfig(configData)
         return userConfig
 
     def _getProjectRootDirectory(self):

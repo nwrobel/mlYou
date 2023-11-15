@@ -83,8 +83,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     settings = MLUSettings(configFilename=args.configFile)
-    sourcePlaylistDir = settings.userConfig.convertPlaylistsInputDir
-    outputPlaylistDir = settings.userConfig.convertPlaylistsOutputDir
+    sourcePlaylistDir = settings.userConfig.convertPlaylistsConfig.inputDir
+    outputPlaylistDir = settings.userConfig.convertPlaylistsConfig.outputDir
 
     playlistFilePaths = mypycommons.file.getFilesByExtension(sourcePlaylistDir, [".m3u", ".m3u8"])
     numPlaylists = len(playlistFilePaths)

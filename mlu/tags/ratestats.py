@@ -39,8 +39,8 @@ class RatestatTagsUpdater:
         self._validateVotePlaylists()
 
     def _validateVotePlaylists(self):
-        for votePlaylistFileConfig in self.settings.userConfig.votePlaylistConfig.votePlaylistFiles:
-            votePlaylistFilepath = mypycommons.file.joinPaths(self.settings.userConfig.votePlaylistConfig.votePlaylistInputDir, votePlaylistFileConfig.filename)
+        for votePlaylistFileConfig in self.settings.userConfig.ratingConfig.votePlaylistFiles:
+            votePlaylistFilepath = mypycommons.file.joinPaths(self.settings.userConfig.ratingConfig.votePlaylistInputDir, votePlaylistFileConfig.filename)
 
             if (not mypycommons.file.pathExists(votePlaylistFilepath)):
                 raise FileNotFoundError("Configured vote playlist file not found: {}".format(votePlaylistFilepath))
@@ -98,8 +98,8 @@ class RatestatTagsUpdater:
         '''
         audioFileVoteDataList = []
 
-        for votePlaylistFileConfig in self.settings.userConfig.votePlaylistConfig.votePlaylistFiles:
-            votePlaylistFilepath = mypycommons.file.joinPaths(self.settings.userConfig.votePlaylistConfig.votePlaylistInputDir, votePlaylistFileConfig.filename)
+        for votePlaylistFileConfig in self.settings.userConfig.ratingConfig.votePlaylistFiles:
+            votePlaylistFilepath = mypycommons.file.joinPaths(self.settings.userConfig.ratingConfig.votePlaylistInputDir, votePlaylistFileConfig.filename)
             votePlaylistValue = votePlaylistFileConfig.value
 
             playlistSongs = mlu.library.playlist.getAllPlaylistLines(votePlaylistFilepath)
@@ -196,7 +196,7 @@ class RatestatTagsUpdater:
             mypycommons.time.getCurrentTimestampForFilename()
         )
 
-        archiveFilePath = mypycommons.file.joinPaths(self.settings.userConfig.votePlaylistConfig.votePlaylistArchiveDir, archiveFilename)
+        archiveFilePath = mypycommons.file.joinPaths(self.settings.userConfig.ratingConfig.votePlaylistArchiveDir, archiveFilename)
         playlistFilepaths = self._getVotePlaylistFilepaths()
 
         mypycommons.archive.create7zArchive(inputFilePath=playlistFilepaths, archiveOutFilePath=archiveFilePath)
@@ -217,9 +217,9 @@ class RatestatTagsUpdater:
         Returns list of filepaths of the vote playlists
         '''
         playlistFilepaths = []
-        for votePlaylistFileConfig in self.settings.userConfig.votePlaylistConfig.votePlaylistFiles:
+        for votePlaylistFileConfig in self.settings.userConfig.ratingConfig.votePlaylistFiles:
             playlistFilepaths.append(
-                mypycommons.file.joinPaths(self.settings.userConfig.votePlaylistConfig.votePlaylistInputDir, votePlaylistFileConfig.filename)
+                mypycommons.file.joinPaths(self.settings.userConfig.ratingConfig.votePlaylistInputDir, votePlaylistFileConfig.filename)
             ) 
 
         return playlistFilepaths
