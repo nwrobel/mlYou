@@ -30,6 +30,11 @@ class MLUConvertPlaylistsConfig:
         self.inputDir = jsonConfig['inputDir']
         self.outputDir = jsonConfig['outputDir']
 
+class MLUMpdConfig:
+    def __init__(self, jsonConfig: dict):
+        self.logFilepath = jsonConfig['logFilepath']
+        self.logArchiveDir = jsonConfig['logArchiveDir']
+
 class MLUUserConfig:
     def __init__(self, jsonConfig: dict):
         self.audioLibraryRootDir = jsonConfig['audioLibraryRootDir']
@@ -43,6 +48,7 @@ class MLUUserConfig:
 
         self.convertPlaylistsConfig = MLUConvertPlaylistsConfig(jsonConfig['convertPlaylists'])
         self.ratingConfig = MLURatingConfig(jsonConfig['rating'])
+        self.mpdConfig = MLUMpdConfig(jsonConfig['mpd'])
 
 class MLUSettings:
     @staticmethod

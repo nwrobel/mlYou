@@ -17,19 +17,19 @@ from mlu.settings import MLUSettings
 class PlaystatTagUpdaterForMpd:
     ''' 
     '''
-    def __init__(self, mpdPlaybackProvider: MpdPlaybackProvider, mluSettings: MLUSettings, commonLogger: CommonLogger) -> None:
-        if (mpdPlaybackProvider is None):
-            raise TypeError("mpdPlaybackProvider not passed")
+    def __init__(self, mluSettings: MLUSettings, commonLogger: mypycommons.logger.CommonLogger) -> None:
         if (mluSettings is None):
             raise TypeError("mluSettings not passed")
         if (commonLogger is None):
             raise TypeError("commonLogger not passed")
 
-        self._playbacks = mpdPlaybackProvider.getPlaybacks()
-        self._uniqueAudioFiles = mlu.tags.playstats.common.getUniqueAudioFilesFromPlaybacks(self._playbacks)
         self._settings = mluSettings
         self._processOutputDir = self._getProcessOutputDir()
         self._logger = commonLogger.getLogger()
+
+        playbackProvider = MpdPlaybackProvider(mluSettings, commonLogger)
+        self._playbacks = playbackProvider.getPlaybacks()
+        self._uniqueAudioFiles = mlu.tags.playstats.common.getUniqueAudioFilesFromPlaybacks(self._playbacks)
 
     def processMpdLogFile(self) -> None:
         ''' 

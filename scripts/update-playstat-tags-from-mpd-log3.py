@@ -1,8 +1,7 @@
 '''
 
 '''
-from dependency_injector import containers, providers
-from dependency_injector.wiring import Provide, inject
+import argparse
 
 from com.nwrobel import mypycommons
 from com.nwrobel.mypycommons.logger import CommonLogger, LogLevel
@@ -15,59 +14,28 @@ import envsetup
 envsetup.PreparePythonProjectEnvironment()
 
 import mlu.tags.io
-
-
 from mlu.mpd.log import MpdLog
 from mlu.mpd.plays import MpdPlaybackProvider
 from mlu.tags.playstats2 import PlaystatTagUpdaterForMpd
 from mlu.settings import MLUSettings
 
-class Container(containers.DeclarativeContainer):
-
-    config = providers.Configuration()
-
-    mluSettings = providers.Singleton(
-        MLUSettings
-    )
-
-    commonLogger = providers.Singleton(
-        CommonLogger,
-        loggerName=mluSettings().loggerName,
-        logDir=mluSettings().logDir,
-        logFilename="{}.log".format(mypycommons.file.getFilename(__file__))
-    )
-
-    mpdLog = providers.Singleton(
-        MpdLog,
-        logFilepath=mluSettings().userConfig.mpdLogFilepath,
-        commonLogger=commonLogger
-    )
-
-    mpdPlaybackProvider = providers.Singleton(
-        MpdPlaybackProvider,
-        mpdLog=mpdLog,
-        audioLibraryRootDir=mluSettings().userConfig.audioLibraryRootDir,
-        commonLogger=commonLogger
-    )
-
-    playstatTagUpdaterForMpd = providers.Singleton(
-        PlaystatTagUpdaterForMpd,
-        mpdPlaybackProvider=mpdPlaybackProvider,
-        mluSettings=mluSettings,
-        commonLogger=commonLogger
-    )
-
-
 if __name__ == "__main__":
-    container = Container()
+    parser = argparse.ArgumentParser()
 
-    mluSettings = container.mluSettings()
-    commonLogger = container.commonLogger()
-    provider = container.playstatTagUpdaterForMpd()
+    parser.add_argument("--config-file", 
+        help="config file name located in root dir",
+        default="mlu.config.json",
+        type=str,
+        dest='configFile'
+    )
+    args = parser.parse_args()
 
-    commonLogger.setFileOutputLogLevel(LogLevel.DEBUG)
-    logger = commonLogger.getLogger()
+    settings = MLUSettings(configFilename=args.configFile)
 
+    loggerWrapper = mypycommons.logger.CommonLogger(loggerName=settings.loggerName, logDir=settings.userConfig.logDir, logFilename="update-ratestat-tags-from-vote-playlists.py.log")
+    logger = loggerWrapper.getLogger()
+
+    provider = PlaystatTagUpdaterForMpd(settings, loggerWrapper)
     provider.processMpdLogFile()
 
     mluSettings.cleanupTempDir()

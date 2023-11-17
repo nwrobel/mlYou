@@ -56,7 +56,7 @@
             "type": "python",
             "request": "launch",
             "program": "scripts\\update-playstat-tags-from-mpd-log3.py",
-            "args": [],
+            "args": ["--config-file", "mlu.TEST.config.json"],
             "console": "integratedTerminal"
         },
         {

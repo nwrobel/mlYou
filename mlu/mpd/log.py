@@ -6,7 +6,8 @@ from typing import List
 from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.file
 import com.nwrobel.mypycommons.time
-from com.nwrobel.mypycommons.logger import CommonLogger
+
+from mlu.settings import MLUSettings
 
 class MpdLogLine:
    '''
@@ -33,17 +34,17 @@ class MpdLogLine:
 class MpdLog:
     '''
     '''
-    def __init__(self, logFilepath: str, commonLogger: CommonLogger) -> None:
-        if (not logFilepath):
-            raise ValueError("logFilepath not passed")
+    def __init__(self, mluSettings: MLUSettings, commonLogger: mypycommons.logger.CommonLogger) -> None:
+        if (not mluSettings):
+            raise ValueError("mluSettings not passed")
         if (commonLogger is None):
             raise ValueError("CommonLogger not passed")
 
         # validate that the filepath exists
-        if (not mypycommons.file.pathExists(logFilepath)):
-            raise ValueError("logFilepath must be a valid filepath to an existing file: invalid value '{}'".format(logFilepath))
+        if (not mypycommons.file.pathExists(mluSettings.userConfig.mpdConfig.logFilepath)):
+            raise ValueError("logFilepath must be a valid filepath to an existing file: invalid value '{}'".format(mluSettings.userConfig.mpdConfig.logFilepath))
 
-        self.logFilepath = logFilepath
+        self.logFilepath = mluSettings.userConfig.mpdConfig.logFilepath
         self._logger = commonLogger.getLogger()
         self._lines = self._readLogLines()
 

@@ -5,25 +5,25 @@ import re
 
 from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.time
-from com.nwrobel.mypycommons.logger import CommonLogger
 
 from mlu.mpd.log import MpdLog, MpdLogLine
 from mlu.tags.playstats.common import Playback
+from mlu.settings import MLUSettings
 
 class MpdPlaybackProvider:
     ''' 
     '''
-    def __init__(self, mpdLog: MpdLog, audioLibraryRootDir: str, commonLogger: CommonLogger) -> None:
-        if (mpdLog is None):
-            raise TypeError("mpdLog not passed")
-        if (not audioLibraryRootDir):
-            raise TypeError("audioLibraryRootDir not passed")
+    def __init__(self, mluSettings: MLUSettings, commonLogger: mypycommons.logger.CommonLogger) -> None:
+        if (not mluSettings):
+            raise TypeError("mluSettings not passed")
         if (commonLogger is None):
             raise TypeError("CommonLogger not passed")
         
-        self._audioLibraryRootDir = audioLibraryRootDir
+        self._audioLibraryRootDir = mluSettings.userConfig.audioLibraryRootDir
         self._logger = commonLogger.getLogger()
-        self._mpdLogLines = mpdLog.getLines()
+
+        mpdLogProvider = MpdLog(mluSettings, commonLogger)
+        self._mpdLogLines = mpdLogProvider.getLines()
     
     def getPlaybacks(self) -> List[Playback]:
         '''
