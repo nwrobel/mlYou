@@ -1,5 +1,7 @@
 from typing import List, Optional, Tuple
 from datetime import timedelta, datetime
+from prettytable import PrettyTable
+import math 
 
 from com.nwrobel import mypycommons
 from com.nwrobel.mypycommons.logger import CommonLogger
@@ -37,35 +39,122 @@ class PlaystatTagUpdaterForMpd:
         self._logger.info("Testing all found audio files for validity")
         audioFileErrors = mlu.utilities.testAudioFilesForErrors(self._uniqueAudioFiles)
 
+        if (audioFileErrors):
+            audioFileErrorLogText = ''
+            for audioFileError in audioFileErrors:
+                audioFileErrorLogText += "{} ({})\n".format(audioFileError.audioFilepath, audioFileError.exceptionMessage)
+
+            self._logger.error("The following audio files failed validity check:\n{}".format(audioFileErrorLogText))
+
         self._logger.info("Parsing MPD log file for playback data")
         finalPlaybacks, excludedPlaybacks = self._filterPlaybacks()
 
         playbackListsFinal = self._convertPlaybacksToAudioFilePlaybackLists(finalPlaybacks)
         playbackListsExcluded = self._convertPlaybacksToAudioFilePlaybackLists(excludedPlaybacks)
 
+        self._writeOutputFiles(finalPlaybacks, playbackListsFinal, playbackListsExcluded)
+
+    def _writeOutputFiles(self, finalPlaybacks: List[Playback], finalPlaybackLists: List[AudioFilePlaybackList], excludedPlaybackLists: List[AudioFilePlaybackList]) -> None:
+        outputDir = self._getNewOutputFilesDir()
+
         self._logger.info("Writing playbacks data json output files")
-        filenameTimestamp = mypycommons.time.getCurrentTimestampForFilename()
-        self._savePlaybacksOutputFile(playbackListsFinal, filenameTimestamp)
-        self._savePlaybacksExcludesFile(playbackListsExcluded, filenameTimestamp)
+        self._savePlaybacksOutputFile(finalPlaybackLists, outputDir)
+        self._savePlaybacksExcludesOutputFile(excludedPlaybackLists, outputDir)
 
-    def writeSummaryFiles(self) -> None:
-        ''' 
-        '''
+        self._logger.info("Writing summary output files")
+        self._saveHistorySummaryOutputFile(finalPlaybacks, outputDir)
+        self._saveTotalsSummaryOutputFile(finalPlaybackLists, outputDir)
 
-        logger.info("Writing summary files ")
-        summaryDir = self._getNewSummaryFileDir()
 
-        outputFilename = '{} playbacks-history-summary.txt'.format(mypycommons.time.getCurrentTimestampForFilename())
-        outputFilepath = mypycommons.file.joinPaths(playbackParseResultsDir, outputFilename)
-        _savePlaybacksHistorySummaryOutputFile(outputFilepath, audioFilePlaybackInstancesList)
+    def _saveHistorySummaryOutputFile(self, playbacks: List[Playback], outputDir) -> None:
+        # History file: ordered by playback time
+        # title, artist, album, playback time, duration played
 
-        outputFilename = '{} playbacks-totals-summary.txt'.format(mypycommons.time.getCurrentTimestampForFilename())
-        outputFilepath = mypycommons.file.joinPaths(playbackParseResultsDir, outputFilename)
-        _savePlaybacksTotalsSummaryOutputFile(outputFilepath, audioFilePlaybackInstancesList)
+        playbacks.sort(key=lambda x: x.dateTime)
 
-        outputFilename = '{} playbacks-errors-summary.txt'.format(mypycommons.time.getCurrentTimestampForFilename())
-        outputFilepath = mypycommons.file.joinPaths(playbackParseResultsDir, outputFilename)
-        _savePlaybacksErrorsSummaryOutputFile(outputFilepath, audioFileErrors)
+        outputFilename = 'summary-playback-history.txt'
+        outputFilepath = mypycommons.file.joinPaths(outputDir, outputFilename)
+
+        table = PrettyTable()
+        table.field_names = ["Track Title", "Artist", "Album", "Date Played", "Playback Duration"]
+        table.align["Track Title"] = "l"
+        table.align["Artist"] = "l"
+        table.align["Album"] = "l"
+        table.align["Date Played"] = "r"
+        table.align["Playback Duration"] = "r"
+        table._max_width = {
+            "Track Title" : 120,
+            "Artist": 120,
+            "Album": 120
+        }
+
+        for playback in playbacks:
+            basicTags = self._getAudioFileBasicTags(playback.audioFilepath)
+            table.add_row([
+                basicTags['title'],
+                basicTags['artist'],
+                basicTags['album'], 
+                mypycommons.time.formatDatetimeForDisplay(playback.dateTime),
+                self._getPlaybackDurationFmt(playback.audioFilepath, playback.duration)
+            ])
+
+        mypycommons.file.writeToFile(outputFilepath, table.get_string())
+
+    def _getPlaybackDurationFmt(self, audioFilepath: str, playbackDuration: timedelta):
+        totalDuration = mlu.tags.playstats.common.getAudioFileDuration(audioFilepath)
+        percentOfAudioPlayed = (playbackDuration.total_seconds() / totalDuration.total_seconds()) * 100
+        percentFmt = "{:0.0f}".format(percentOfAudioPlayed)
+
+        playbackDuration = timedelta(seconds=math.ceil(playbackDuration.total_seconds()))
+        #minutes, seconds = divmod(playbackDuration.seconds, 60)
+        #playbackDurationFmt = "{}:{}".format(minutes, seconds)
+
+        return "{} ({}%)".format(str(playbackDuration), percentFmt)
+
+
+
+    def _saveTotalsSummaryOutputFile(self, playbackLists: List[AudioFilePlaybackList], outputDir) -> None:
+        # Totals file: ordered by play count
+        # title, artist, album, play count, times played
+
+        # Sort audio files by play count
+        playbackLists.sort(key=lambda x: x.getPlaybacksTotal())
+
+        outputFilename = 'summary-playback-totals.txt'
+        outputFilepath = mypycommons.file.joinPaths(outputDir, outputFilename)
+
+        table = PrettyTable()
+        table.field_names = ["Track Title", "Artist", "Album", "Play Count", "Dates Played"]
+        table.align["Track Title"] = "l"
+        table.align["Artist"] = "l"
+        table.align["Album"] = "l"
+        table.align["Play Count"] = "r"
+        table.align["Dates Played"] = "l"
+        table._max_width = {
+            "Track Title" : 120,
+            "Artist": 120,
+            "Album": 120
+        }
+
+        for audioFilePlaybackList in playbackLists:
+            basicTags = self._getAudioFileBasicTags(audioFilePlaybackList.audioFilepath)
+            playbackDateTimes = audioFilePlaybackList.getPlaybacksDateTimes()
+            playbackDatesFmt = [mypycommons.time.formatDatetimeForDisplay(x) for x in playbackDateTimes]
+
+            table.add_row([
+                basicTags['title'],
+                basicTags['artist'],
+                basicTags['album'], 
+                audioFilePlaybackList.getPlaybacksTotal(),
+                ", ".join(playbackDatesFmt)
+            ])
+
+        mypycommons.file.writeToFile(outputFilepath, table.get_string())
+
+#---------------------------
+
+
+
 
 
     def _filterPlaybacks(self) -> Tuple[List[Playback], List[Playback]]:
@@ -76,7 +165,7 @@ class PlaystatTagUpdaterForMpd:
         excludedPlaybacks = []
 
         for audioFile in self._uniqueAudioFiles:
-            thisFileDuration = self._getAudioFileDuration(audioFile)
+            thisFileDuration = mlu.tags.playstats.common.getAudioFileDuration(audioFile)
             thisFilePlaybacks = self._getPlaybacksForAudioFile(self._playbacks, audioFile)
 
             for playback in thisFilePlaybacks:
@@ -89,13 +178,15 @@ class PlaystatTagUpdaterForMpd:
 
         return (filteredPlaybacks, excludedPlaybacks)
 
-    def _getAudioFileDuration(self, audioFilepath: str) -> timedelta:
-        ''' 
-        '''
+    def _getAudioFileBasicTags(self, audioFilepath: str) -> dict:
         handler = mlu.tags.io.AudioFileMetadataHandler(audioFilepath)
-        properties = handler.getProperties()
+        tags = handler.getTags()
 
-        return properties.duration
+        return {
+            'title': tags.title,
+            'artist': tags.artist,
+            'album': tags.album
+        }
 
     def _convertPlaybacksToAudioFilePlaybackLists(self, playbacks: List[Playback]) -> List[AudioFilePlaybackList]:
         '''
@@ -125,8 +216,8 @@ class PlaystatTagUpdaterForMpd:
 
         return scriptCacheDir
 
-    def _getNewSummaryFileDir(self) -> str:
-        dirName = '[{}] playback-data-summary'.format(mypycommons.time.getCurrentTimestampForFilename())
+    def _getNewOutputFilesDir(self) -> str:
+        dirName = '[{}] playback-data-output'.format(mypycommons.time.getCurrentTimestampForFilename())
         dirFilepath = mypycommons.file.joinPaths(self._processOutputDir, dirName)
 
         if (not mypycommons.file.pathExists(dirFilepath)):
@@ -134,20 +225,12 @@ class PlaystatTagUpdaterForMpd:
 
         return dirFilepath
 
-    def _getLatestPlaybackDataFile(self) -> str:
-        dataFilepaths = mypycommons.file.getFilesByExtension(self._processOutputDir, '.')
-        dirFilepath = mypycommons.file.joinPaths(self._processOutputDir, dirName)
 
-        if (not mypycommons.file.pathExists(dirFilepath)):
-            mypycommons.file.createDirectory(dirFilepath)
-
-        return dirFilepath  
-
-    def _savePlaybacksOutputFile(self, audioFilePlaybackLists: List[AudioFilePlaybackList], filenameTimestamp: str) -> None:
+    def _savePlaybacksOutputFile(self, audioFilePlaybackLists: List[AudioFilePlaybackList], outputDir: str) -> None:
         ''' 
         '''
-        outputFilename = '[{}] playbacks-data.json'.format(filenameTimestamp)
-        outputFilepath = mypycommons.file.joinPaths(self._processCacheDir, outputFilename)
+        outputFilename = 'playbacks.data.json'
+        outputFilepath = mypycommons.file.joinPaths(outputDir, outputFilename)
 
         dictList = []
         for playbackList in audioFilePlaybackLists:
@@ -155,11 +238,11 @@ class PlaystatTagUpdaterForMpd:
 
         mypycommons.file.writeJsonFile(outputFilepath, dictList)
 
-    def _savePlaybacksExcludesFile(self, audioFilePlaybackLists: List[AudioFilePlaybackList], filenameTimestamp: str) -> None:
+    def _savePlaybacksExcludesOutputFile(self, audioFilePlaybackLists: List[AudioFilePlaybackList], outputDir: str) -> None:
         ''' 
         '''
-        outputFilename = '[{}] playbacks-excluded.json'.format(filenameTimestamp)
-        outputFilepath = mypycommons.file.joinPaths(self._processCacheDir, outputFilename)
+        outputFilename = 'playbacks-excluded.data.json'
+        outputFilepath = mypycommons.file.joinPaths(outputDir, outputFilename)
 
         dictList = []
         for playbackList in audioFilePlaybackLists:
@@ -167,98 +250,27 @@ class PlaystatTagUpdaterForMpd:
 
         mypycommons.file.writeJsonFile(outputFilepath, dictList)
 
-    def _archiveMpdLogFile(self) -> None:
-        ''' 
-        '''
-        mpdLogArchiveFilename = '[{}] {}.archive.7z'.format(
-            mypycommons.time.getCurrentTimestampForFilename(), 
-            mypycommons.file.getFilename(self.settings.userConfig.mpdLogFilepath)
-        ) 
-        mpdLogArchiveOutFilepath = mypycommons.file.joinPaths(MLUSettings.userConfig.mpdLogBackupDirectory, mpdLogArchiveFilename)
+    # def _getLatestPlaybackDataFile(self) -> str:
+    #     dataFilepaths = mypycommons.file.getFilesByExtension(self._processOutputDir, '.')
+    #     dirFilepath = mypycommons.file.joinPaths(self._processOutputDir, dirName)
 
-        logger.info("Archiving MPD log file: {}".format(mpdLogArchiveOutFilepath))
-        mypycommons.archive.create7zArchive(mpdLogFilepath, mpdLogArchiveOutFilepath)
+    #     if (not mypycommons.file.pathExists(dirFilepath)):
+    #         mypycommons.file.createDirectory(dirFilepath)
 
+    #     return dirFilepath  
 
+    # def _archiveMpdLogFile(self) -> None:
+    #     ''' 
+    #     '''
+    #     mpdLogArchiveFilename = '[{}] {}.archive.7z'.format(
+    #         mypycommons.time.getCurrentTimestampForFilename(), 
+    #         mypycommons.file.getFilename(self.settings.userConfig.mpdLogFilepath)
+    #     ) 
+    #     mpdLogArchiveOutFilepath = mypycommons.file.joinPaths(MLUSettings.userConfig.mpdLogBackupDirectory, mpdLogArchiveFilename)
 
+    #     logger.info("Archiving MPD log file: {}".format(mpdLogArchiveOutFilepath))
+    #     mypycommons.archive.create7zArchive(mpdLogFilepath, mpdLogArchiveOutFilepath)
 
-
-
-
-
-
-
-
-# def convertAudioFilePlaybackInstancesListToPlaybackList(audioFilePlaybackInstancesList):
-#     playbackList = []
-#     for playbackInstance in audioFilePlaybackInstancesList:
-#         for playbackDateTime in playbackInstance.playbackDateTimes:
-#             playbackList.append(
-#                 Playback(playbackInstance.audioFilepath, playbackDateTime)
-#             )
-#     return playbackList
-
-# def sortPlaybackListByTime(playbackList):
-#     playbackList.sort(key=lambda playback: playback.playbackDateTime)
-#     return playbackList
-
-# def sortPlaybackInstancesListByAudioFile(audioFilePlaybackInstancesList):
-#     audioFilePlaybackInstancesList.sort(key=lambda playbackInstance: playbackInstance.audioFilepath)
-#     return audioFilePlaybackInstancesList
-
-# def writeTagsForAudioFilePlaybackInstances(audioFilePlaybackInstances):
-#     '''
-#     Alter PLAY_COUNT, DATE_LAST_PLAYED, DATE_ALL_PLAYS
-#     '''
-#     handler = AudioFileMetadataHandler(audioFilePlaybackInstances.audioFilepath)
-#     currentTags = handler.getTags()
-
-#     # Get values needed
-#     if (currentTags.playCount):
-#         currentPlayCount = int(currentTags.playCount)
-#     else:
-#         currentPlayCount = 0
-    
-#     if (currentTags.dateLastPlayed):
-#         currentDateLastPlayed = currentTags.dateLastPlayed
-#     else:
-#         currentDateLastPlayed = ""
-    
-#     if (currentTags.dateAllPlays):
-#         currentDateAllPlaysList = mlu.tags.common.formatAudioTagValueToValuesList(currentTags.dateAllPlays)
-#     else:
-#         currentDateAllPlaysList = []
-
-#     # Set new values
-#     newPlayCount = currentPlayCount + len(audioFilePlaybackInstances.playbackDateTimes)
-#     # get last play time in the list (list is sorted already)
-#     newDateLastPlayed = audioFilePlaybackInstances.playbackDateTimes[-1] 
- 
-#     newDateAllPlaysList = currentDateAllPlaysList
-#     for playbackDateTime in audioFilePlaybackInstances.playbackDateTimes:
-#         newDateAllPlaysList.append(playbackDateTime)
-#     newDateAllPlaysList.sort()
-
-#     # Check if the original last played tag value is newer than the last played value from the new playbackInstance
-#     # If it is, keep the last played tag what it currently is set as
-#     if (currentDateLastPlayed):
-#         currentLastPlayedTimestamp = mypycommons.time.getTimestampFromFormattedTime(currentDateLastPlayed)
-#         newLastPlayedTimestamp = mypycommons.time.getTimestampFromFormattedTime(newDateLastPlayed)
-#         if (currentLastPlayedTimestamp > newLastPlayedTimestamp):
-#             newDateLastPlayed = currentDateLastPlayed
-
-#     # Set new values on the tags
-#     currentTags.playCount = str(newPlayCount)
-#     currentTags.dateLastPlayed = newDateLastPlayed
-#     currentTags.dateAllPlays = mlu.tags.common.formatValuesListToAudioTagValue(newDateAllPlaysList)
-
-#     handler.setTags(currentTags)
-    
-# def writeTagsForNewPlayback(audioFilepath, playbackDateTime):
-#     '''
-#     '''
-#     playbackInstances = AudioFilePlaybackInstances(audioFilepath, [playbackDateTime])
-#     writeTagsForAudioFilePlaybackInstances(playbackInstances)
 
 
     

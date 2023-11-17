@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.time
+import mlu.tags.io
 from com.nwrobel.mypycommons.utils import stringIsNullOrEmpty, listIsNullOrEmpty
 
 class Playback:
@@ -15,6 +16,11 @@ class Playback:
             raise ValueError("dateTime not passed")
         if (duration is None):
             raise ValueError("duration not passed")
+
+        # Adjust for if the duration played is longer than the total duration
+        totalDuration = getAudioFileDuration(audioFilepath)
+        if (duration > totalDuration):
+            duration = totalDuration
 
         self.audioFilepath = audioFilepath
         self.dateTime = dateTime
@@ -61,6 +67,7 @@ class AudioFilePlaybackList:
         if (listIsNullOrEmpty(playbacks)):
             raise ValueError("playbacks empty or not passed")
 
+        # validate
         uniqueAudioFiles = getUniqueAudioFilesFromPlaybacks(playbacks)
         if (len(uniqueAudioFiles) > 1):
             raise ValueError("playbacks list contains playbacks for more than 1 audio file")
@@ -70,6 +77,11 @@ class AudioFilePlaybackList:
 
         self.playbacks.sort()
 
+    def getPlaybacksTotal(self) -> int:
+        return len(self.playbacks)
+
+    def getPlaybacksDateTimes(self) -> List[datetime]:
+        return [x.dateTime for x in self.playbacks]
 
     def getDictForJsonDataFile(self) -> str:
         playbackTimesFmt = []
@@ -102,3 +114,11 @@ def getUniqueAudioFilesFromPlaybacks(playbacks: List[Playback]) -> List[str]:
     '''
     audioFilePaths = sorted(set([playback.audioFilepath for playback in playbacks]))
     return audioFilePaths
+
+def getAudioFileDuration(audioFilepath: str) -> timedelta:
+    ''' 
+    '''
+    handler = mlu.tags.io.AudioFileMetadataHandler(audioFilepath)
+    properties = handler.getProperties()
+
+    return properties.duration

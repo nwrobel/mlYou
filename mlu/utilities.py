@@ -6,7 +6,7 @@ from mlu.tags.io import AudioFileMetadataHandler, AudioFileFormatNotSupportedErr
 class AudioFileError:
     ''' 
     '''
-    NOT_FOUND = "Audio file path cannot be found or is invalid"
+    NOT_FOUND = "File not found"
     NOT_SUPPORTED = "Audio file format is not supported"
 
     def __init__(self, audioFilepath: str, exceptionMessage: str) -> None:

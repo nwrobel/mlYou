@@ -21,12 +21,25 @@ from mlu.settings import MLUSettings
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group()
 
     parser.add_argument("--config-file", 
         help="config file name located in root dir",
         default="mlu.config.json",
         type=str,
         dest='configFile'
+    )
+    group.add_argument('-l', '--load', 
+        action='store_true',
+        dest='load',
+        default=True,
+        help="Load the MPD log file and generate directory of output data"
+    )
+
+    group.add_argument("-s", "--save", 
+        type=str,
+        dest='saveFromDataDirectory',
+        help="Update audio file playstats tags from previously generated output data"
     )
     args = parser.parse_args()
 
@@ -36,8 +49,12 @@ if __name__ == "__main__":
     logger = loggerWrapper.getLogger()
 
     provider = PlaystatTagUpdaterForMpd(settings, loggerWrapper)
-    provider.processMpdLogFile()
 
-    mluSettings.cleanupTempDir()
+    if (args.load):
+        provider.processMpdLogFile()
+    elif (args.saveFromDataDirectory):
+        x = 2
+
+    settings.cleanupTempDir()
     logger.info('Script complete')
 
