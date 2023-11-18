@@ -32,7 +32,6 @@ if __name__ == "__main__":
     group.add_argument('-l', '--load', 
         action='store_true',
         dest='load',
-        default=True,
         help="Load the MPD log file and generate directory of output data"
     )
 
@@ -53,7 +52,7 @@ if __name__ == "__main__":
     if (args.load):
         provider.processMpdLogFile()
     elif (args.saveFromDataDirectory):
-        x = 2
+        provider.updatePlaystatTags(args.saveFromDataDirectory)
 
     settings.cleanupTempDir()
     logger.info('Script complete')

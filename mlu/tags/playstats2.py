@@ -10,11 +10,53 @@ import com.nwrobel.mypycommons.archive
 import com.nwrobel.mypycommons.time
 
 import mlu.tags.io
+import mlu.tags.common
 import mlu.utilities
 import mlu.tags.playstats.common 
 from mlu.tags.playstats.common import Playback, AudioFilePlaybackList
 from mlu.mpd.plays import MpdPlaybackProvider
 from mlu.settings import MLUSettings
+
+class PlaystatTags:
+    def __init__(self, audioFilepath: str):
+        self.audioFilepath = audioFilepath
+        self.playCount = 0
+        self.dateLastPlayed = None
+        self.dateAllPlays = []
+        self._handler = mlu.tags.io.AudioFileMetadataHandler(self.audioFilepath)
+
+        self._loadTags()
+
+    def _loadTags(self):
+        currentTags = self._handler.getTags()
+
+        # Get values needed
+        if (currentTags.playCount):
+            self.playCount = int(currentTags.playCount)
+        
+        if (currentTags.dateLastPlayed):
+            self.dateLastPlayed = mypycommons.time.getDateTimeFromFormattedTime(currentTags.dateLastPlayed)
+        
+        if (currentTags.dateAllPlays):
+            currentDateAllPlaysList = mlu.tags.common.formatAudioTagToValuesList(currentTags.dateAllPlays)
+            self.dateAllPlays = [mypycommons.time.getDateTimeFromFormattedTime(x) for x in currentDateAllPlaysList]
+
+    def saveTags(self):
+        '''
+        Write current class values to file, formatted 
+        '''
+        playCountFmt = str(self.playCount)
+        dateLastPlayedFmt = mypycommons.time.formatDatetimeForDisplay(self.dateLastPlayed)
+
+        dateAllPlaysFmtList = [mypycommons.time.formatDatetimeForDisplay(x) for x in self.dateAllPlays]
+        dateAllPlaysFmt = mlu.tags.common.formatValuesListToAudioTag(dateAllPlaysFmtList)
+
+        currentTags = self._handler.getTags()
+        currentTags.playCount = playCountFmt
+        currentTags.dateLastPlayed = dateLastPlayedFmt
+        currentTags.dateAllPlays = dateAllPlaysFmt
+
+        self._handler.setTags(currentTags)
 
 class PlaystatTagUpdaterForMpd:
     ''' 
@@ -54,12 +96,51 @@ class PlaystatTagUpdaterForMpd:
 
         self._writeOutputFiles(finalPlaybacks, playbackListsFinal, playbackListsExcluded)
 
+
+    def updatePlaystatTags(self, dataDir: str) -> None:
+        audioFilePlaybackLists = self._loadPlaybacksOutputFile(dataDir, 'playbacks.data.json')
+
+        for audioFilePlaybackList in audioFilePlaybackLists:
+            self._updatePlaystatTagsForAudioFilePlaybackList(audioFilePlaybackList)
+
+
+    def _updatePlaystatTagsForAudioFilePlaybackList(self, audioFilePlaybackList: AudioFilePlaybackList) -> None:
+        '''
+        Alter PLAY_COUNT, DATE_LAST_PLAYED, DATE_ALL_PLAYS
+        '''
+        playstatTags = PlaystatTags(audioFilePlaybackList.audioFilepath)
+
+        # Set new values
+        newPlayCount = playstatTags.playCount + audioFilePlaybackList.getPlaybacksTotal()
+        playstatTags.playCount = newPlayCount
+
+        # Last played
+        audioFilePlaybackList.playbacks.sort(key=lambda x: x.dateTime)
+        dateLastPlayedMpd = audioFilePlaybackList.getPlaybacksDateTimes()[-1] 
+
+        if (not playstatTags.dateLastPlayed):
+            playstatTags.dateLastPlayed = dateLastPlayedMpd
+        else:
+            # If the current date last played is before our latest one from MPD, set our latest
+            if (dateLastPlayedMpd > playstatTags.dateLastPlayed):
+                playstatTags.dateLastPlayed = dateLastPlayedMpd
+            
+        # All plays
+        newDateAllPlaysList = playstatTags.dateAllPlays
+        for playbackDateTime in audioFilePlaybackList.getPlaybacksDateTimes():
+            newDateAllPlaysList.append(playbackDateTime)
+
+        newDateAllPlaysList.sort()
+        playstatTags.dateAllPlays = newDateAllPlaysList
+
+        playstatTags.saveTags()
+
     def _writeOutputFiles(self, finalPlaybacks: List[Playback], finalPlaybackLists: List[AudioFilePlaybackList], excludedPlaybackLists: List[AudioFilePlaybackList]) -> None:
         outputDir = self._getNewOutputFilesDir()
 
         self._logger.info("Writing playbacks data json output files")
-        self._savePlaybacksOutputFile(finalPlaybackLists, outputDir)
-        self._savePlaybacksExcludesOutputFile(excludedPlaybackLists, outputDir)
+        self._savePlaybacksOutputFile(finalPlaybackLists, outputDir, 'playbacks.data.json')
+        self._savePlaybacksOutputFile(excludedPlaybackLists, outputDir, 'playbacks-excluded.data.json')
 
         self._logger.info("Writing summary output files")
         self._saveHistorySummaryOutputFile(finalPlaybacks, outputDir)
@@ -226,10 +307,9 @@ class PlaystatTagUpdaterForMpd:
         return dirFilepath
 
 
-    def _savePlaybacksOutputFile(self, audioFilePlaybackLists: List[AudioFilePlaybackList], outputDir: str) -> None:
+    def _savePlaybacksOutputFile(self, audioFilePlaybackLists: List[AudioFilePlaybackList], outputDir: str, outputFilename: str) -> None:
         ''' 
         '''
-        outputFilename = 'playbacks.data.json'
         outputFilepath = mypycommons.file.joinPaths(outputDir, outputFilename)
 
         dictList = []
@@ -238,17 +318,28 @@ class PlaystatTagUpdaterForMpd:
 
         mypycommons.file.writeJsonFile(outputFilepath, dictList)
 
-    def _savePlaybacksExcludesOutputFile(self, audioFilePlaybackLists: List[AudioFilePlaybackList], outputDir: str) -> None:
+
+    def _loadPlaybacksOutputFile(self, outputDir: str, outputFilename: str) -> List[AudioFilePlaybackList]:
         ''' 
         '''
-        outputFilename = 'playbacks-excluded.data.json'
         outputFilepath = mypycommons.file.joinPaths(outputDir, outputFilename)
 
-        dictList = []
-        for playbackList in audioFilePlaybackLists:
-            dictList.append(playbackList.getDictForJsonExcludesFile())
+        json = mypycommons.file.readJsonFile(outputFilepath)
+        audioFilePlaybackLists = []
 
-        mypycommons.file.writeJsonFile(outputFilepath, dictList)
+        for item in json:
+            playbacks = []
+            playbacksJson = item['playbacks']
+            for playbackJson in playbacksJson:
+                dateTime = mypycommons.time.getDateTimeFromFormattedTime(playbackJson['dateTime'])
+                timeD = mypycommons.time.getTimedeltaFromFormattedDuration(playbackJson['playbackDuration'])
+                playbacks.append(
+                    Playback(item['audioFilepath'], dateTime, timeD)
+                )
+            
+            audioFilePlaybackLists.append(AudioFilePlaybackList(playbacks))
+
+        return audioFilePlaybackLists
 
     # def _getLatestPlaybackDataFile(self) -> str:
     #     dataFilepaths = mypycommons.file.getFilesByExtension(self._processOutputDir, '.')

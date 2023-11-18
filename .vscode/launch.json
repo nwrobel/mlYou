@@ -52,11 +52,19 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "MPD Playstats updater - Test",
+            "name": "MPD Playstats updater - Test Load",
             "type": "python",
             "request": "launch",
             "program": "scripts\\update-playstat-tags-from-mpd-log3.py",
-            "args": ["--config-file", "mlu.TEST.config.json"],
+            "args": ["--config-file", "mlu.TEST.config.json", "-l"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "MPD Playstats updater - Test Save",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\update-playstat-tags-from-mpd-log3.py",
+            "args": ["--config-file", "mlu.TEST.config.json", "-s", "C:\\nick-local-data\\local-dev-my\\mlu\\~cache\\update-playstat-tags-from-mpd-log\\[2023-11-18 13.21.14] playback-data-output"],
             "console": "integratedTerminal"
         },
         {

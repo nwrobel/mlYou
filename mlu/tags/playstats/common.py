@@ -84,16 +84,6 @@ class AudioFilePlaybackList:
         return [x.dateTime for x in self.playbacks]
 
     def getDictForJsonDataFile(self) -> str:
-        playbackTimesFmt = []
-        for playback in self.playbacks:
-            playbackTimesFmt.append(mypycommons.time.formatDatetimeForDisplay(playback.dateTime))
-
-        return {
-            'audioFilepath': self.audioFilepath,
-            'playbackDateTimes': playbackTimesFmt
-        }
-
-    def getDictForJsonExcludesFile(self) -> str:
         playbackTimesFmt = [mypycommons.time.formatDatetimeForDisplay(playback.dateTime) for playback in self.playbacks]
         jsonDict = {
             'audioFilepath': self.audioFilepath,
