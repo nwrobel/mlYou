@@ -15,7 +15,6 @@ import mlu.utilities
 import mlu.tags.playstats.common 
 from mlu.tags.playstats.common import Playback, AudioFilePlaybackList
 from mlu.mpd.plays import MpdPlaybackProvider
-from mlu.mpd.log import MpdLog
 from mlu.settings import MLUSettings
 
 class PlaystatTags:
@@ -101,7 +100,9 @@ class PlaystatTagUpdaterForMpd:
         self._savePlaybacksOutputFile(excludedPlaybackLists, outputDir, 'playbacks-excluded.data.json')
 
 
-    def updatePlaystatTags(self, dataDir: str) -> None:
+    def updatePlaystatTags(self, dataDirName: str) -> None:
+        dataDir = mypycommons.file.joinPaths(self._processOutputDir, dataDirName)
+
         self._logger.info("Loading data file from dir {}".format(dataDir))
         audioFilePlaybackLists = self._loadPlaybacksOutputFile(dataDir, 'playbacks.data.json')
 
@@ -120,16 +121,16 @@ class PlaystatTagUpdaterForMpd:
     def _archiveMpdLogFile(self) -> None:
         mpdLogArchiveFilename = '[{}] {}.archive.7z'.format(
             mypycommons.time.getCurrentTimestampForFilename(), 
-            mypycommons.file.getFilename(self.settings.userConfig.mpdConfig.logFilepath)
+            mypycommons.file.getFilename(self._settings.userConfig.mpdConfig.logFilepath)
         ) 
-        mpdLogArchiveOutFilepath = mypycommons.file.joinPaths(self.settings.userConfig.mpdConfig.logArchiveDir, mpdLogArchiveFilename)
+        mpdLogArchiveOutFilepath = mypycommons.file.joinPaths(self._settings.userConfig.mpdConfig.logArchiveDir, mpdLogArchiveFilename)
 
-        self._logger.info("Archiving MPD log file: {}".format(mpdLogArchiveOutFilepath))
-        mypycommons.archive.create7zArchive(mpdLogFilepath, mpdLogArchiveOutFilepath)
+        self._logger.info("Archiving MPD log file to: {}".format(mpdLogArchiveOutFilepath))
+        mypycommons.archive.create7zArchive(self._settings.userConfig.mpdConfig.logFilepath, mpdLogArchiveOutFilepath)
 
     def _resetMpdLogFile(self) -> None:
-        self._logger.info("Clearing MPD log file: {}".format(self.settings.userConfig.mpdConfig.logFilepath))
-        mypycommons.file.clearFileContents(self.settings.userConfig.mpdConfig.logFilepath)
+        self._logger.info("Clearing MPD log file: {}".format(self._settings.userConfig.mpdConfig.logFilepath))
+        mypycommons.file.clearFileContents(self._settings.userConfig.mpdConfig.logFilepath)
 
     def _updatePlaystatTagsForAudioFilePlaybackList(self, audioFilePlaybackList: AudioFilePlaybackList) -> None:
         '''
@@ -160,14 +161,14 @@ class PlaystatTagUpdaterForMpd:
         newDateAllPlaysList.sort()
         playstatTags.dateAllPlays = newDateAllPlaysList
 
-        self._logger.info("Setting playstat tags for audio file, new values: {}, PlayCount={}, DateLastPlayed={}".format(
+        self._logger.info("Setting playstat tags for audio file, values: {}, PlayCountAdded={}, NewPlayCount={}, NewDateLastPlayed={}".format(
             audioFilePlaybackList.audioFilepath,
+            audioFilePlaybackList.getPlaybacksTotal(),
             playstatTags.playCount,
             mypycommons.time.formatDatetimeForDisplay(playstatTags.dateLastPlayed)
         ))
 
         playstatTags.saveTags()
-
 
     def _saveHistorySummaryOutputFile(self, playbackLists: List[AudioFilePlaybackList], outputDir) -> None:
         # History file: ordered by playback time
@@ -307,12 +308,13 @@ class PlaystatTagUpdaterForMpd:
     def _convertAudioFilePlaybackListsToPlaybacks(self, playbackLists: List[AudioFilePlaybackList]) -> List[Playback]:
         '''
         '''
-        playbacks = []
+        allPlaybacks = []
 
         for playbackList in playbackLists:
-            playbacks.append(playbackList.playbacks)
+            for playback in playbackList.playbacks:
+                allPlaybacks.append(playback)
 
-        return playbacks
+        return allPlaybacks
 
     def _getPlaybacksForAudioFile(self, allPlaybacks: List[Playback], audioFilepath: str) -> List[Playback]:
         ''' 

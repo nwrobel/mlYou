@@ -14,7 +14,6 @@ import envsetup
 envsetup.PreparePythonProjectEnvironment()
 
 import mlu.tags.io
-from mlu.mpd.log import MpdLog
 from mlu.mpd.plays import MpdPlaybackProvider
 from mlu.tags.playstats2 import PlaystatTagUpdaterForMpd
 from mlu.settings import MLUSettings
@@ -38,7 +37,7 @@ if __name__ == "__main__":
     group.add_argument("-s", "--save", 
         type=str,
         dest='saveFromDataDirectory',
-        help="Update audio file playstats tags from previously generated output data"
+        help="Update audio file playstats tags from previously generated output data. Name of the directory (in mlu/~cache/update-playstat-tags-from-mpd-log) that was output previously. ex) \"[2023-11-18 13.21.14] playback-data-output\""
     )
     args = parser.parse_args()
 
