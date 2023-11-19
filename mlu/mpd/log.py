@@ -31,7 +31,7 @@ class MpdLogLine:
         self.dateTime = dateTime
         self.originalText = originalText
 
-class MpdLog:
+class MpdLogProvider:
     '''
     '''
     def __init__(self, mluSettings: MLUSettings, commonLogger: mypycommons.logger.CommonLogger) -> None:
@@ -50,23 +50,6 @@ class MpdLog:
 
     def getLines(self) -> MpdLogLine:
         return self._lines
-
-    def reset(self, mpdLogLineToPreserve: MpdLogLine) -> None:
-        '''
-        
-        '''
-        currentLines = self._getRawLines()
-        previousLines = [logLine.originalText for logLine in self._lines]
-        newLines = [currentLine for currentLine in currentLines if (currentLine not in previousLines)]
-
-        mypycommons.file.clearFileContents(self.logFilepath)
-
-        # Insert the line to preserve at the beginning of the list of new lines (if there is one), 
-        # since the line to preserve is older than the newer lines
-        if (mpdLogLineToPreserve):
-            newLines.insert(0, mpdLogLineToPreserve.originalText)     
-
-        mypycommons.file.writeToFile(self.logFilepath, newLines)
 
     def _readLogLines(self) -> List[MpdLogLine]:
         '''

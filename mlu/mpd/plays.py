@@ -6,7 +6,7 @@ import re
 from com.nwrobel import mypycommons
 import com.nwrobel.mypycommons.time
 
-from mlu.mpd.log import MpdLog, MpdLogLine
+from mlu.mpd.log import MpdLogProvider, MpdLogLine
 from mlu.tags.playstats.common import Playback
 from mlu.settings import MLUSettings
 
@@ -22,7 +22,7 @@ class MpdPlaybackProvider:
         self._audioLibraryRootDir = mluSettings.userConfig.audioLibraryRootDir
         self._logger = commonLogger.getLogger()
 
-        mpdLogProvider = MpdLog(mluSettings, commonLogger)
+        mpdLogProvider = MpdLogProvider(mluSettings, commonLogger)
         self._mpdLogLines = mpdLogProvider.getLines()
     
     def getPlaybacks(self) -> List[Playback]:
