@@ -14,13 +14,15 @@ class Playback:
             raise ValueError("audioFilepath empty or not passed")
         if (dateTime is None):
             raise ValueError("dateTime not passed")
-        if (duration is None):
-            raise ValueError("duration not passed")
-
-        # Adjust for if the duration played is longer than the total duration
+  
         totalDuration = getAudioFileDuration(audioFilepath)
-        if (duration > totalDuration):
-            duration = totalDuration
+
+        #  duration can be null (means it could not determine duration from log lines)
+        if (duration):
+            # Adjust for:
+            #  if the duration played is longer than the total duration
+            if (duration > totalDuration):
+                duration = totalDuration
 
         self.audioFilepath = audioFilepath
         self.dateTime = dateTime
@@ -36,9 +38,8 @@ class Playback:
         else:
             check1 = (self.audioFilepath < other.audioFilepath)
             check2 = (self.dateTime < other.dateTime)
-            check3 = (self.duration < other.duration)
             
-            return (check1 or check2 or check3) 
+            return (check1 or check2) 
 
     # def __hash__(self):
     #     ''' 
@@ -62,7 +63,6 @@ class AudioFilePlaybackList:
     #     # Sort the playback times, with oldest first
     #     playbackDateTimes.sort()
     #     self.dateTimes = dateTimes
-
     def __init__(self, playbacks: List[Playback]) -> None:
         if (listIsNullOrEmpty(playbacks)):
             raise ValueError("playbacks empty or not passed")
@@ -91,9 +91,13 @@ class AudioFilePlaybackList:
         }
 
         for playback in self.playbacks:
+            if (playback.duration is not None):
+                playbackDuration = str(playback.duration)
+            else:
+                playbackDuration = None
             playbackDict = {
                 'dateTime': mypycommons.time.formatDatetimeForDisplay(playback.dateTime),
-                'playbackDuration': str(playback.duration)
+                'playbackDuration': playbackDuration
             }
             jsonDict['playbacks'].append(playbackDict)
 

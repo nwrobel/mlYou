@@ -70,14 +70,18 @@ class PlaystatTagUpdaterForMpd:
         self._settings = mluSettings
         self._processOutputDir = self._getProcessOutputDir()
         self._logger = commonLogger.getLogger()
-
-        playbackProvider = MpdPlaybackProvider(mluSettings, commonLogger)
-        self._playbacks = playbackProvider.getPlaybacks()
-        self._uniqueAudioFiles = mlu.tags.playstats.common.getUniqueAudioFilesFromPlaybacks(self._playbacks)
+        self._mpdPlaybackProvider = MpdPlaybackProvider(mluSettings, commonLogger)
+        self._playbacks = None
+        self._uniqueAudioFiles = None
 
     def processMpdLogFile(self) -> None:
         ''' 
         '''
+        self._logger.info("Loading playback info from mpd log file")
+        
+        self._playbacks = self._mpdPlaybackProvider.getPlaybacks()
+        self._uniqueAudioFiles = mlu.tags.playstats.common.getUniqueAudioFilesFromPlaybacks(self._playbacks)
+
         self._logger.info("Testing all found audio files for validity")
         audioFileErrors = mlu.utilities.testAudioFilesForErrors(self._uniqueAudioFiles)
 
@@ -88,11 +92,11 @@ class PlaystatTagUpdaterForMpd:
 
             self._logger.error("The following audio files failed validity check:\n{}".format(audioFileErrorLogText))
 
-        self._logger.info("Parsing MPD log file for playback data")
+        self._logger.info("Excluding partial playbacks (<20% played) for playback data")
         finalPlaybacks, excludedPlaybacks = self._filterPlaybacks()
 
-        playbackListsFinal = self._convertPlaybacksToAudioFilePlaybackLists(finalPlaybacks)
-        playbackListsExcluded = self._convertPlaybacksToAudioFilePlaybackLists(excludedPlaybacks)
+        finalPlaybackLists = self._convertPlaybacksToAudioFilePlaybackLists(finalPlaybacks)
+        excludedPlaybackLists = self._convertPlaybacksToAudioFilePlaybackLists(excludedPlaybacks)
 
         outputDir = self._getNewOutputFilesDir()
         self._logger.info("Writing playbacks data json output files to new dir: {}".format(outputDir))
@@ -206,15 +210,17 @@ class PlaystatTagUpdaterForMpd:
         mypycommons.file.writeToFile(outputFilepath, table.get_string())
 
     def _getPlaybackDurationFmt(self, audioFilepath: str, playbackDuration: timedelta):
-        totalDuration = mlu.tags.playstats.common.getAudioFileDuration(audioFilepath)
-        percentOfAudioPlayed = (playbackDuration.total_seconds() / totalDuration.total_seconds()) * 100
-        percentFmt = "{:0.0f}".format(percentOfAudioPlayed)
+        if (playbackDuration is not None):
+            totalDuration = mlu.tags.playstats.common.getAudioFileDuration(audioFilepath)
+            percentOfAudioPlayed = (playbackDuration.total_seconds() / totalDuration.total_seconds()) * 100
+            percentFmt = "{:0.0f}".format(percentOfAudioPlayed)
 
-        playbackDuration = timedelta(seconds=math.ceil(playbackDuration.total_seconds()))
-        #minutes, seconds = divmod(playbackDuration.seconds, 60)
-        #playbackDurationFmt = "{}:{}".format(minutes, seconds)
+            # get a timedelta without fractions of seconds, for display
+            playbackDuration = timedelta(seconds=math.ceil(playbackDuration.total_seconds()))
 
-        return "{} ({}%)".format(str(playbackDuration), percentFmt)
+            return "{} ({}%)".format(str(playbackDuration), percentFmt)
+        else:
+            return "unknown"
 
 
 
@@ -274,12 +280,19 @@ class PlaystatTagUpdaterForMpd:
             thisFilePlaybacks = self._getPlaybacksForAudioFile(self._playbacks, audioFile)
 
             for playback in thisFilePlaybacks:
-                percentOfAudioPlayed = (playback.duration.total_seconds() / thisFileDuration.total_seconds()) * 100
-
-                if (percentOfAudioPlayed >= 20):
+                if (playback.duration is None):
+                    self._logger.warning("Including playback of unknown duration: File='{}', PlaybackStartTime='{}'".format(
+                        audioFile,
+                        mypycommons.time.formatDatetimeForDisplay(playback.dateTime)
+                    ))
                     filteredPlaybacks.append(playback)
                 else:
-                    excludedPlaybacks.append(playback)
+                    percentOfAudioPlayed = (playback.duration.total_seconds() / thisFileDuration.total_seconds()) * 100
+
+                    if (percentOfAudioPlayed >= 20):
+                        filteredPlaybacks.append(playback)
+                    else:
+                        excludedPlaybacks.append(playback)
 
         return (filteredPlaybacks, excludedPlaybacks)
 
@@ -367,7 +380,9 @@ class PlaystatTagUpdaterForMpd:
             playbacksJson = item['playbacks']
             for playbackJson in playbacksJson:
                 dateTime = mypycommons.time.getDateTimeFromFormattedTime(playbackJson['dateTime'])
-                timeD = mypycommons.time.getTimedeltaFromFormattedDuration(playbackJson['playbackDuration'])
+                timeD = None
+                if (playbackJson['playbackDuration']):
+                    timeD = mypycommons.time.getTimedeltaFromFormattedDuration(playbackJson['playbackDuration'])
                 playbacks.append(
                     Playback(item['audioFilepath'], dateTime, timeD)
                 )

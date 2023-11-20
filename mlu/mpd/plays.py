@@ -21,15 +21,13 @@ class MpdPlaybackProvider:
         
         self._audioLibraryRootDir = mluSettings.userConfig.audioLibraryRootDir
         self._logger = commonLogger.getLogger()
+        self._mpdLogProvider = MpdLogProvider(mluSettings, commonLogger)
+        self._mpdLogLines = None
 
-        mpdLogProvider = MpdLogProvider(mluSettings, commonLogger)
-        self._mpdLogLines = mpdLogProvider.getLines()
-    
     def getPlaybacks(self) -> List[Playback]:
         '''
-        If the last filtered log line is a 'played' line, it is not counted, and it will be kept
-        during the MPD log reset processing done outside this module
         '''
+        self._mpdLogLines = self._mpdLogProvider.getLines()
         linesWithJunkRemoved = self._getJunkFilteredMpdLogLines()
 
         playbackList = []
@@ -44,7 +42,6 @@ class MpdPlaybackProvider:
         # Have loop go to the next line - we will do the above again next time we hit the next consecutive 'playback' line
 
         # Go through each line in the list of log lines
-        atLastLogLine = False
         for (index, currentLine) in enumerate(linesWithJunkRemoved):
             # If the current log line is one that indicates a song was played back, get the info from the line
             if (self._mpdLogLineIsPlaybackStarted(currentLine)):
@@ -62,17 +59,14 @@ class MpdPlaybackProvider:
                     playbackStopTime = nextLine.dateTime
                     playbackTimedelta = playbackStopTime - playbackStartTime
 
-                # If the list is out of bounds, we are at the end of the list, and we have no way to know what the play duration is,
-                # so we don't add this song to the list of playbacks - this song playback line will be preserved in the log file
-                # and we will not make a Playback for it right now (the next round of log lines should have a stop playback indicator)
+                # If the list is out of bounds, we are at the end of the list, and we have no real way to know what the play duration is,
+                # To handle this, we just will set timedelta to 0 (count this as a play)
                 except IndexError:
-                    atLastLogLine = True
+                    self._logger.warning("Last playback line in log reached, unable to determine exact play duration for final 'played' line")
+                    playbackTimedelta = None
 
-                # Create the Playback object from the values we found for this playback and add it to the list
-                # (if the playback duration was found - if not, don't make a playback instance for the last playback)
-                if (not atLastLogLine):
-                    playbackInstance = Playback(audioFilepath, playbackStartTime, playbackTimedelta)
-                    playbackList.append(playbackInstance)
+                playbackInstance = Playback(audioFilepath, playbackStartTime, playbackTimedelta)
+                playbackList.append(playbackInstance)
 
         return playbackList
 
