@@ -23,8 +23,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--config-file", 
-        help="config file name located in root dir",
-        default="mlu.TEST.config.json",
+        help="config file name in mlu/config",
+        default="mlu.config.json",
         type=str,
         dest='configFile'
     )
