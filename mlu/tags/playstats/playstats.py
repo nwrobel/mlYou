@@ -68,7 +68,6 @@ class PlaystatTagUpdaterForMpd:
             raise TypeError("commonLogger not passed")
 
         self._settings = mluSettings
-        self._processOutputDir = self._getProcessOutputDir()
         self._logger = commonLogger.getLogger()
         self._mpdPlaybackProvider = MpdPlaybackProvider(mluSettings, commonLogger)
         self._playbacks = None
@@ -91,6 +90,8 @@ class PlaystatTagUpdaterForMpd:
                 audioFileErrorLogText += "{} ({})\n".format(audioFileError.audioFilepath, audioFileError.exceptionMessage)
 
             self._logger.error("The following audio files failed validity check:\n{}".format(audioFileErrorLogText))
+            self._logger.info("exiting due to failed check. open log file and manually fix file paths or remove those lines")
+            return
 
         self._logger.info("Excluding partial playbacks (<20% played) for playback data")
         finalPlaybacks, excludedPlaybacks = self._filterPlaybacks()
@@ -98,14 +99,18 @@ class PlaystatTagUpdaterForMpd:
         finalPlaybackLists = self._convertPlaybacksToAudioFilePlaybackLists(finalPlaybacks)
         excludedPlaybackLists = self._convertPlaybacksToAudioFilePlaybackLists(excludedPlaybacks)
 
-        outputDir = self._getNewOutputFilesDir()
-        self._logger.info("Writing playbacks data json output files to new dir: {}".format(outputDir))
+        outputDir = self._getOutputFilesDir()
+        self._logger.info("Writing included and excluded playbacks data json output files")
         self._savePlaybacksOutputFile(finalPlaybackLists, outputDir, 'playbacks.data.json')
         self._savePlaybacksOutputFile(excludedPlaybackLists, outputDir, 'playbacks-excluded.data.json')
 
+        self._logger.info("Writing summary output files for loaded tags: {}".format(outputDir))
+        self._saveHistorySummaryOutputFile(finalPlaybackLists, outputDir)
+        self._saveTotalsSummaryOutputFile(finalPlaybackLists, outputDir)
+
 
     def updatePlaystatTags(self, dataDirName: str) -> None:
-        dataDir = mypycommons.file.joinPaths(self._processOutputDir, dataDirName)
+        dataDir = mypycommons.file.joinPaths(self._settings.userConfig.mpdConfig.outputDir, dataDirName)
 
         self._logger.info("Loading data file from dir {}".format(dataDir))
         audioFilePlaybackLists = self._loadPlaybacksOutputFile(dataDir, 'playbacks.data.json')
@@ -183,6 +188,7 @@ class PlaystatTagUpdaterForMpd:
 
         outputFilename = 'summary-playback-history.txt'
         outputFilepath = mypycommons.file.joinPaths(outputDir, outputFilename)
+        self._logger.info("Saving playback history summary file: {}".format(outputFilepath))
 
         table = PrettyTable()
         table.field_names = ["Track Title", "Artist", "Album", "Date Played", "Playback Duration"]
@@ -222,17 +228,16 @@ class PlaystatTagUpdaterForMpd:
         else:
             return "unknown"
 
-
-
     def _saveTotalsSummaryOutputFile(self, playbackLists: List[AudioFilePlaybackList], outputDir) -> None:
         # Totals file: ordered by play count
         # title, artist, album, play count, times played
 
         # Sort audio files by play count
-        playbackLists.sort(key=lambda x: x.getPlaybacksTotal())
+        playbackLists.sort(key=lambda x: x.getPlaybacksTotal(), reverse=True)
 
         outputFilename = 'summary-playback-totals.txt'
         outputFilepath = mypycommons.file.joinPaths(outputDir, outputFilename)
+        self._logger.info("Saving playback totals summary file: {}".format(outputFilepath))
 
         table = PrettyTable()
         table.field_names = ["Track Title", "Artist", "Album", "Play Count", "Dates Played"]
@@ -262,12 +267,6 @@ class PlaystatTagUpdaterForMpd:
 
         mypycommons.file.writeToFile(outputFilepath, table.get_string())
 
-#---------------------------
-
-
-
-
-
     def _filterPlaybacks(self) -> Tuple[List[Playback], List[Playback]]:
         '''
         Remove any playbacks in which less than 20% of the song was played.
@@ -287,6 +286,10 @@ class PlaystatTagUpdaterForMpd:
                     ))
                     filteredPlaybacks.append(playback)
                 else:
+                    # adjustment for if the duration is larger than file played duration
+                    if (playback.duration > thisFileDuration):
+                        playback.duration = thisFileDuration
+
                     percentOfAudioPlayed = (playback.duration.total_seconds() / thisFileDuration.total_seconds()) * 100
 
                     if (percentOfAudioPlayed >= 20):
@@ -334,7 +337,7 @@ class PlaystatTagUpdaterForMpd:
         '''        
         return [playback for playback in allPlaybacks if (playback.audioFilepath == audioFilepath)]
 
-    def _getProcessOutputDir(self) -> str:
+    def _getDefaultOutputFilesDir(self) -> str:
         ''' 
         '''
         dirName = "update-playstat-tags-from-mpd-log"
@@ -345,27 +348,31 @@ class PlaystatTagUpdaterForMpd:
 
         return scriptCacheDir
 
-    def _getNewOutputFilesDir(self) -> str:
+    def _getOutputFilesDir(self) -> str:
+        
         dirName = '[{}] playback-data-output'.format(mypycommons.time.getCurrentTimestampForFilename())
-        dirFilepath = mypycommons.file.joinPaths(self._processOutputDir, dirName)
+        dirFilepath = ''
+        if (self._settings.userConfig.mpdConfig.outputDir):
+            dirFilepath = mypycommons.file.joinPaths(self._settings.userConfig.mpdConfig.outputDir, dirName)
+        else:
+            dirFilepath = self._getDefaultOutputFilesDir()
 
         if (not mypycommons.file.pathExists(dirFilepath)):
             mypycommons.file.createDirectory(dirFilepath)
 
         return dirFilepath
 
-
     def _savePlaybacksOutputFile(self, audioFilePlaybackLists: List[AudioFilePlaybackList], outputDir: str, outputFilename: str) -> None:
         ''' 
         '''
         outputFilepath = mypycommons.file.joinPaths(outputDir, outputFilename)
+        self._logger.info("Writing playbacks data output file: {}".format(outputFilename))
 
         dictList = []
         for playbackList in audioFilePlaybackLists:
             dictList.append(playbackList.getDictForJsonDataFile())
 
         mypycommons.file.writeJsonFile(outputFilepath, dictList)
-
 
     def _loadPlaybacksOutputFile(self, outputDir: str, outputFilename: str) -> List[AudioFilePlaybackList]:
         ''' 
@@ -390,18 +397,3 @@ class PlaystatTagUpdaterForMpd:
             audioFilePlaybackLists.append(AudioFilePlaybackList(playbacks))
 
         return audioFilePlaybackLists
-
-    # def _getLatestPlaybackDataFile(self) -> str:
-    #     dataFilepaths = mypycommons.file.getFilesByExtension(self._processOutputDir, '.')
-    #     dirFilepath = mypycommons.file.joinPaths(self._processOutputDir, dirName)
-
-    #     if (not mypycommons.file.pathExists(dirFilepath)):
-    #         mypycommons.file.createDirectory(dirFilepath)
-
-    #     return dirFilepath  
-
-
-
-
-
-    

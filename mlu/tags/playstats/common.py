@@ -15,15 +15,6 @@ class Playback:
         if (dateTime is None):
             raise ValueError("dateTime not passed")
   
-        totalDuration = getAudioFileDuration(audioFilepath)
-
-        #  duration can be null (means it could not determine duration from log lines)
-        if (duration):
-            # Adjust for:
-            #  if the duration played is longer than the total duration
-            if (duration > totalDuration):
-                duration = totalDuration
-
         self.audioFilepath = audioFilepath
         self.dateTime = dateTime
         self.duration = duration

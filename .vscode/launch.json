@@ -52,10 +52,26 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "MPD Playstats updater - Load",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\update-playstat-tags-from-mpd-log.py",
+            "args": ["--config-file", "mlu.config.json", "-l"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "MPD Playstats updater - Save",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\update-playstat-tags-from-mpd-log.py",
+            "args": ["--config-file", "mlu.config.json", "-s", "[2023-11-21 12.44.37] playback-data-output"],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "MPD Playstats updater - Test Load",
             "type": "python",
             "request": "launch",
-            "program": "scripts\\update-playstat-tags-from-mpd-log3.py",
+            "program": "scripts\\update-playstat-tags-from-mpd-log.py",
             "args": ["--config-file", "mlu.TEST.config.json", "-l"],
             "console": "integratedTerminal"
         },
@@ -63,8 +79,8 @@
             "name": "MPD Playstats updater - Test Save",
             "type": "python",
             "request": "launch",
-            "program": "scripts\\update-playstat-tags-from-mpd-log3.py",
-            "args": ["--config-file", "mlu.TEST.config.json", "-s", "[2023-11-20 16.02.31] playback-data-output"],
+            "program": "scripts\\update-playstat-tags-from-mpd-log.py",
+            "args": ["--config-file", "mlu.TEST.config.json", "-s", "[2023-11-21 12.32.05] playback-data-output"],
             "console": "integratedTerminal"
         },
         {

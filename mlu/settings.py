@@ -34,6 +34,7 @@ class MLUMpdConfig:
     def __init__(self, jsonConfig: dict):
         self.logFilepath = jsonConfig['logFilepath']
         self.logArchiveDir = jsonConfig['logArchiveDir']
+        self.outputDir = jsonConfig['outputDir']
 
 class MLUUserConfig:
     def __init__(self, jsonConfig: dict):

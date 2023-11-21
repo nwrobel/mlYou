@@ -4,8 +4,9 @@
     "logDir": "Z:\\Development\\Data\\Prod\\mlu\\logs",
 
     "mpd": {
-        "logFilepath": "",
-        "logArchiveDir": ""
+        "logFilepath": "Z:\\Development\\Data\\Prod\\mlu\\mpd-log\\mpd-master.log",
+        "logArchiveDir": "Z:\\Development\\Data\\Prod\\mlu\\mpd-log-archive",
+        "outputDir": "Z:\\Development\\Data\\Prod\\mlu\\playstats-output-dir"
     },
     "convertPlaylists": {
         "inputDir": "Z:\\Development\\Data\\Prod\\mlu\\convert-playlists-input",

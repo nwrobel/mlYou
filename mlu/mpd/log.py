@@ -46,9 +46,9 @@ class MpdLogProvider:
 
         self.logFilepath = mluSettings.userConfig.mpdConfig.logFilepath
         self._logger = commonLogger.getLogger()
-        self._lines = self._readLogLines()
 
     def getLines(self) -> MpdLogLine:
+        self._lines = self._readLogLines()
         return self._lines
 
     def _readLogLines(self) -> List[MpdLogLine]:
@@ -57,16 +57,17 @@ class MpdLogProvider:
         The list is then sorted by the timestamp of each line (earliest first) and returned.
         '''
         rawLogFileLines = self._getRawLines()
+        self._logger.info("Parsing {} lines from MPD log".format(len(rawLogFileLines)))
         allMpdLogLines = []
 
         for logLine in rawLogFileLines:
-            # Try using the start year first
-            lineDatetime = self._getDatetimeFromRawLogLine(logLine)
-            lineText = self._getTextFromRawLogLine(logLine)
+            if (logLine):
+                lineDatetime = self._getDatetimeFromRawLogLine(logLine)
+                lineText = self._getTextFromRawLogLine(logLine)
 
-            allMpdLogLines.append(
-                MpdLogLine(dateTime=lineDatetime, text=lineText, originalText=logLine)
-            )
+                allMpdLogLines.append(
+                    MpdLogLine(dateTime=lineDatetime, text=lineText, originalText=logLine)
+                )
 
         # Sort the loglines array
         sortedLines = self._sortLogLinesByDatetime(allMpdLogLines)
