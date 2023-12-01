@@ -12,6 +12,22 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Autoplaylists",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\create-rating-autoplaylists.py",
+            "args": ["--config-file", "mlu.config.json"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Autoplaylists - TEST",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts\\create-rating-autoplaylists.py",
+            "args": ["--config-file", "mlu.TEST.config.json"],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Convert Playlists - Linux to Windows",
             "type": "python",
             "request": "launch",
@@ -64,7 +80,7 @@
             "type": "python",
             "request": "launch",
             "program": "scripts\\update-playstat-tags-from-mpd-log.py",
-            "args": ["--config-file", "mlu.config.json", "-s", "[2023-11-21 12.44.37] playback-data-output"],
+            "args": ["--config-file", "mlu.config.json", "-s", "[2023-11-23 14.28.37] playback-data-output"],
             "console": "integratedTerminal"
         },
         {

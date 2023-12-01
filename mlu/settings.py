@@ -14,32 +14,69 @@ class MLUVotePlaylistFileConfigItem:
         self.filename = filename
         self.value = value
 
+class MLURatingAutoplaylistConfigItem:
+    def __init__(self, filename: str, minValue: float, maxValue: float):
+        self.filename = filename
+        self.minValue = minValue
+        self.maxValue = maxValue
+
 class MLURatingConfig:
     def __init__(self, jsonConfig: dict):
-        self.votePlaylistInputDir = jsonConfig['votePlaylistInputDir']
-        self.votePlaylistArchiveDir = jsonConfig['votePlaylistArchiveDir']
-        self.votePlaylistFiles = []
+        if (jsonConfig is None):
+            self.votePlaylistInputDir = ''
+            self.votePlaylistArchiveDir = ''
+            self.votePlaylistFiles = []
+        else:  
+            self.votePlaylistInputDir = jsonConfig['votePlaylistInputDir']
+            self.votePlaylistArchiveDir = jsonConfig['votePlaylistArchiveDir']
+            self.votePlaylistFiles = []
 
-        for votePlaylistFileJsonCfg in jsonConfig['votePlaylistFiles']:
-            self.votePlaylistFiles.append(
-                MLUVotePlaylistFileConfigItem(votePlaylistFileJsonCfg['filename'], votePlaylistFileJsonCfg['value'])
-            )
+            for votePlaylistFileJsonCfg in jsonConfig['votePlaylistFiles']:
+                self.votePlaylistFiles.append(
+                    MLUVotePlaylistFileConfigItem(votePlaylistFileJsonCfg['filename'], votePlaylistFileJsonCfg['value'])
+                )
+
+class MLUAutoPlaylistsConfig:
+    def __init__(self, jsonConfig: dict):
+        if (jsonConfig is None):
+            self.outputDir = ''
+            self.ratingConfigs = []  
+        else:         
+            self.outputDir = jsonConfig['outputDir']
+            self.ratingConfigs = []
+
+            for ratingPlaylistCfg in jsonConfig['rating']:
+                self.ratingConfigs.append(
+                    MLURatingAutoplaylistConfigItem(
+                        ratingPlaylistCfg['filename'], 
+                        ratingPlaylistCfg['minValue'],
+                        ratingPlaylistCfg['maxValue']
+                    )
+                )
 
 class MLUConvertPlaylistsConfig:
     def __init__(self, jsonConfig: dict):
-        self.inputDir = jsonConfig['inputDir']
-        self.outputDir = jsonConfig['outputDir']
+        if (jsonConfig is None):
+            self.inputDir = ''
+            self.outputDir = ''
+        else:      
+            self.inputDir = jsonConfig['inputDir']
+            self.outputDir = jsonConfig['outputDir']
 
 class MLUMpdConfig:
     def __init__(self, jsonConfig: dict):
-        self.logFilepath = jsonConfig['logFilepath']
-        self.logArchiveDir = jsonConfig['logArchiveDir']
-        self.outputDir = jsonConfig['outputDir']
+        if (jsonConfig is None):
+            self.logFilepath = ''
+            self.logArchiveDir = ''
+            self.outputDir = ''
+        else:
+            self.logFilepath = jsonConfig['logFilepath']
+            self.logArchiveDir = jsonConfig['logArchiveDir']
+            self.outputDir = jsonConfig['outputDir']
 
 class MLUUserConfig:
     def __init__(self, jsonConfig: dict):
         self.audioLibraryRootDir = jsonConfig['audioLibraryRootDir']
-        self.autoplaylistsOutputDir = jsonConfig['autoplaylistsOutputDir']
         
         logDir = jsonConfig['logDir']
         if (logDir):
@@ -47,9 +84,16 @@ class MLUUserConfig:
         else:
             self.logDir = self.defaultLogDir 
 
-        self.convertPlaylistsConfig = MLUConvertPlaylistsConfig(jsonConfig['convertPlaylists'])
-        self.ratingConfig = MLURatingConfig(jsonConfig['rating'])
-        self.mpdConfig = MLUMpdConfig(jsonConfig['mpd'])
+        self.autoplaylistsConfig = MLUAutoPlaylistsConfig(self._getConfigSectionOrNull(jsonConfig, 'autoplaylists'))
+        self.convertPlaylistsConfig = MLUConvertPlaylistsConfig(self._getConfigSectionOrNull(jsonConfig, 'convertPlaylists'))
+        self.ratingConfig = MLURatingConfig(self._getConfigSectionOrNull(jsonConfig, 'rating'))
+        self.mpdConfig = MLUMpdConfig(self._getConfigSectionOrNull(jsonConfig, 'mpd'))
+
+    def _getConfigSectionOrNull(self, jsonConfig, keyName):
+        try:
+            return jsonConfig[keyName]
+        except:
+            return None
 
 class MLUSettings:
     @staticmethod

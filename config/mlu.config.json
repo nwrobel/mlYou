@@ -1,10 +1,29 @@
 {
     "audioLibraryRootDir": "Z:\\Music Library\\Content",
-    "autoplaylistsOutputDir": "Z:\\Music Library\\!mpd-saved-playlists",
     "logDir": "Z:\\Development\\Data\\Prod\\mlu\\logs",
 
+    "autoplaylists": {
+        "outputDir": "Z:\\Music Library\\!mpd-saved-playlists",
+        "rating": [
+            {
+                "filename": "Rating 7-10 (desc).m3u",
+                "minValue": 7,
+                "maxValue": 10                
+            },
+            {
+                "filename": "Rating 8-10 (desc).m3u",
+                "minValue": 8,
+                "maxValue": 10                
+            },
+            {
+                "filename": "Rating 9-10 (desc).m3u",
+                "minValue": 9,
+                "maxValue": 10                
+            }
+        ] 
+    },
     "mpd": {
-        "logFilepath": "Z:\\Development\\Data\\Prod\\mlu\\mpd-log\\mpd-master.log",
+        "logFilepath": "Z:\\Development\\Data\\Prod\\mlu\\mpd-log\\mpd-master-current.log",
         "logArchiveDir": "Z:\\Development\\Data\\Prod\\mlu\\mpd-log-archive",
         "outputDir": "Z:\\Development\\Data\\Prod\\mlu\\playstats-output-dir"
     },
