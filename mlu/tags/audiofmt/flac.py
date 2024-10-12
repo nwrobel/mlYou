@@ -35,19 +35,9 @@ class AudioFormatHandlerFLAC:
 
         title = self._getTagValueFromMutagenInterface(mutagenInterface, 'title')
         artist = self._getTagValueFromMutagenInterface(mutagenInterface, 'artist')
-        album = self._getTagValueFromMutagenInterface(mutagenInterface, 'album')
         albumArtist = self._getTagValueFromMutagenInterface(mutagenInterface, 'albumartist')
-        composer = self._getTagValueFromMutagenInterface(mutagenInterface, 'composer')
-        date = self._getTagValueFromMutagenInterface(mutagenInterface, 'date')
+        album = self._getTagValueFromMutagenInterface(mutagenInterface, 'album')
         genre = self._getTagValueFromMutagenInterface(mutagenInterface, 'genre')
-        trackNumber = self._getTagValueFromMutagenInterface(mutagenInterface, 'tracknumber')
-        totalTracks = self._getTagValueFromMutagenInterface(mutagenInterface, 'tracktotal')
-        discNumber = self._getTagValueFromMutagenInterface(mutagenInterface, 'discnumber')
-        totalDiscs = self._getTagValueFromMutagenInterface(mutagenInterface, 'disctotal')
-        bpm = self._getTagValueFromMutagenInterface(mutagenInterface, 'bpm')
-        key = self._getTagValueFromMutagenInterface(mutagenInterface, 'key')
-        dateAdded = self._getTagValueFromMutagenInterface(mutagenInterface, 'date_added')
-        dateAllPlays = self._getTagValueFromMutagenInterface(mutagenInterface, 'date_all_plays')
         dateLastPlayed = self._getTagValueFromMutagenInterface(mutagenInterface, 'date_last_played') 
         playCount = self._getTagValueFromMutagenInterface(mutagenInterface, 'play_count')
         rating = self._getTagValueFromMutagenInterface(mutagenInterface, 'rating')
@@ -57,17 +47,7 @@ class AudioFormatHandlerFLAC:
             artist=artist,
             album=album,
             albumArtist=albumArtist,
-            composer=composer,
-            date=date,
             genre=genre, 
-            trackNumber=trackNumber,
-            totalTracks=totalTracks,
-            discNumber=discNumber,
-            totalDiscs=totalDiscs,
-            bpm=bpm,
-            key=key,
-            dateAdded=dateAdded,
-            dateAllPlays=dateAllPlays, 
             dateLastPlayed=dateLastPlayed, 
             playCount=playCount, 
             rating=rating        
@@ -80,7 +60,6 @@ class AudioFormatHandlerFLAC:
         '''
         mutagenInterface = mutagen.File(self.audioFilepath)
 
-        mutagenInterface['date_all_plays'] = audioFileTags.dateAllPlays
         mutagenInterface['date_last_played'] = audioFileTags.dateLastPlayed
         mutagenInterface['play_count'] = audioFileTags.playCount
         mutagenInterface['rating'] = audioFileTags.rating

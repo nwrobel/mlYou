@@ -1,5 +1,6 @@
 {
-    "audioLibraryRootDir": "Z:\\Music Library\\Content",
+    "audioLibraryRootDir": "Z:\\Music Library\\Content\\Music\\16Volt",
+    "tagBackupFilepath": "Z:\\Development\\Data\\Prod\\mlu\\library-all-tags-snapshot.json",
     "logDir": "Z:\\Development\\Data\\Prod\\mlu\\logs",
 
     "autoplaylists": {
@@ -20,7 +21,41 @@
                 "minValue": 9,
                 "maxValue": 10                
             }
-        ] 
+        ],
+        "unrated": [
+            {
+                "filename": "Unrated Industrial.m3u",
+                "genres": [
+                    "Industrial",
+                    "Industrial Rock",
+                    "Industrial Metal"
+                ]
+            },
+            {
+                "filename": "Unrated Alt Rock.m3u",
+                "genres": [
+                    "Alternative Rock"
+                ]
+            },
+            {
+                "filename": "Unrated Electro rock.m3u",
+                "genres": [
+                    "Electro",
+                    "Rock"
+                ],
+                "genreOp": "AND",
+                "fileOp": "a"
+            } ,
+            {
+                "filename": "Unrated Electro rock.m3u",
+                "genres": [
+                    "Electronic",
+                    "Rock"
+                ],
+                "genreOp": "AND",
+                "fileOp": "a"
+            }          
+        ]
     },
     "mpd": {
         "logFilepath": "Z:\\Development\\Data\\Prod\\mlu\\mpd-log\\mpd-master-current.log",

@@ -42,32 +42,6 @@ class AudioFormatHandlerMP3:
         album = self._getTagValueFromMutagenInterface(mutagenInterface, 'TALB')
         albumArtist = self._getTagValueFromMutagenInterface(mutagenInterface, 'TPE2')
         genre = self._getTagValueFromMutagenInterface(mutagenInterface, 'TCON')
-        bpm = self._getTagValueFromMutagenInterface(mutagenInterface, 'TBPM')
-        date = self._getTagValueFromMutagenInterface(mutagenInterface, 'TDRC')
-
-        trackNumOfTotal = self._getTagValueFromMutagenInterface(mutagenInterface, 'TRCK')
-        discNumOfTotal = self._getTagValueFromMutagenInterface(mutagenInterface, 'TPOS')
-
-        if ('/' in trackNumOfTotal):
-            parts = trackNumOfTotal.split('/')
-            trackNumber = parts[0]
-            totalTracks = parts[1]
-        else:
-            trackNumber = trackNumOfTotal
-            totalTracks = ''
-
-        if ('/' in discNumOfTotal):
-            parts = discNumOfTotal.split('/')
-            discNumber = parts[0]
-            totalDiscs = parts[1]
-        else:
-            discNumber = discNumOfTotal
-            totalDiscs = ''
-
-        composer = self._getTagValueFromMutagenInterface(mutagenInterface, 'TCOM')
-        key = self._getTagValueFromMutagenInterface(mutagenInterface, 'TXXX:Key')
-        dateAdded = self._getTagValueFromMutagenInterface(mutagenInterface, 'TXXX:DATE_ADDED')
-        dateAllPlays = self._getTagValueFromMutagenInterface(mutagenInterface, 'TXXX:DATE_ALL_PLAYS')
         dateLastPlayed = self._getTagValueFromMutagenInterface(mutagenInterface, 'TXXX:DATE_LAST_PLAYED') 
         playCount = self._getTagValueFromMutagenInterface(mutagenInterface, 'TXXX:PLAY_COUNT')
         rating = self._getTagValueFromMutagenInterface(mutagenInterface, 'TXXX:RATING')
@@ -77,17 +51,7 @@ class AudioFormatHandlerMP3:
             artist=artist,
             album=album,
             albumArtist=albumArtist,
-            composer=composer,
-            date=date,
             genre=genre, 
-            trackNumber=trackNumber,
-            totalTracks=totalTracks,
-            discNumber=discNumber,
-            totalDiscs=totalDiscs,
-            bpm=bpm,
-            key=key,
-            dateAdded=dateAdded,
-            dateAllPlays=dateAllPlays, 
             dateLastPlayed=dateLastPlayed, 
             playCount=playCount, 
             rating=rating
@@ -112,7 +76,6 @@ class AudioFormatHandlerMP3:
         # Use the ID3 interface for setting the nonstandard Mp3 tags
         mutagenInterface = ID3(self.audioFilepath, v2_version=3)
 
-        mutagenInterface['TXXX:DATE_ALL_PLAYS'] = TXXX(3, desc='DATE_ALL_PLAYS', text=audioFileTags.dateAllPlays)
         mutagenInterface['TXXX:DATE_LAST_PLAYED'] = TXXX(3, desc='DATE_LAST_PLAYED', text=audioFileTags.dateLastPlayed)
         mutagenInterface['TXXX:PLAY_COUNT'] = TXXX(3, desc='PLAY_COUNT', text=audioFileTags.playCount)
         mutagenInterface['TXXX:RATING'] = TXXX(3, desc='RATING', text=audioFileTags.rating)

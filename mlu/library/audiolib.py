@@ -14,3 +14,4 @@ def getAllLibraryAudioFilepaths(libraryRootDir):
     audioFileExtensions = ['.flac', '.mp3', '.m4a', '.ogg', '.opus']
     allSongs = mypycommons.file.getFilesByExtension(rootDirPath=libraryRootDir, fileExt=audioFileExtensions)
     return allSongs
+

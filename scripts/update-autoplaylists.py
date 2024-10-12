@@ -1,10 +1,3 @@
-'''
-update-ratestat-tags-from-vote-playlists.py
-
-This script uses the votes playlists (1-10) to add the new votes to and update the ratestat tags of 
-audio files in the music library. 
-
-'''
 import argparse
 
 from com.nwrobel import mypycommons
@@ -17,7 +10,8 @@ import envsetup
 envsetup.PreparePythonProjectEnvironment()
 
 from mlu.settings import MLUSettings
-from mlu.library.playlist import RatingAutoplaylistProvider
+import mlu.managers.load_tags
+import mlu.managers.write_autoplaylists
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -32,11 +26,15 @@ if __name__ == "__main__":
 
     settings = MLUSettings(configFilename=args.configFile)
 
-    loggerWrapper = mypycommons.logger.CommonLogger(loggerName=settings.loggerName, logDir=settings.userConfig.logDir, logFilename="create-rating-autoplaylists.py.log")
+    loggerWrapper = mypycommons.logger.CommonLogger(loggerName=settings.loggerName, logDir=settings.userConfig.logDir, logFilename="update-autoplaylists.py.log")
     logger = loggerWrapper.getLogger()
 
-    provider = RatingAutoplaylistProvider(settings, loggerWrapper)
-    provider.createRatingAutoplaylists()
+    provider = mlu.managers.load_tags.LoadLibraryTagsManager(settings, loggerWrapper)
+    provider.saveLibraryTagsSnapshot()
+
+    provider = mlu.managers.write_autoplaylists.WriteAutoplaylistsManager(settings, loggerWrapper)
+    provider.writeRatingAutoplaylists()
+    provider.writeUnratedAutoplaylists()
 
     settings.cleanupTempDir()
     logger.info('Script complete')
