@@ -1,61 +1,98 @@
 {
-    "audioLibraryRootDir": "Z:\\Music Library\\Content\\Music\\16Volt",
+    "audioLibraryRootDir": "Z:\\Music Library\\Content",
     "tagBackupFilepath": "Z:\\Development\\Data\\Prod\\mlu\\library-all-tags-snapshot.json",
     "logDir": "Z:\\Development\\Data\\Prod\\mlu\\logs",
-
     "autoplaylists": {
-        "outputDir": "Z:\\Music Library\\!mpd-saved-playlists",
+        "outputDir": "Z:\\Music Library\\!mpd-saved-playlists\\Test2",
         "rating": [
             {
                 "filename": "Rating 7-10 (desc).m3u",
                 "minValue": 7,
-                "maxValue": 10                
+                "maxValue": 10
             },
             {
                 "filename": "Rating 8-10 (desc).m3u",
                 "minValue": 8,
-                "maxValue": 10                
+                "maxValue": 10
             },
             {
                 "filename": "Rating 9-10 (desc).m3u",
                 "minValue": 9,
-                "maxValue": 10                
+                "maxValue": 10
             }
         ],
-        "unrated": [
-            {
-                "filename": "Unrated Industrial.m3u",
+        "unrated": {
+            "simpleGenreConfig": {
+                "filenamePattern": "Unrated_s - {}.m3u",
                 "genres": [
-                    "Industrial",
-                    "Industrial Rock",
-                    "Industrial Metal"
-                ]
-            },
-            {
-                "filename": "Unrated Alt Rock.m3u",
-                "genres": [
-                    "Alternative Rock"
-                ]
-            },
-            {
-                "filename": "Unrated Electro rock.m3u",
-                "genres": [
+                    "Alternative Metal",
+                    "Alternative Rock",
+                    "Ambient",
+                    "Breakbeat",
+                    "Dark Ambient",
+                    "Downtempo",
+                    "Drum And Bass",
+                    "Ebm",
                     "Electro",
-                    "Rock"
-                ],
-                "genreOp": "AND",
-                "fileOp": "a"
-            } ,
-            {
-                "filename": "Unrated Electro rock.m3u",
-                "genres": [
+                    "Electro-Industrial",
                     "Electronic",
-                    "Rock"
-                ],
-                "genreOp": "AND",
-                "fileOp": "a"
-            }          
-        ]
+                    "Funk Metal",
+                    "Goa Trance",
+                    "Gothic Metal",
+                    "Groove Metal",
+                    "Grunge",
+                    "Hard Rock",
+                    "Heavy Metal",
+                    "Hip Hop",
+                    "House",
+                    "Industrial Metal",
+                    "Industrial Rock",
+                    "Industrial",
+                    "Metal",
+                    "Metalcore",
+                    "Nu Metal",
+                    "Post-Grunge",
+                    "Post-Hardcore",
+                    "Progressive House",
+                    "Progressive Metal",
+                    "Progressive Rock",
+                    "Progressive Trance",
+                    "Psychedelic",
+                    "Psychedelic Rock",
+                    "Psybient",
+                    "Psytrance",
+                    "Punk",
+                    "Punk Rock",
+                    "Sludge Metal",
+                    "Southern Rock",
+                    "Stoner Rock",
+                    "Techno",
+                    "Trance"      
+                ]
+            },
+            "advancedGenreConfig": [
+                {
+                    "filename": "Unrated Industrial.m3u",
+                    "query": "'Industrial' or 'Industrial Rock' or 'Industrial Metal' or 'Electro-Industrial'"
+                },
+                {
+                    "filename": "Unrated Metal.m3u",
+                    "query": "'Metal' or 'Industrial Metal' or 'Alternative Metal' or 'Funk Metal' or 'Nu Metal' or 'Progressive Metal' or 'Sludge Metal'"
+                },
+                {
+                    "filename": "Unrated Electronic industrial.m3u",
+                    "query": "('Industrial' or 'Industrial Rock' or 'Industrial Metal') and ('Techno' or 'Electronic' or 'Electro' or 'Electro-Industrial' or 'Ebm' or 'Drum And Bass')"
+                },
+                {
+                     "filename": "Unrated Psychedelic chill.m3u",
+                    "query": "('Psychedelic' or 'Psybient' or 'Psytrance' or 'Trance' or 'Goa Trance') and ('Downtempo' or 'Ambient' or 'Dark Ambient')"
+                },
+                {
+                     "filename": "Unrated Ambient industrial.m3u",
+                    "query": "('Ambient' or 'Dark Ambient') and ('Industrial' or 'Industrial Rock' or 'Industrial Metal' or 'Electro-Industrial')"
+                }
+            ]
+        }
     },
     "mpd": {
         "logFilepath": "Z:\\Development\\Data\\Prod\\mlu\\mpd-log\\mpd-master-current.log",

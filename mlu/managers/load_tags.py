@@ -38,4 +38,8 @@ class LoadLibraryTagsManager:
             mypycommons.file.deletePath(self.settings.userConfig.tagBackupFilepath)
 
         allTagsJson = [tags.__dict__ for tags in allTags]
+        
+        if (mypycommons.file.pathExists(self.settings.userConfig.tagBackupFilepath)):
+            mypycommons.file.deletePath(self.settings.userConfig.tagBackupFilepath)
+
         mypycommons.file.writeJsonFile(self.settings.userConfig.tagBackupFilepath, allTagsJson)

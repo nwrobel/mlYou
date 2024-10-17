@@ -6,6 +6,23 @@ import mlu.tags.values
 import mlu.tags.common
 import mlu.library.audiolib
 from mlu.settings import MLUSettings
+import re
+
+
+class AutoplaylistQueryResult:
+    def __init__(self, filepath, tags, genresQuery, fileHasGenresQuery, originalQuery):
+        self.filepath = filepath
+        self.tags = tags
+        self.genresQuery = genresQuery # ex ['Industrial', 'Industrial Rock', 'Industrial Metal']
+        self.fileHasGenresQuery = fileHasGenresQuery  # ex: [False, True, True]
+
+        logicalQuery = originalQuery.replace("'", "")
+        counter = 0
+        for genre in genresQuery:
+            logicalQuery = logicalQuery.replace(genre, str(self.fileHasGenresQuery[counter]), 1)
+            counter += 1
+
+        self.expression = logicalQuery
 
 class WriteAutoplaylistsManager:
     def __init__(self, mluSettings: MLUSettings, commonLogger: mypycommons.logger.CommonLogger):
@@ -22,14 +39,25 @@ class WriteAutoplaylistsManager:
 
         self._clearPreviousAutoplaylists()
 
-    def _clearPreviousAutoplaylists(self):
-        for ratingPlaylistCfg in self._settings.userConfig.autoplaylistsConfig.ratingConfigs:
-            playlistFilepath = mypycommons.file.joinPaths(self._settings.userConfig.autoplaylistsConfig.outputDir, ratingPlaylistCfg.filename)
-            mypycommons.file.deletePath(playlistFilepath)
+        if (not mypycommons.file.pathExists(self._settings.userConfig.autoplaylistsConfig.outputDir)):
+            mypycommons.file.createDirectory(self._settings.userConfig.autoplaylistsConfig.outputDir)
 
-        for playlistCfg in self._settings.userConfig.autoplaylistsConfig.unratedConfigs:
-            playlistFilepath = mypycommons.file.joinPaths(self._settings.userConfig.autoplaylistsConfig.outputDir, playlistCfg.filename)
-            mypycommons.file.deletePath(playlistFilepath)
+    def _clearPreviousAutoplaylists(self):
+        # Clear rating autoplaylists
+        # for ratingPlaylistCfg in self._settings.userConfig.autoplaylistsConfig.ratingConfigs:
+        #     playlistFilepath = mypycommons.file.joinPaths(self._settings.userConfig.autoplaylistsConfig.outputDir, ratingPlaylistCfg.filename)
+        #     mypycommons.file.deletePath(playlistFilepath)
+
+        # Clear 
+
+        # for playlistCfg in self._settings.userConfig.autoplaylistsConfig.unratedConfig.simpleCfg.:
+        #     playlistFilepath = mypycommons.file.joinPaths(self._settings.userConfig.autoplaylistsConfig.outputDir, ratingPlaylistCfg.filename)
+        #     mypycommons.file.deletePath(playlistFilepath)
+
+        # for playlistCfg in self._settings.userConfig.autoplaylistsConfig.ratingConfigs:
+        #     playlistFilepath = mypycommons.file.joinPaths(self._settings.userConfig.autoplaylistsConfig.outputDir, playlistCfg.filename)
+        #     mypycommons.file.deletePath(playlistFilepath)
+        pass
 
     def writeRatingAutoplaylists(self):
         for ratingPlaylistCfg in self._settings.userConfig.autoplaylistsConfig.ratingConfigs:
@@ -49,7 +77,7 @@ class WriteAutoplaylistsManager:
                     )
 
             # sort by multiple attributes
-            # Rating descending, then by albumArtist - album - trackNumber
+            # Rating descending, then by albumArtist - album 
             playlistItems.sort(key=lambda x: (x['tags'].albumArtist, x['tags'].album))
             playlistItems.sort(key=lambda x: (float(x['tags'].rating)), reverse=True)
 
@@ -60,24 +88,89 @@ class WriteAutoplaylistsManager:
             mypycommons.file.writeToFile(filepath=playlistFilepath, content=playlistItemsSorted) 
 
     def writeUnratedAutoplaylists(self):
-        for playlistCfg in self._settings.userConfig.autoplaylistsConfig.unratedConfigs:
-            playlistFilepath = mypycommons.file.joinPaths(self._settings.userConfig.autoplaylistsConfig.outputDir, playlistCfg.filename)
+        for advancedCfg in self._settings.userConfig.autoplaylistsConfig.unratedConfig.advancedConfigs:
+            playlistFilepath = mypycommons.file.joinPaths(self._settings.userConfig.autoplaylistsConfig.outputDir, advancedCfg.filename)
             playlistItems = []
 
-            if (playlistCfg.genreOperator == "OR"):
-                playlistItems = self._getPlaylistItemsOR(playlistCfg)
-            else:
-                playlistItems = self._getPlaylistItemsAND(playlistCfg)
+            query = advancedCfg.query
+            theGenres = re.findall(r"'(.*?)'", query, re.DOTALL)
+            queryResults = []
 
+            for audioFileTags in self._tagsJson:
+                filepath = audioFileTags['filepath']
+                tags = mlu.tags.values.AudioFileTags.fromJsonDict(audioFileTags['tags'])
+                fileHasGenresQuery = []
 
-            if (playlistCfg.fileOperator == "a" and mypycommons.file.pathExists(playlistFilepath)):
-                existingPlaylistFilepaths = mypycommons.file.readFile(playlistFilepath)
-                existingPlaylistItems = self._getPlaylistItems(existingPlaylistFilepaths)
-                playlistItems = self._removeDupes(existingPlaylistItems + playlistItems)
+                for genre in theGenres:
+                    if (genre in tags.genre):
+                        fileHasGenresQuery.append(True)
+                    else:
+                        fileHasGenresQuery.append(False)
+
+                queryResults.append(
+                    AutoplaylistQueryResult(filepath, tags, theGenres, fileHasGenresQuery, query)
+                )
+
+            # Take AutoplaylistQueryResult and feed it to the python eval
+            for result in queryResults:
+                shouldBeInAutoplaylist = (eval(result.expression) and result.tags.rating == 0)
+                if (shouldBeInAutoplaylist):
+                    playlistItems.append(
+                    {
+                            'filepath': result.filepath,
+                            'tags': result.tags
+                        }
+                    )
 
             playlistItems.sort(key=lambda x: (x['tags'].albumArtist, x['tags'].album))
-            playlistItemFilepaths = [x['filepath'] for x in playlistItems]
-            mypycommons.file.writeToFile(filepath=playlistFilepath, content=playlistItemFilepaths)   
+            playlistFilepaths = [x['filepath'] for x in playlistItems]
+
+            mypycommons.file.writeToFile(filepath=playlistFilepath, content=playlistFilepaths) 
+
+
+    def _audioFileHasThisGenre(self, filepath, theGenre):
+
+        item = [audioFileTags for audioFileTags in self._tagsJson if audioFileTags[filepath] == filepath]
+        tags = mlu.tags.values.AudioFileTags.fromJsonDict(item[0]['tags'])
+
+        if (theGenre in tags.genre):
+            return True
+
+        return False
+
+    def writeUnratedSimpleGenreAutoplaylists(self):
+        filenamePattern = self._settings.userConfig.autoplaylistsConfig.unratedConfig.simpleCfg.filenamePattern
+        genresToDo = self._settings.userConfig.autoplaylistsConfig.unratedConfig.simpleCfg.genres
+
+        for givenGenre in genresToDo:
+            filename = filenamePattern.format(givenGenre)
+            playlistFilepath = mypycommons.file.joinPaths(self._settings.userConfig.autoplaylistsConfig.outputDir, filename)
+
+            itemsMatching = self._getFilesMatchingGenre(givenGenre)
+            itemsMatching.sort(key=lambda x: (x['tags'].albumArtist, x['tags'].album))
+            playlistFilepaths = [x['filepath'] for x in itemsMatching]
+
+            mypycommons.file.writeToFile(filepath=playlistFilepath, content=playlistFilepaths) 
+
+    
+    def _getFilesMatchingGenre(self, genre):
+        playlistItems = []
+        for audioFileTags in self._tagsJson:
+            filepath = audioFileTags['filepath']
+            tags = mlu.tags.values.AudioFileTags.fromJsonDict(audioFileTags['tags'])
+
+            if (genre in tags.genre and
+                tags.rating == 0):
+                    playlistItems.append(
+                        {
+                            'filepath': filepath,
+                            'tags': tags
+                        }
+                    )           
+
+        return playlistItems
+
+    
 
   
     

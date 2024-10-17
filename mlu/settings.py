@@ -20,25 +20,39 @@ class MLURatingAutoplaylistConfigItem:
         self.minValue = minValue
         self.maxValue = maxValue
 
-class MLUUnratedAutoplaylistConfigItem:
-    def __init__(self, filename: str, genres: List, genreOperator: str, fileOperator: str):
-        self.filename = filename
+class MLUUnratedAutoplaylistSimpleConfigItem:
+    def __init__(self, filenamePattern: str, genres: List):
+        if ("{}" not in filenamePattern):
+            raise Exception("need token replacement char '{}' in filenamePattern")
+
+        self.filenamePattern = filenamePattern
         self.genres = genres
 
-        if (not genreOperator):
-            self.genreOperator = "OR"
-        elif (genreOperator != "OR" and genreOperator != "AND"):
-            raise Exception("invalid genreOp given in config")
-        else:
-            self.genreOperator = genreOperator
+class MLUUnratedAutoplaylistAdvancedConfigItem:
+    def __init__(self, filename: str, query: str):
+        self.filename = filename
+        self.query = query
 
-        if (not fileOperator):
-            self.fileOperator = "w"
-        elif (fileOperator != "w" and fileOperator != "a"):
-            raise Exception("invalid fileOp given in config")
-        else:
-            self.fileOperator = fileOperator
+
+class MLUUnratedAutoplaylistConfig:
+    def __init__(self, jsonConfig: dict):
+        simpleCfg = jsonConfig['simpleGenreConfig']
+        advancedCfg = jsonConfig['advancedGenreConfig']
+
+        self.simpleCfg = MLUUnratedAutoplaylistSimpleConfigItem(
+            simpleCfg['filenamePattern'],
+            simpleCfg['genres']
+        )      
+
+        self.advancedConfigs = []  
         
+        for advConfigItem in advancedCfg:
+            self.advancedConfigs.append(
+                MLUUnratedAutoplaylistAdvancedConfigItem(
+                    advConfigItem['filename'], 
+                    advConfigItem['query'])
+            )
+
 
 class MLURatingConfig:
     def __init__(self, jsonConfig: dict):
@@ -56,33 +70,26 @@ class MLURatingConfig:
                     MLUVotePlaylistFileConfigItem(votePlaylistFileJsonCfg['filename'], votePlaylistFileJsonCfg['value'])
                 )
 
+
 class MLUAutoPlaylistsConfig:
     def __init__(self, jsonConfig: dict):
         self.outputDir = ''
         self.ratingConfigs = []  
-        self.unratedConfigs = []
+        self.unratedConfig = None
 
-        if (jsonConfig is not None):
-            self.outputDir = jsonConfig['outputDir']
+        self.outputDir = jsonConfig['outputDir']
 
-            for ratingPlaylistCfg in jsonConfig['rating']:
-                self.ratingConfigs.append(
-                    MLURatingAutoplaylistConfigItem(
-                        ratingPlaylistCfg['filename'], 
-                        ratingPlaylistCfg['minValue'],
-                        ratingPlaylistCfg['maxValue']
-                    )
+        for ratingPlaylistCfg in jsonConfig['rating']:
+            self.ratingConfigs.append(
+                MLURatingAutoplaylistConfigItem(
+                    ratingPlaylistCfg['filename'], 
+                    ratingPlaylistCfg['minValue'],
+                    ratingPlaylistCfg['maxValue']
                 )
+            )
 
-            for unratedCfg in jsonConfig['unrated']:
-                self.unratedConfigs.append(
-                    MLUUnratedAutoplaylistConfigItem(
-                        unratedCfg['filename'],
-                        unratedCfg['genres'],
-                        getConfigOrNull(unratedCfg, 'genreOp'),
-                        getConfigOrNull(unratedCfg, 'fileOp')
-                    )
-                )
+        self.unratedConfig = MLUUnratedAutoplaylistConfig(jsonConfig['unrated'])
+
 
 class MLUConvertPlaylistsConfig:
     def __init__(self, jsonConfig: dict):

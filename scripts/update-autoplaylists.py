@@ -30,10 +30,11 @@ if __name__ == "__main__":
     logger = loggerWrapper.getLogger()
 
     provider = mlu.managers.load_tags.LoadLibraryTagsManager(settings, loggerWrapper)
-    provider.saveLibraryTagsSnapshot()
+    #provider.saveLibraryTagsSnapshot()
 
     provider = mlu.managers.write_autoplaylists.WriteAutoplaylistsManager(settings, loggerWrapper)
     provider.writeRatingAutoplaylists()
+    provider.writeUnratedSimpleGenreAutoplaylists()
     provider.writeUnratedAutoplaylists()
 
     settings.cleanupTempDir()
