@@ -72,8 +72,8 @@ class AudioFormatHandlerM4A:
 
         # Nonstandard (custom) M4A tags
         mutagenInterface['----:com.apple.iTunes:DATE_LAST_PLAYED'] = (audioFileTags.dateLastPlayed).encode('utf-8')
-        mutagenInterface['----:com.apple.iTunes:PLAY_COUNT'] = (audioFileTags.playCount).encode('utf-8')
-        mutagenInterface['----:com.apple.iTunes:RATING'] = (audioFileTags.rating).encode('utf-8')
+        mutagenInterface['----:com.apple.iTunes:PLAY_COUNT'] = (str(audioFileTags.playCount)).encode('utf-8')
+        mutagenInterface['----:com.apple.iTunes:RATING'] = (str(audioFileTags.rating)).encode('utf-8')
 
         mutagenInterface.save()
 

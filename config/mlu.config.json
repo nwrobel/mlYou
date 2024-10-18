@@ -84,8 +84,8 @@
                     "query": "('Industrial' or 'Industrial Rock' or 'Industrial Metal') and ('Techno' or 'Electronic' or 'Electro' or 'Electro-Industrial' or 'Ebm' or 'Drum And Bass')"
                 },
                 {
-                     "filename": "Unrated Psychedelic chill.m3u",
-                    "query": "('Psychedelic' or 'Psybient' or 'Psytrance' or 'Trance' or 'Goa Trance') and ('Downtempo' or 'Ambient' or 'Dark Ambient')"
+                     "filename": "Unrated Psychedelics.m3u",
+                    "query": "'Psychedelic' or 'Psybient' or 'Psytrance' or 'Trance' or 'Goa Trance' or 'Downtempo' or 'Ambient' or 'Dark Ambient'"
                 },
                 {
                      "filename": "Unrated Ambient industrial.m3u",

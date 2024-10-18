@@ -77,8 +77,8 @@ class AudioFormatHandlerMP3:
         mutagenInterface = ID3(self.audioFilepath, v2_version=3)
 
         mutagenInterface['TXXX:DATE_LAST_PLAYED'] = TXXX(3, desc='DATE_LAST_PLAYED', text=audioFileTags.dateLastPlayed)
-        mutagenInterface['TXXX:PLAY_COUNT'] = TXXX(3, desc='PLAY_COUNT', text=audioFileTags.playCount)
-        mutagenInterface['TXXX:RATING'] = TXXX(3, desc='RATING', text=audioFileTags.rating)
+        mutagenInterface['TXXX:PLAY_COUNT'] = TXXX(3, desc='PLAY_COUNT', text=str(audioFileTags.playCount))
+        mutagenInterface['TXXX:RATING'] = TXXX(3, desc='RATING', text=str(audioFileTags.rating))
 
         mutagenInterface.save(v2_version=3)
 

@@ -61,8 +61,8 @@ class AudioFormatHandlerFLAC:
         mutagenInterface = mutagen.File(self.audioFilepath)
 
         mutagenInterface['date_last_played'] = audioFileTags.dateLastPlayed
-        mutagenInterface['play_count'] = audioFileTags.playCount
-        mutagenInterface['rating'] = audioFileTags.rating
+        mutagenInterface['play_count'] = str(audioFileTags.playCount)
+        mutagenInterface['rating'] = str(audioFileTags.rating)
 
         mutagenInterface.save()
 

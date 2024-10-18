@@ -2,7 +2,6 @@
 Module that handles ratestat tags (votes, rating) updates.
 ''' 
 
-import numpy as np
 from prettytable import PrettyTable
 from typing import List
 
